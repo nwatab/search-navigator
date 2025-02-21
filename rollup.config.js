@@ -1,13 +1,14 @@
 import typescript from '@rollup/plugin-typescript';
+import terser from '@rollup/plugin-terser';
 import fs from 'fs';
 import path from 'path';
 
-// カスタムコピー用プラグイン
+
 function copyPlugin({ src, dest }) {
   return {
     name: 'copy-plugin',
     writeBundle() {
-      // コピー先ディレクトリが存在しなければ作成
+
       if (!fs.existsSync(dest)) {
         fs.mkdirSync(dest, { recursive: true });
       }
@@ -22,11 +23,12 @@ export default {
   input: 'src/content.ts',
   output: {
     file: 'dist/content.js',
-    format: 'iife', // コンテンツスクリプトは即時実行関数形式 (IIFE) で読み込むと安全です
+    format: 'iife',
     sourcemap: true
   },
   plugins: [
     typescript(),
+    terser(), 
     copyPlugin({ src: 'manifest.json', dest: 'dist' })
   ]
 };
