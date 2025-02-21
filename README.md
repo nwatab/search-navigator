@@ -19,3 +19,19 @@ A lightweight bookmarklet that enhances your Google search experience with intui
 - [ ] Google Shopping
 - [ ] Google News
 - [ ] Google Video
+
+## Developer Contribution Guidelines
+
+To set up the project locally and contribute, follow these steps:
+
+1. **Install Dependencies:**  
+   Run `pnpm run install` to install all necessary packages.
+
+2. **Build the Project:**  
+   Execute `pnpm run build` to compile the project. The build artifacts will be generated in the `/dist` directory.
+
+3. **Load the Extension:**  
+   Open `chrome://extensions/` in your Chrome browser and use the "Load unpacked" option to load the `/dist` directory.
+
+Feel free to open issues or submit pull requests if you have any improvements or fixes!
+
