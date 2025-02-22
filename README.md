@@ -5,15 +5,15 @@ A lightweight bookmarklet that enhances your Google search experience with intui
 1. **Keyboard Navigation:**
   - **j**: Navigate down through search results.
   - **k**: Navigate up through search results.
-  - **Enter**: Open the highlighted search result.
   - **h**: Go to the previous search results page.
   - **l**: Go to the next search results page.
+  - **Enter**: Open the highlighted search result.
 
 ## Roadmap
 - [ ] YouTube Support
-- [ ] Light/Dark Theme Support
+- [-] Light/Dark Theme Support
 - [ ] Customizable Keyboard Shortcuts
-- [ ] Scroll up/down only when a selected item is out of the viewport.
+- [-] Scroll up/down only when a selected item is out of the viewport.
 - [ ] Google Images
 - [ ] Google Maps
 - [ ] Google Shopping
