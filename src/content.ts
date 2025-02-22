@@ -1,8 +1,11 @@
 (() => {
   let currentIndex: number = 0;
   const results: Element[] = Array.from(document.querySelectorAll('div.g'));
-
   function highlight(index: number): void {
+
+    const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const highlightColor = isDark ? "rgb(51, 51, 51)" : "rgb(205, 204, 204)";
+
     results.forEach((el, idx) => {
       if (idx === index) {
         (el as HTMLElement).style.backgroundColor = '#eef';
