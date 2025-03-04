@@ -1,8 +1,8 @@
 (() => {
   let currentIndex: number = 0;
   const results: Element[] = Array.from(document.querySelectorAll('div.g'));
+
   function highlight(index: number): void {
-    
     const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     const highlightColor = isDark ? "rgb(51, 51, 51)" : "rgb(205, 204, 204)";
 
@@ -19,7 +19,6 @@
     });
   }
 
-
   if (results.length > 0) {
     highlight(currentIndex);
   }
@@ -29,27 +28,29 @@
     if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
       return;
     }
-    
+
     if (e.ctrlKey || e.metaKey) {
       return;
     }
 
     switch (e.key) {
-      case 'j': // down
+      case 'j': // down (Vim)
+      case 'ArrowDown': // down (Arrow key)
         if (currentIndex < results.length - 1) {
           currentIndex++;
           highlight(currentIndex);
         }
         e.preventDefault();
         break;
-      case 'k': // up
+      case 'k': // up (Vim)
+      case 'ArrowUp': // up (Arrow key)
         if (currentIndex > 0) {
           currentIndex--;
           highlight(currentIndex);
         }
         e.preventDefault();
         break;
-      case 'Enter': // open
+      case 'Enter': // open link
         if (currentIndex >= 0 && currentIndex < results.length) {
           const link = results[currentIndex].querySelector('a');
           if (link instanceof HTMLAnchorElement && link.href) {
@@ -57,7 +58,8 @@
           }
         }
         break;
-      case 'h': // previous
+      case 'h': // previous page (Vim)
+      case 'ArrowLeft': // previous page (Arrow key)
         {
           const prevLink = document.querySelector('#pnprev');
           if (prevLink instanceof HTMLAnchorElement && prevLink.href) {
@@ -66,7 +68,8 @@
           e.preventDefault();
         }
         break;
-      case 'l': // next
+      case 'l': // next page (Vim)
+      case 'ArrowRight': // next page (Arrow key)
         {
           const nextLink = document.querySelector('#pnnext');
           if (nextLink instanceof HTMLAnchorElement && nextLink.href) {
