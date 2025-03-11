@@ -11,9 +11,9 @@ A lightweight bookmarklet that enhances your Google search experience with intui
 
 ## Roadmap
 - [ ] YouTube Support
-- [-] Light/Dark Theme Support
+- [x] Light/Dark Theme Support
 - [ ] Customizable Keyboard Shortcuts
-- [-] Scroll up/down only when a selected item is out of the viewport.
+- [x] Scroll up/down only when a selected item is out of the viewport.
 - [ ] Google Images
 - [ ] Google Maps
 - [ ] Google Shopping
