@@ -3,10 +3,10 @@ A lightweight bookmarklet that enhances your Google search experience with intui
 
 ## Usage
 1. **Keyboard Navigation:**
-  - **j**: Navigate down through search results.
-  - **k**: Navigate up through search results.
-  - **h**: Go to the previous search results page.
-  - **l**: Go to the next search results page.
+  - **j** or **Down Arrow**: Navigate down through search results.
+  - **k** or **Up Arrow**: Navigate up through search results.
+  - **h** or **Left Arrow**: Go to the previous search results page.
+  - **l** or **Right Arrow**: Go to the next search results page.
   - **Enter**: Open the highlighted search result.
 
 ## Roadmap

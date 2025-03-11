@@ -1,8 +1,10 @@
-import typescript from '@rollup/plugin-typescript';
 import terser from '@rollup/plugin-terser';
+import typescript from '@rollup/plugin-typescript';
 import fs from 'fs';
 import path from 'path';
-
+import postcss from "postcss";
+import scss from "rollup-plugin-scss";
+import autoprefixer from "autoprefixer";
 
 function copyPlugin({ src, dest }) {
   return {
@@ -28,7 +30,15 @@ export default {
   },
   plugins: [
     typescript(),
-    terser(), 
+    scss({
+      fileName: 'style.css',
+      processor: () => postcss([autoprefixer()]),
+      outputStyle: "compressed",
+    }),
+    terser({   
+      compress: {
+        drop_console: true
+    }}),
     copyPlugin({ src: 'manifest.json', dest: 'dist' })
   ]
 };

@@ -1,3 +1,5 @@
+import './style.scss'
+
 /**
  * Checks if Google Search is using a dark theme based on the body's background color.
  *
@@ -23,17 +25,16 @@ function isGoogleSearchDarkTheme(window: Window & typeof globalThis, brightnessT
 
   function highlight(index: number): void {
     const isDark = isGoogleSearchDarkTheme(window)
-    const highlightColor = isDark ? "rgb(61, 69, 92)" : "rgb(224, 227, 235)";
-
+    const className = `sn-selected-${isDark ? 'dark' : 'light'}`
     results.forEach((el, idx) => {
       if (idx === index) {
-        (el as HTMLElement).style.backgroundColor = highlightColor;
+        el.classList.add(className);
         const rect = el.getBoundingClientRect();
         if (rect.top < 0 || rect.bottom > window.innerHeight) {
           el.scrollIntoView({ behavior: 'instant', block: 'center' });
         }
       } else {
-        (el as HTMLElement).style.backgroundColor = '';
+        el.classList.remove(className);
       }
     });
   }
