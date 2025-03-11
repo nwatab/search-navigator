@@ -1,10 +1,29 @@
+/**
+ * Checks if Google Search is using a dark theme based on the body's background color.
+ *
+ * Calculates brightness using the formula:
+ *   brightness = (r * 299 + g * 587 + b * 114) / 1000
+ * Returns true if brightness is below the given threshold.
+ *
+ * @param {Window} window - The global window object.
+ * @param {number} [brightnessThreshold=128] - The brightness threshold for dark mode.
+ * @returns {boolean} True if dark theme is detected, otherwise false.
+ */
+function isGoogleSearchDarkTheme(window: Window & typeof globalThis, brightnessThreshold: number = 128): boolean {
+  const bgColor = window.getComputedStyle(document.body).backgroundColor;
+  const rgbValues = bgColor.match(/\d+/g)?.map(Number);
+  if (!rgbValues || rgbValues.length < 3) return false;
+  const [r, g, b] = rgbValues;
+  return (r * 299 + g * 587 + b * 114) / 1000 < brightnessThreshold;
+}
+
 (() => {
   let currentIndex: number = 0;
   const results: Element[] = Array.from(document.querySelectorAll('div.g'));
 
   function highlight(index: number): void {
-    const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const highlightColor = isDark ? "rgb(51, 51, 51)" : "rgb(205, 204, 204)";
+    const isDark = isGoogleSearchDarkTheme(window)
+    const highlightColor = isDark ? "rgb(61, 69, 92)" : "rgb(224, 227, 235)";
 
     results.forEach((el, idx) => {
       if (idx === index) {
