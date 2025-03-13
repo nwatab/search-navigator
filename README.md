@@ -7,6 +7,8 @@ A lightweight bookmarklet that enhances your Google search experience with intui
   - **k** or **Up Arrow**: Navigate up through search results.
   - **h** or **Left Arrow**: Go to the previous search results page.
   - **l** or **Right Arrow**: Go to the next search results page.
+  - **i**: Go to Google Image search
+  - **a**: Go back to Google Search All tab
   - **Enter**: Open the highlighted search result.
 
 ## Roadmap
@@ -14,7 +16,7 @@ A lightweight bookmarklet that enhances your Google search experience with intui
 - [x] Light/Dark Theme Support
 - [ ] Customizable Keyboard Shortcuts
 - [x] Scroll up/down only when a selected item is out of the viewport.
-- [ ] Google Images
+- [x] Google Images
 - [ ] Google Maps
 - [ ] Google Shopping
 - [ ] Google News
