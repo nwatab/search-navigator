@@ -24,19 +24,24 @@ function isGoogleSearchDarkTheme(window: Window & typeof globalThis, brightnessT
   const results: Element[] = Array.from(document.querySelectorAll('div.g'));
 
   function highlight(index: number): void {
-    const isDark = isGoogleSearchDarkTheme(window)
-    const className = `sn-selected-${isDark ? 'dark' : 'light'}`
-    results.forEach((el, idx) => {
-      if (idx === index) {
-        el.classList.add(className);
-        const rect = el.getBoundingClientRect();
-        if (rect.top < 0 || rect.bottom > window.innerHeight) {
-          el.scrollIntoView({ behavior: 'instant', block: 'center' });
-        }
-      } else {
-        el.classList.remove(className);
-      }
+    const isDark = isGoogleSearchDarkTheme(window);
+    const className = `sn-selected-${isDark ? 'dark' : 'light'}`;
+    
+    // Remove highlights from all elements
+    results.forEach(el => {
+      el.classList.remove('sn-selected-dark', 'sn-selected-light');
     });
+    
+    // Apply new styling only to the current element
+    if (index >= 0 && index < results.length) {
+      const selectedElement = results[index];
+      selectedElement.classList.add(className);
+      
+      const rect = selectedElement.getBoundingClientRect();
+      if (rect.top < 0 || rect.bottom > window.innerHeight) {
+        selectedElement.scrollIntoView({ behavior: 'instant', block: 'center' });
+      }
+    }
   }
 
   if (results.length > 0) {
@@ -94,6 +99,40 @@ function isGoogleSearchDarkTheme(window: Window & typeof globalThis, brightnessT
           const nextLink = document.querySelector('#pnnext');
           if (nextLink instanceof HTMLAnchorElement && nextLink.href) {
             window.location.href = nextLink.href;
+          }
+          e.preventDefault();
+        }
+        break;
+      case 'i': // switch to image search
+        {
+          const currentUrl = window.location.href;
+          const searchParams = new URLSearchParams(window.location.search);
+          const query = searchParams.get('q');
+          
+          if (query) {
+            // Check if we're already on image search
+            if (!currentUrl.includes('/imghp') && !currentUrl.includes('/search?tbm=isch')) {
+              // Construct image search URL
+              const imageSearchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
+              window.location.href = imageSearchUrl;
+            }
+          }
+          e.preventDefault();
+        }
+        break;
+      case 'a': // switch to "All" search results
+        {
+          const currentUrl = window.location.href;
+          const searchParams = new URLSearchParams(window.location.search);
+          const query = searchParams.get('q');
+          
+          if (query) {
+            // Check if we're already on "All" search (no tbm parameter)
+            if (currentUrl.includes('udm=')) {
+              // Construct "All" search URL (removing any tbm parameter)
+              const allSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+              window.location.href = allSearchUrl;
+            }
           }
           e.preventDefault();
         }

@@ -1,7 +1,38 @@
-.sn-selected-light {
-  background-color: rgb(224, 227, 235);
+/* style.scss */
+
+/* Create a highlight effect using pseudo-elements that won't affect layout */
+div.g.sn-selected-dark,
+div.g.sn-selected-light {
+  position: relative !important;
+  z-index: 1 !important;
 }
 
-.sn-selected-dark {
-  background-color: rgb(51, 57, 77);
+div.g.sn-selected-dark::before,
+div.g.sn-selected-light::before {
+  content: '' !important;
+  position: absolute !important;
+  top: -4px !important;
+  left: -4px !important;
+  right: -4px !important;
+  bottom: -4px !important;
+  border-radius: 8px !important;
+  z-index: -1 !important;
+}
+
+div.g.sn-selected-dark::before {
+  background-color: rgb(51, 57, 77) !important;
+  box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.5) !important;
+}
+
+div.g.sn-selected-light::before {
+  background-color: rgb(240, 240, 240) !important;
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.5) !important;
+}
+
+/* Ensure text color is appropriate for the background */
+div.g.sn-selected-dark a,
+div.g.sn-selected-dark div,
+div.g.sn-selected-dark span,
+div.g.sn-selected-dark p {
+  color: #fff !important;
 }
