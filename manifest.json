@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Search navigator",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Let you navigate search results with shortcut keys",
   "content_scripts": [
     {
