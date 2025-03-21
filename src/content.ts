@@ -19,9 +19,48 @@ function isGoogleSearchDarkTheme(window: Window & typeof globalThis, brightnessT
   return (r * 299 + g * 587 + b * 114) / 1000 < brightnessThreshold;
 }
 
+function getGoogleSearchResultsWithDivG(): Element[] {
+  return Array.from(document.querySelectorAll('div.g'));
+}
+
+
+function getGoogleSearchResultsWithH3() {
+  const searchRoot = document.getElementById('search');
+  if (!searchRoot) return [];
+  
+  const h3Elements = Array.from(searchRoot.getElementsByTagName('h3'));
+  
+  const getAncestor = (element: Element, levels: number) => {
+    let current: Element | null = element;
+    for (let i = 0; i < levels; i++) {
+      current = current?.parentElement || current;
+    }
+    return current;
+  };
+  return [...new Set(h3Elements.map(h3 => getAncestor(h3, 9)))];
+}
+ 
+const makeGetGoogleSearchResults = (
+  getGoogleSearchResultsWithDivG: () => Element[],
+  getGoogleSearchResultsWithH3: () => Element[]
+) => (): Element[] => {
+  const resultsDivG = getGoogleSearchResultsWithDivG()
+  console.log('resultsDivG', resultsDivG)
+  if (resultsDivG.length > 0) {
+    return resultsDivG;
+  }
+  const resultsH3 = getGoogleSearchResultsWithH3();
+  console.log('resultsH3', resultsH3)
+  if (resultsH3.length > 0) {
+    return resultsH3;
+  }
+  return [];
+}
+
 (() => {
   let currentIndex: number = 0;
-  const results: Element[] = Array.from(document.querySelectorAll('div.g'));
+  const getGoogleSearchResults = makeGetGoogleSearchResults(getGoogleSearchResultsWithDivG, getGoogleSearchResultsWithH3);
+  const results: Element[] = getGoogleSearchResults();
 
   function highlight(index: number): void {
     const isDark = isGoogleSearchDarkTheme(window);
