@@ -19,31 +19,72 @@ function isGoogleSearchDarkTheme(window: Window & typeof globalThis, brightnessT
   return (r * 299 + g * 587 + b * 114) / 1000 < brightnessThreshold;
 }
 
-(() => {
-  let currentIndex: number = 0;
-  const results: Element[] = Array.from(document.querySelectorAll('div.g'));
+function getGoogleSearchResultsWithDivG(): Element[] {
+  return Array.from(document.querySelectorAll('div.g'));
+}
 
-  function highlight(index: number): void {
-    const isDark = isGoogleSearchDarkTheme(window);
-    const className = `sn-selected-${isDark ? 'dark' : 'light'}`;
+
+function getGoogleSearchResultsWithH3() {
+  const searchRoot = document.getElementById('search');
+  if (!searchRoot) return [];
+  
+  const h3Elements = Array.from(searchRoot.getElementsByTagName('h3'));
+  
+  const getAncestor = (element: Element, levels: number) => {
+    let current: Element | null = element;
+    for (let i = 0; i < levels; i++) {
+      current = current?.parentElement || current;
+    }
+    return current;
+  };
+  return [...new Set(h3Elements.map(h3 => getAncestor(h3, 9)))];
+}
+ 
+const makeGetGoogleSearchResults = (
+  getGoogleSearchResultsWithDivG: () => Element[],
+  getGoogleSearchResultsWithH3: () => Element[]
+) => (): Element[] => {
+  const resultsDivG = getGoogleSearchResultsWithDivG()
+  console.log('resultsDivG', resultsDivG)
+  if (resultsDivG.length > 0) {
+    return resultsDivG;
+  }
+  const resultsH3 = getGoogleSearchResultsWithH3();
+  console.log('resultsH3', resultsH3)
+  if (resultsH3.length > 0) {
+    return resultsH3;
+  }
+  return [];
+}
+
+
+const makeHighlight = (results: Element[]) => (index: number): void => {
+  const isDark = isGoogleSearchDarkTheme(window);
+  const className = `sn-selected-${isDark ? 'dark' : 'light'}`;
+  
+  // Remove highlights from all elements
+  results.forEach(el => {
+    el.classList.remove('sn-selected-dark', 'sn-selected-light');
+  });
+  
+  // Apply new styling only to the current element
+  if (index >= 0 && index < results.length) {
+    const selectedElement = results[index];
+    selectedElement.classList.add(className);
     
-    // Remove highlights from all elements
-    results.forEach(el => {
-      el.classList.remove('sn-selected-dark', 'sn-selected-light');
-    });
-    
-    // Apply new styling only to the current element
-    if (index >= 0 && index < results.length) {
-      const selectedElement = results[index];
-      selectedElement.classList.add(className);
-      
-      const rect = selectedElement.getBoundingClientRect();
-      if (rect.top < 0 || rect.bottom > window.innerHeight) {
-        selectedElement.scrollIntoView({ behavior: 'instant', block: 'center' });
-      }
+    const rect = selectedElement.getBoundingClientRect();
+    if (rect.top < 0 || rect.bottom > window.innerHeight) {
+      selectedElement.scrollIntoView({ behavior: 'instant', block: 'center' });
     }
   }
+}
 
+(() => {
+  let currentIndex: number = 0;
+  const getGoogleSearchResults = makeGetGoogleSearchResults(getGoogleSearchResultsWithDivG, getGoogleSearchResultsWithH3);
+  const results: Element[] = getGoogleSearchResults();
+  const highlight = makeHighlight(results);
+  
   if (results.length > 0) {
     highlight(currentIndex);
   }
