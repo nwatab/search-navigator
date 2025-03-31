@@ -19,10 +19,28 @@ function isGoogleSearchDarkTheme(window: Window & typeof globalThis, brightnessT
   return (r * 299 + g * 587 + b * 114) / 1000 < brightnessThreshold;
 }
 
+/**
+ * Checks if the current page is Google Search's "All" tab.
+ * 
+ * @returns {boolean} True if the current page is Google Search's "All" tab, otherwise false.
+ */
+function isGoogleSearchAllTab(): boolean {
+  const url = window.location.href;
+  const searchParams = new URLSearchParams(window.location.search);
+  
+  // Check if we're on Google Search
+  if (!url.includes('google.com/search')) return false;
+  
+  // If tbm parameter exists, we're not on the "All" tab
+  // tbm=isch (images), tbm=vid (videos), tbm=nws (news), etc.
+  if (searchParams.has('tbm')) return false;
+  
+  return true;
+}
+
 function getGoogleSearchResultsWithDivG(): Element[] {
   return Array.from(document.querySelectorAll('div.g'));
 }
-
 
 function getGoogleSearchResultsWithH3() {
   const searchRoot = document.getElementById('search');
@@ -57,7 +75,6 @@ const makeGetGoogleSearchResults = (
   return [];
 }
 
-
 const makeHighlight = (results: Element[]) => (index: number): void => {
   const isDark = isGoogleSearchDarkTheme(window);
   const className = `sn-selected-${isDark ? 'dark' : 'light'}`;
@@ -80,15 +97,23 @@ const makeHighlight = (results: Element[]) => (index: number): void => {
 }
 
 (() => {
+  // Initialize variables
   let currentIndex: number = 0;
-  const getGoogleSearchResults = makeGetGoogleSearchResults(getGoogleSearchResultsWithDivG, getGoogleSearchResultsWithH3);
-  const results: Element[] = getGoogleSearchResults();
-  const highlight = makeHighlight(results);
+  let results: Element[] = [];
+  let highlight: (index: number) => void = () => {};
   
-  if (results.length > 0) {
-    highlight(currentIndex);
+  // Initialize search results and highlighting only if we're on the "All" tab
+  if (isGoogleSearchAllTab()) {
+    const getGoogleSearchResults = makeGetGoogleSearchResults(getGoogleSearchResultsWithDivG, getGoogleSearchResultsWithH3);
+    results = getGoogleSearchResults();
+    highlight = makeHighlight(results);
+    
+    if (results.length > 0) {
+      highlight(currentIndex);
+    }
   }
 
+  // Add keydown event listener for all Google Search pages
   document.addEventListener('keydown', (e: KeyboardEvent) => {
     const activeTag = (document.activeElement && document.activeElement.tagName) || '';
     if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
@@ -99,31 +124,37 @@ const makeHighlight = (results: Element[]) => (index: number): void => {
       return;
     }
 
+    // Check if we're on the "All" tab for navigation/highlight features
+    const onAllTab = isGoogleSearchAllTab();
+
     switch (e.key) {
+      // Only enable j/k navigation and highlighting if we're on the "All" tab
       case 'j': // down (Vim)
       case 'ArrowDown': // down (Arrow key)
-        if (currentIndex < results.length - 1) {
+        if (onAllTab && results.length > 0 && currentIndex < results.length - 1) {
           currentIndex++;
           highlight(currentIndex);
+          e.preventDefault();
         }
-        e.preventDefault();
         break;
       case 'k': // up (Vim)
       case 'ArrowUp': // up (Arrow key)
-        if (currentIndex > 0) {
+        if (onAllTab && results.length > 0 && currentIndex > 0) {
           currentIndex--;
           highlight(currentIndex);
+          e.preventDefault();
         }
-        e.preventDefault();
         break;
       case 'Enter': // open link
-        if (currentIndex >= 0 && currentIndex < results.length) {
+        if (onAllTab && results.length > 0 && currentIndex >= 0 && currentIndex < results.length) {
           const link = results[currentIndex].querySelector('a');
           if (link instanceof HTMLAnchorElement && link.href) {
             window.location.href = link.href;
           }
         }
         break;
+      
+      // Navigation keys work on all Google Search pages
       case 'h': // previous page (Vim)
       case 'ArrowLeft': // previous page (Arrow key)
         {
@@ -144,36 +175,30 @@ const makeHighlight = (results: Element[]) => (index: number): void => {
           e.preventDefault();
         }
         break;
+      
+      // Tab switching keys work on all Google Search pages
       case 'i': // switch to image search
         {
-          const currentUrl = window.location.href;
           const searchParams = new URLSearchParams(window.location.search);
           const query = searchParams.get('q');
           
           if (query) {
-            // Check if we're already on image search
-            if (!currentUrl.includes('/imghp') && !currentUrl.includes('/search?tbm=isch')) {
-              // Construct image search URL
-              const imageSearchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
-              window.location.href = imageSearchUrl;
-            }
+            // Construct image search URL
+            const imageSearchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
+            window.location.href = imageSearchUrl;
           }
           e.preventDefault();
         }
         break;
       case 'a': // switch to "All" search results
         {
-          const currentUrl = window.location.href;
           const searchParams = new URLSearchParams(window.location.search);
           const query = searchParams.get('q');
           
-          if (query) {
-            // Check if we're already on "All" search (no tbm parameter)
-            if (currentUrl.includes('udm=')) {
-              // Construct "All" search URL (removing any tbm parameter)
-              const allSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-              window.location.href = allSearchUrl;
-            }
+          if (query && searchParams.has('tbm')) {
+            // Construct "All" search URL
+            const allSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+            window.location.href = allSearchUrl;
           }
           e.preventDefault();
         }
