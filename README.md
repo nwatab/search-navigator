@@ -9,7 +9,7 @@ A lightweight bookmarklet that enhances your Google search experience with intui
   - **l** or **Right Arrow**: Go to the next search results page.
   - **i**: Go to Google Image search
   - **a**: Go back to Google Search All tab
-  - **Enter**: Open the highlighted search result.
+  - **Enter** or **Space**: Open the highlighted search result.
 
 ## Roadmap
 - [ ] YouTube Support

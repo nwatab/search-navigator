@@ -116,10 +116,12 @@ const makeHighlight = (results: Element[]) => (index: number): void => {
         }
         e.preventDefault();
         break;
+      case ' ': // open link (Space key)
       case 'Enter': // open link
         if (currentIndex >= 0 && currentIndex < results.length) {
           const link = results[currentIndex].querySelector('a');
           if (link instanceof HTMLAnchorElement && link.href) {
+            e.preventDefault(); // Prevent scrolling when pressing space
             window.location.href = link.href;
           }
         }
