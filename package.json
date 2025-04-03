@@ -5,7 +5,9 @@
   "main": "dist/content.js",
   "type": "module",
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+      "format": "prettier --write \"src/**/*.{js,ts,tsx,json,css,scss,md}\"",
+      "format:check": "prettier --check \"src/**/*.{js,ts,tsx,json,css,scss,md}\""
   },
   "author": "Naoki Watanave",
   "license": "MIT",
@@ -14,6 +16,7 @@
     "@rollup/plugin-typescript": "^8.5.0",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.3",
+    "prettier": "^3.5.3",
     "rollup": "^3.0.0",
     "rollup-plugin-scss": "^4.0.1",
     "sass": "^1.85.1",
