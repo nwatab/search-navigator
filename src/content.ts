@@ -1,56 +1,59 @@
 import './style.scss'
 
-/**
- * Checks if Google Search is using a dark theme based on the body's background color.
- *
- * Calculates brightness using the formula:
- *   brightness = (r * 299 + g * 587 + b * 114) / 1000
- * Returns true if brightness is below the given threshold.
- *
- * @param {Window} window - The global window object.
- * @param {number} [brightnessThreshold=128] - The brightness threshold for dark mode.
- * @returns {boolean} True if dark theme is detected, otherwise false.
- */
-function isGoogleSearchDarkTheme(window: Window & typeof globalThis, brightnessThreshold: number = 128): boolean {
+// side effects
+type ExtractBodyBackgroundRgb = (window: Window & typeof globalThis, document: Document) => [number, number, number] | null;
+const extractBodyBackgroundRgb: ExtractBodyBackgroundRgb = (window, document) => {
   const bgColor = window.getComputedStyle(document.body).backgroundColor;
   const rgbValues = bgColor.match(/\d+/g)?.map(Number);
-  if (!rgbValues || rgbValues.length < 3) return false;
-  const [r, g, b] = rgbValues;
-  return (r * 299 + g * 587 + b * 114) / 1000 < brightnessThreshold;
+  if (!rgbValues || rgbValues.length < 3) return null;
+  return [rgbValues[0], rgbValues[1], rgbValues[2]];
+}
+type ClassModifier = (el: Element, className: string) => Element;
+const addClass: ClassModifier = (el, className) => {
+  el.classList.add(className);
+  return el;
+}
+const removeClass: ClassModifier = (el, className) => {
+  el.classList.remove(className);
+  return el;
 }
 
-function getGoogleSearchResultsWithDivG(): Element[] {
+const scrollIntoViewIfOutsideViewport = (el: Element) => {
+  const rect = el.getBoundingClientRect();
+  if (rect.top < 0 || rect.bottom > window.innerHeight) {
+    el.scrollIntoView({ behavior: 'instant', block: 'center' });
+  }
+  return el;
+}
+
+function getGoogleSearchResultsWithDivG(): HTMLElement[] {
   return Array.from(document.querySelectorAll('div.g'));
 }
 
-
-function getGoogleSearchResultsWithH3() {
+function getGoogleSearchResultsWithH3(tabType: 'all'|'image') {
   const searchRoot = document.getElementById('search');
   if (!searchRoot) return [];
   
   const h3Elements = Array.from(searchRoot.getElementsByTagName('h3'));
   
-  const getAncestor = (element: Element, levels: number) => {
-    let current: Element | null = element;
+  const getAncestor = (element: HTMLElement, levels: number) => {
+    let current: HTMLElement | null = element;
     for (let i = 0; i < levels; i++) {
       current = current?.parentElement || current;
     }
     return current;
   };
-  return [...new Set(h3Elements.map(h3 => getAncestor(h3, 9)))];
+  // magic numbers depending on actual DOM structure
+  const levels = tabType === 'all' ? 9 : 2
+  return [...new Set(h3Elements.map(h3 => getAncestor(h3, levels)))];
 }
  
-const makeGetGoogleSearchResults = (
-  getGoogleSearchResultsWithDivG: () => Element[],
-  getGoogleSearchResultsWithH3: () => Element[]
-) => (): Element[] => {
+const getGoogleSearchResults = (tabType: 'all' | 'image'): HTMLElement[] => {
   const resultsDivG = getGoogleSearchResultsWithDivG()
-  console.log('resultsDivG', resultsDivG)
   if (resultsDivG.length > 0) {
     return resultsDivG;
   }
-  const resultsH3 = getGoogleSearchResultsWithH3();
-  console.log('resultsH3', resultsH3)
+  const resultsH3 = getGoogleSearchResultsWithH3(tabType);
   if (resultsH3.length > 0) {
     return resultsH3;
   }
@@ -58,37 +61,61 @@ const makeGetGoogleSearchResults = (
 }
 
 
-const makeHighlight = (results: Element[]) => (index: number): void => {
-  const isDark = isGoogleSearchDarkTheme(window);
-  const className = `sn-selected-${isDark ? 'dark' : 'light'}`;
-  
-  // Remove highlights from all elements
+// business logic pure functions
+function determineThemeFromRgb(rgb: [number, number, number], brightnessThreshold: number = 128): 'light' | 'dark' {
+  const [r, g, b] = rgb;
+  return (r * 299 + g * 587 + b * 114) / 1000 < brightnessThreshold ? 'dark' : 'light';
+}
+
+function getGoogleSearchTabType(location: Location ): 'all' | 'image' | null {
+  const searchParams = new URLSearchParams(location.search);
+  const udm = searchParams.get('udm');
+  switch (udm) {
+    case null:
+      return 'all';
+    case '2':
+      return 'image';
+    default:
+      return null;      
+  }
+}
+
+
+const makeHighlight = ({addClass, removeClass}:
+  {
+    addClass: ClassModifier,
+    removeClass: ClassModifier,
+  }) => (results: HTMLElement[], index: number, theme: 'dark' | 'light'): void => {
+  const className = `sn-selected-${theme}`;
   results.forEach(el => {
-    el.classList.remove('sn-selected-dark', 'sn-selected-light');
+    removeClass(el, 'sn-selected-dark');
+    removeClass(el, 'sn-selected-light');
   });
   
-  // Apply new styling only to the current element
   if (index >= 0 && index < results.length) {
-    const selectedElement = results[index];
-    selectedElement.classList.add(className);
-    
-    const rect = selectedElement.getBoundingClientRect();
-    if (rect.top < 0 || rect.bottom > window.innerHeight) {
-      selectedElement.scrollIntoView({ behavior: 'instant', block: 'center' });
-    }
+    addClass(results[index], className);
   }
 }
 
 (() => {
   let currentIndex: number = 0;
-  const getGoogleSearchResults = makeGetGoogleSearchResults(getGoogleSearchResultsWithDivG, getGoogleSearchResultsWithH3);
-  const results: Element[] = getGoogleSearchResults();
-  const highlight = makeHighlight(results);
   
-  if (results.length > 0) {
-    highlight(currentIndex);
+  const searchTabType = getGoogleSearchTabType(window.location);
+  console.log('searchTabType', searchTabType);
+  if (!searchTabType) {
+    // Only all and image tabs are supported for now
+    return;
   }
+  const results = getGoogleSearchResults(searchTabType);
+  if (currentIndex < 0 || results.length <= currentIndex) {
+    throw new Error(`currentIndex is out of bounds: ${currentIndex} of ${results.length}`);
+  }
+  const bodyBackgroundRgb = extractBodyBackgroundRgb(window, document);
+  const theme = bodyBackgroundRgb == null ? 'light' : determineThemeFromRgb(bodyBackgroundRgb);
+  const highlight = makeHighlight({addClass, removeClass});
+  highlight(results, currentIndex, theme);
 
+  // Add keydown event listener for all Google Search pages
   document.addEventListener('keydown', (e: KeyboardEvent) => {
     const activeTag = (document.activeElement && document.activeElement.tagName) || '';
     if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
@@ -100,82 +127,118 @@ const makeHighlight = (results: Element[]) => (index: number): void => {
     }
 
     switch (e.key) {
-      case 'j': // down (Vim)
-      case 'ArrowDown': // down (Arrow key)
-        if (currentIndex < results.length - 1) {
+      // down
+      case 'j':
+      case 'ArrowDown':
+        // TODO: add support for image search
+        if (results.length > 0 && currentIndex < results.length - 1 && searchTabType === 'all') {
           currentIndex++;
-          highlight(currentIndex);
+          highlight(results, currentIndex, theme);
+          scrollIntoViewIfOutsideViewport(results[currentIndex]);
+          e.preventDefault();
         }
-        e.preventDefault();
         break;
-      case 'k': // up (Vim)
-      case 'ArrowUp': // up (Arrow key)
-        if (currentIndex > 0) {
+
+      // up
+      case 'k':
+      case 'ArrowUp':
+        // TODO: add support for image search
+        if (results.length > 0 && currentIndex > 0 && searchTabType === 'all') {
           currentIndex--;
-          highlight(currentIndex);
-        }
-        e.preventDefault();
-        break;
-      case 'Enter': // open link
-        if (currentIndex >= 0 && currentIndex < results.length) {
-          const link = results[currentIndex].querySelector('a');
-          if (link instanceof HTMLAnchorElement && link.href) {
-            window.location.href = link.href;
-          }
-        }
-        break;
-      case 'h': // previous page (Vim)
-      case 'ArrowLeft': // previous page (Arrow key)
-        {
-          const prevLink = document.querySelector('#pnprev');
-          if (prevLink instanceof HTMLAnchorElement && prevLink.href) {
-            window.location.href = prevLink.href;
-          }
+          highlight(results, currentIndex, theme);
+          scrollIntoViewIfOutsideViewport(results[currentIndex]);
           e.preventDefault();
         }
         break;
-      case 'l': // next page (Vim)
-      case 'ArrowRight': // next page (Arrow key)
-        {
-          const nextLink = document.querySelector('#pnnext');
-          if (nextLink instanceof HTMLAnchorElement && nextLink.href) {
-            window.location.href = nextLink.href;
+
+      // open link
+      case 'Enter':
+        // TODO: add support for image search
+        if (results.length > 0 && currentIndex >= 0 && currentIndex < results.length) {
+          switch(searchTabType) {
+            case 'all':
+              const link = results[currentIndex].querySelector('a');
+              if (link instanceof HTMLAnchorElement && link.href) {
+                window.location.href = link.href;
+              }
+              break;
+            case 'image':
+              // ToDo: it's complicated. Going up and down doesn't work when enlarging an image. More investigation needed.
+              // const vhid = results[currentIndex].querySelector('div')?.dataset.vhid;
+              // if (vhid) {
+              //   const url = new URL(window.location.href);
+              //   const currentHash = url.hash.replace('#', '');
+              //   console.log(currentHash, vhid);
+              //   if (currentHash === vhid) {
+              //       url.hash = '';
+              //   } else {
+              //     url.hash = `#${vhid}`;
+              //   }
+              //   window.location.href = url.toString();
+              // }
+              break;
+            default:
+              break;
           }
-          e.preventDefault();
         }
         break;
-      case 'i': // switch to image search
-        {
-          const currentUrl = window.location.href;
-          const searchParams = new URLSearchParams(window.location.search);
-          const query = searchParams.get('q');
-          
-          if (query) {
-            // Check if we're already on image search
-            if (!currentUrl.includes('/imghp') && !currentUrl.includes('/search?tbm=isch')) {
-              // Construct image search URL
-              const imageSearchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
-              window.location.href = imageSearchUrl;
+      
+      // previous page
+      case 'h':
+      case 'ArrowLeft': {
+        // TODO: add support for image search
+          if (searchTabType === 'all') {
+            const prevLink = document.querySelector('#pnprev');
+            if (prevLink instanceof HTMLAnchorElement && prevLink.href) {
+              window.location.href = prevLink.href;
             }
+            e.preventDefault();
           }
-          e.preventDefault();
         }
         break;
-      case 'a': // switch to "All" search results
-        {
-          const currentUrl = window.location.href;
-          const searchParams = new URLSearchParams(window.location.search);
-          const query = searchParams.get('q');
-          
+
+      // next page
+      case 'l':
+      case 'ArrowRight': {
+          if (searchTabType === 'all') {
+            const nextLink = document.querySelector('#pnnext');
+            if (nextLink instanceof HTMLAnchorElement && nextLink.href) {
+              window.location.href = nextLink.href;
+            }
+            e.preventDefault();
+          }
+        }
+        break;
+      
+      // switch to image search
+      case 'i': {
+          if (searchTabType !== 'image') {
+            const searchParams = new URLSearchParams(window.location.search);
+            const query = searchParams.get('q');
+            
           if (query) {
-            // Check if we're already on "All" search (no tbm parameter)
-            if (currentUrl.includes('udm=')) {
-              // Construct "All" search URL (removing any tbm parameter)
+            // Construct image search URL
+            const imageSearchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
+            window.location.href = imageSearchUrl;
+          }
+            e.preventDefault();
+          }
+        }
+        break;
+
+      // switch to all search
+      case 'a': {
+          if (searchTabType !== 'all') {
+            const searchParams = new URLSearchParams(window.location.search);
+            const query = searchParams.get('q');
+            if (!query) {
+              window.location.href = 'https://www.google.com';
+            } else {
               const allSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
               window.location.href = allSearchUrl;
-            }
+            }          
+            e.preventDefault();
           }
-          e.preventDefault();
         }
         break;
       default:
