@@ -5,8 +5,7 @@
   "description": "Let you navigate search results with shortcut keys",
   "content_scripts": [
     {
-      "matches": [
-        "https://www.google.com/search*"],
+      "matches": ["https://www.google.com/search*"],
       "js": ["content.js"],
       "css": ["style.css"],
       "run_at": "document_end"

@@ -1,22 +1,25 @@
-import './style.scss'
+import './style.scss';
 
 // side effects
-type ExtractBodyBackgroundRgb = (window: Window & typeof globalThis, document: Document) => [number, number, number] | null;
+type ExtractBodyBackgroundRgb = (
+  window: Window & typeof globalThis,
+  document: Document
+) => [number, number, number] | null;
 const extractBodyBackgroundRgb: ExtractBodyBackgroundRgb = (window, document) => {
   const bgColor = window.getComputedStyle(document.body).backgroundColor;
   const rgbValues = bgColor.match(/\d+/g)?.map(Number);
   if (!rgbValues || rgbValues.length < 3) return null;
   return [rgbValues[0], rgbValues[1], rgbValues[2]];
-}
+};
 type ClassModifier = (el: Element, className: string) => Element;
 const addClass: ClassModifier = (el, className) => {
   el.classList.add(className);
   return el;
-}
+};
 const removeClass: ClassModifier = (el, className) => {
   el.classList.remove(className);
   return el;
-}
+};
 
 const scrollIntoViewIfOutsideViewport = (el: Element) => {
   const rect = el.getBoundingClientRect();
@@ -24,18 +27,18 @@ const scrollIntoViewIfOutsideViewport = (el: Element) => {
     el.scrollIntoView({ behavior: 'instant', block: 'center' });
   }
   return el;
-}
+};
 
 function getGoogleSearchResultsWithDivG(): HTMLElement[] {
   return Array.from(document.querySelectorAll('div.g'));
 }
 
-function getGoogleSearchResultsWithH3(tabType: 'all'|'image') {
+function getGoogleSearchResultsWithH3(tabType: 'all' | 'image') {
   const searchRoot = document.getElementById('search');
   if (!searchRoot) return [];
-  
+
   const h3Elements = Array.from(searchRoot.getElementsByTagName('h3'));
-  
+
   const getAncestor = (element: HTMLElement, levels: number) => {
     let current: HTMLElement | null = element;
     for (let i = 0; i < levels; i++) {
@@ -44,12 +47,12 @@ function getGoogleSearchResultsWithH3(tabType: 'all'|'image') {
     return current;
   };
   // magic numbers depending on actual DOM structure
-  const levels = tabType === 'all' ? 9 : 2
-  return [...new Set(h3Elements.map(h3 => getAncestor(h3, levels)))];
+  const levels = tabType === 'all' ? 9 : 2;
+  return [...new Set(h3Elements.map((h3) => getAncestor(h3, levels)))];
 }
- 
+
 const getGoogleSearchResults = (tabType: 'all' | 'image'): HTMLElement[] => {
-  const resultsDivG = getGoogleSearchResultsWithDivG()
+  const resultsDivG = getGoogleSearchResultsWithDivG();
   if (resultsDivG.length > 0) {
     return resultsDivG;
   }
@@ -58,16 +61,18 @@ const getGoogleSearchResults = (tabType: 'all' | 'image'): HTMLElement[] => {
     return resultsH3;
   }
   return [];
-}
-
+};
 
 // business logic pure functions
-function determineThemeFromRgb(rgb: [number, number, number], brightnessThreshold: number = 128): 'light' | 'dark' {
+function determineThemeFromRgb(
+  rgb: [number, number, number],
+  brightnessThreshold: number = 128
+): 'light' | 'dark' {
   const [r, g, b] = rgb;
   return (r * 299 + g * 587 + b * 114) / 1000 < brightnessThreshold ? 'dark' : 'light';
 }
 
-function getGoogleSearchTabType(location: Location ): 'all' | 'image' | null {
+function getGoogleSearchTabType(location: Location): 'all' | 'image' | null {
   const searchParams = new URLSearchParams(location.search);
   const udm = searchParams.get('udm');
   switch (udm) {
@@ -76,30 +81,27 @@ function getGoogleSearchTabType(location: Location ): 'all' | 'image' | null {
     case '2':
       return 'image';
     default:
-      return null;      
+      return null;
   }
 }
 
+const makeHighlight =
+  ({ addClass, removeClass }: { addClass: ClassModifier; removeClass: ClassModifier }) =>
+  (results: HTMLElement[], index: number, theme: 'dark' | 'light'): void => {
+    const className = `sn-selected-${theme}`;
+    results.forEach((el) => {
+      removeClass(el, 'sn-selected-dark');
+      removeClass(el, 'sn-selected-light');
+    });
 
-const makeHighlight = ({addClass, removeClass}:
-  {
-    addClass: ClassModifier,
-    removeClass: ClassModifier,
-  }) => (results: HTMLElement[], index: number, theme: 'dark' | 'light'): void => {
-  const className = `sn-selected-${theme}`;
-  results.forEach(el => {
-    removeClass(el, 'sn-selected-dark');
-    removeClass(el, 'sn-selected-light');
-  });
-  
-  if (index >= 0 && index < results.length) {
-    addClass(results[index], className);
-  }
-}
+    if (index >= 0 && index < results.length) {
+      addClass(results[index], className);
+    }
+  };
 
 (() => {
   let currentIndex: number = 0;
-  
+
   const searchTabType = getGoogleSearchTabType(window.location);
   console.log('searchTabType', searchTabType);
   if (!searchTabType) {
@@ -112,7 +114,7 @@ const makeHighlight = ({addClass, removeClass}:
   }
   const bodyBackgroundRgb = extractBodyBackgroundRgb(window, document);
   const theme = bodyBackgroundRgb == null ? 'light' : determineThemeFromRgb(bodyBackgroundRgb);
-  const highlight = makeHighlight({addClass, removeClass});
+  const highlight = makeHighlight({ addClass, removeClass });
   highlight(results, currentIndex, theme);
 
   // Add keydown event listener for all Google Search pages
@@ -155,7 +157,7 @@ const makeHighlight = ({addClass, removeClass}:
       case 'Enter':
         // TODO: add support for image search
         if (results.length > 0 && currentIndex >= 0 && currentIndex < results.length) {
-          switch(searchTabType) {
+          switch (searchTabType) {
             case 'all':
               const link = results[currentIndex].querySelector('a');
               if (link instanceof HTMLAnchorElement && link.href) {
@@ -182,11 +184,12 @@ const makeHighlight = ({addClass, removeClass}:
           }
         }
         break;
-      
+
       // previous page
       case 'h':
-      case 'ArrowLeft': {
-        // TODO: add support for image search
+      case 'ArrowLeft':
+        {
+          // TODO: add support for image search
           if (searchTabType === 'all') {
             const prevLink = document.querySelector('#pnprev');
             if (prevLink instanceof HTMLAnchorElement && prevLink.href) {
@@ -199,7 +202,8 @@ const makeHighlight = ({addClass, removeClass}:
 
       // next page
       case 'l':
-      case 'ArrowRight': {
+      case 'ArrowRight':
+        {
           if (searchTabType === 'all') {
             const nextLink = document.querySelector('#pnnext');
             if (nextLink instanceof HTMLAnchorElement && nextLink.href) {
@@ -209,25 +213,27 @@ const makeHighlight = ({addClass, removeClass}:
           }
         }
         break;
-      
+
       // switch to image search
-      case 'i': {
+      case 'i':
+        {
           if (searchTabType !== 'image') {
             const searchParams = new URLSearchParams(window.location.search);
             const query = searchParams.get('q');
-            
-          if (query) {
-            // Construct image search URL
-            const imageSearchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
-            window.location.href = imageSearchUrl;
-          }
+
+            if (query) {
+              // Construct image search URL
+              const imageSearchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
+              window.location.href = imageSearchUrl;
+            }
             e.preventDefault();
           }
         }
         break;
 
       // switch to all search
-      case 'a': {
+      case 'a':
+        {
           if (searchTabType !== 'all') {
             const searchParams = new URLSearchParams(window.location.search);
             const query = searchParams.get('q');
@@ -236,7 +242,7 @@ const makeHighlight = ({addClass, removeClass}:
             } else {
               const allSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
               window.location.href = allSearchUrl;
-            }          
+            }
             e.preventDefault();
           }
         }
