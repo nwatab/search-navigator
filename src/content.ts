@@ -5,7 +5,10 @@ type ExtractBodyBackgroundRgb = (
   window: Window & typeof globalThis,
   document: Document
 ) => [number, number, number] | null;
-const extractBodyBackgroundRgb: ExtractBodyBackgroundRgb = (window, document) => {
+const extractBodyBackgroundRgb: ExtractBodyBackgroundRgb = (
+  window,
+  document
+) => {
   const bgColor = window.getComputedStyle(document.body).backgroundColor;
   const rgbValues = bgColor.match(/\d+/g)?.map(Number);
   if (!rgbValues || rgbValues.length < 3) return null;
@@ -69,7 +72,9 @@ function determineThemeFromRgb(
   brightnessThreshold: number = 128
 ): 'light' | 'dark' {
   const [r, g, b] = rgb;
-  return (r * 299 + g * 587 + b * 114) / 1000 < brightnessThreshold ? 'dark' : 'light';
+  return (r * 299 + g * 587 + b * 114) / 1000 < brightnessThreshold
+    ? 'dark'
+    : 'light';
 }
 
 function getGoogleSearchTabType(location: Location): 'all' | 'image' | null {
@@ -86,7 +91,13 @@ function getGoogleSearchTabType(location: Location): 'all' | 'image' | null {
 }
 
 const makeHighlight =
-  ({ addClass, removeClass }: { addClass: ClassModifier; removeClass: ClassModifier }) =>
+  ({
+    addClass,
+    removeClass,
+  }: {
+    addClass: ClassModifier;
+    removeClass: ClassModifier;
+  }) =>
   (results: HTMLElement[], index: number, theme: 'dark' | 'light'): void => {
     const className = `sn-selected-${theme}`;
     results.forEach((el) => {
@@ -110,21 +121,23 @@ const makeHighlight =
   }
   const results = getGoogleSearchResults(searchTabType);
   if (currentIndex < 0 || results.length <= currentIndex) {
-    throw new Error(`currentIndex is out of bounds: ${currentIndex} of ${results.length}`);
+    throw new Error(
+      `currentIndex is out of bounds: ${currentIndex} of ${results.length}`
+    );
   }
   const bodyBackgroundRgb = extractBodyBackgroundRgb(window, document);
-  const theme = bodyBackgroundRgb == null ? 'light' : determineThemeFromRgb(bodyBackgroundRgb);
+  const theme =
+    bodyBackgroundRgb == null
+      ? 'light'
+      : determineThemeFromRgb(bodyBackgroundRgb);
   const highlight = makeHighlight({ addClass, removeClass });
   highlight(results, currentIndex, theme);
 
   // Add keydown event listener for all Google Search pages
   document.addEventListener('keydown', (e: KeyboardEvent) => {
-    const activeTag = (document.activeElement && document.activeElement.tagName) || '';
+    const activeTag =
+      (document.activeElement && document.activeElement.tagName) || '';
     if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
-      return;
-    }
-
-    if (e.ctrlKey || e.metaKey) {
       return;
     }
 
@@ -132,8 +145,15 @@ const makeHighlight =
       // down
       case 'j':
       case 'ArrowDown':
+        if (e.ctrlKey || e.metaKey) {
+          return;
+        }
         // TODO: add support for image search
-        if (results.length > 0 && currentIndex < results.length - 1 && searchTabType === 'all') {
+        if (
+          results.length > 0 &&
+          currentIndex < results.length - 1 &&
+          searchTabType === 'all'
+        ) {
           currentIndex++;
           highlight(results, currentIndex, theme);
           scrollIntoViewIfOutsideViewport(results[currentIndex]);
@@ -144,6 +164,9 @@ const makeHighlight =
       // up
       case 'k':
       case 'ArrowUp':
+        if (e.ctrlKey || e.metaKey) {
+          return;
+        }
         // TODO: add support for image search
         if (results.length > 0 && currentIndex > 0 && searchTabType === 'all') {
           currentIndex--;
@@ -156,32 +179,47 @@ const makeHighlight =
       // open link
       case 'Enter':
         // TODO: add support for image search
-        if (results.length > 0 && currentIndex >= 0 && currentIndex < results.length) {
-          switch (searchTabType) {
-            case 'all':
-              const link = results[currentIndex].querySelector('a');
-              if (link instanceof HTMLAnchorElement && link.href) {
-                window.location.href = link.href;
-              }
-              break;
-            case 'image':
-              // ToDo: it's complicated. Going up and down doesn't work when enlarging an image. More investigation needed.
-              // const vhid = results[currentIndex].querySelector('div')?.dataset.vhid;
-              // if (vhid) {
-              //   const url = new URL(window.location.href);
-              //   const currentHash = url.hash.replace('#', '');
-              //   console.log(currentHash, vhid);
-              //   if (currentHash === vhid) {
-              //       url.hash = '';
-              //   } else {
-              //     url.hash = `#${vhid}`;
-              //   }
-              //   window.location.href = url.toString();
-              // }
-              break;
-            default:
-              break;
-          }
+        if (
+          !(
+            0 < results.length &&
+            0 <= currentIndex &&
+            currentIndex < results.length
+          )
+        ) {
+          return; // not expected to happen
+        }
+        switch (searchTabType) {
+          case 'all':
+            const link = results[currentIndex].querySelector('a');
+            if (link instanceof HTMLAnchorElement && link.href) {
+              const clickEvent = new MouseEvent('click', {
+                ctrlKey: e.ctrlKey,
+                metaKey: e.metaKey,
+                shiftKey: e.shiftKey,
+                bubbles: true,
+                cancelable: true,
+                view: window,
+              });
+              link.dispatchEvent(clickEvent);
+            }
+            break;
+          case 'image':
+            // ToDo: it's complicated. Going up and down doesn't work when enlarging an image. More investigation needed.
+            // const vhid = results[currentIndex].querySelector('div')?.dataset.vhid;
+            // if (vhid) {
+            //   const url = new URL(window.location.href);
+            //   const currentHash = url.hash.replace('#', '');
+            //   console.log(currentHash, vhid);
+            //   if (currentHash === vhid) {
+            //       url.hash = '';
+            //   } else {
+            //     url.hash = `#${vhid}`;
+            //   }
+            //   window.location.href = url.toString();
+            // }
+            break;
+          default:
+            break;
         }
         break;
 
@@ -190,6 +228,9 @@ const makeHighlight =
       case 'ArrowLeft':
         {
           // TODO: add support for image search
+          if (e.ctrlKey || e.metaKey) {
+            return;
+          }
           if (searchTabType === 'all') {
             const prevLink = document.querySelector('#pnprev');
             if (prevLink instanceof HTMLAnchorElement && prevLink.href) {
@@ -204,6 +245,9 @@ const makeHighlight =
       case 'l':
       case 'ArrowRight':
         {
+          if (e.ctrlKey || e.metaKey) {
+            return;
+          }
           if (searchTabType === 'all') {
             const nextLink = document.querySelector('#pnnext');
             if (nextLink instanceof HTMLAnchorElement && nextLink.href) {
@@ -217,6 +261,9 @@ const makeHighlight =
       // switch to image search
       case 'i':
         {
+          if (e.ctrlKey || e.metaKey) {
+            return;
+          }
           if (searchTabType !== 'image') {
             const searchParams = new URLSearchParams(window.location.search);
             const query = searchParams.get('q');
@@ -234,6 +281,9 @@ const makeHighlight =
       // switch to all search
       case 'a':
         {
+          if (e.ctrlKey || e.metaKey) {
+            return;
+          }
           if (searchTabType !== 'all') {
             const searchParams = new URLSearchParams(window.location.search);
             const query = searchParams.get('q');
