@@ -186,7 +186,11 @@ const makeHighlight =
             case 'all':
               const link = results[currentIndex].querySelector('a');
               if (link instanceof HTMLAnchorElement && link.href) {
-                window.location.href = link.href;
+                if (e.ctrlKey || e.metaKey) {
+                  window.open(link.href, '_blank');
+                } else {
+                  window.location.href = link.href;
+                }
               }
               break;
             case 'image':
