@@ -141,10 +141,6 @@ const makeHighlight =
       return;
     }
 
-    if (e.ctrlKey || e.metaKey) {
-      return;
-    }
-
     switch (e.key) {
       // down
       case 'j':
@@ -186,8 +182,21 @@ const makeHighlight =
             case 'all':
               const link = results[currentIndex].querySelector('a');
               if (link instanceof HTMLAnchorElement && link.href) {
-                if (e.ctrlKey || e.metaKey) {
-                  window.open(link.href, '_blank');
+                if (
+                  (((window.navigator as any).userAgentData?.platform || '')
+                    .toLowerCase()
+                    .includes('win') &&
+                    e.ctrlKey) ||
+                  e.metaKey
+                ) {
+                  const clickEvent = new MouseEvent('click', {
+                    ctrlKey: true,
+                    metaKey: true,
+                    bubbles: true,
+                    cancelable: true,
+                    view: window,
+                  });
+                  link.dispatchEvent(clickEvent);
                 } else {
                   window.location.href = link.href;
                 }
