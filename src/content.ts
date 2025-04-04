@@ -145,6 +145,9 @@ const makeHighlight =
       // down
       case 'j':
       case 'ArrowDown':
+        if (e.ctrlKey || e.metaKey) {
+          return;
+        }
         // TODO: add support for image search
         if (
           results.length > 0 &&
@@ -161,6 +164,9 @@ const makeHighlight =
       // up
       case 'k':
       case 'ArrowUp':
+        if (e.ctrlKey || e.metaKey) {
+          return;
+        }
         // TODO: add support for image search
         if (results.length > 0 && currentIndex > 0 && searchTabType === 'all') {
           currentIndex--;
@@ -174,70 +180,46 @@ const makeHighlight =
       case 'Enter':
         // TODO: add support for image search
         if (
-          results.length > 0 &&
-          currentIndex >= 0 &&
-          currentIndex < results.length
+          !(
+            0 < results.length &&
+            0 <= currentIndex &&
+            currentIndex < results.length
+          )
         ) {
-          switch (searchTabType) {
-            case 'all':
-              const link = results[currentIndex].querySelector('a');
-              if (link instanceof HTMLAnchorElement && link.href) {
-                if (
-                  ((((window.navigator as any).userAgentData?.platform || '')
-                    .toLowerCase()
-                    .includes('win') &&
-                    e.ctrlKey) ||
-                    e.metaKey) &&
-                  !e.shiftKey
-                ) {
-                  const clickEvent = new MouseEvent('click', {
-                    ctrlKey: true,
-                    metaKey: true,
-                    bubbles: true,
-                    cancelable: true,
-                    view: window,
-                  });
-                  link.dispatchEvent(clickEvent);
-                } else if (
-                  !(
-                    (((window.navigator as any).userAgentData?.platform || '')
-                      .toLowerCase()
-                      .includes('win') &&
-                      e.ctrlKey) ||
-                    e.metaKey
-                  ) &&
-                  e.shiftKey
-                ) {
-                  const clickEvent = new MouseEvent('click', {
-                    shiftKey: true,
-                    bubbles: true,
-                    cancelable: true,
-                    view: window,
-                  });
-                  link.dispatchEvent(clickEvent);
-                } else {
-                  window.location.href = link.href;
-                }
-              }
-              break;
-            case 'image':
-              // ToDo: it's complicated. Going up and down doesn't work when enlarging an image. More investigation needed.
-              // const vhid = results[currentIndex].querySelector('div')?.dataset.vhid;
-              // if (vhid) {
-              //   const url = new URL(window.location.href);
-              //   const currentHash = url.hash.replace('#', '');
-              //   console.log(currentHash, vhid);
-              //   if (currentHash === vhid) {
-              //       url.hash = '';
-              //   } else {
-              //     url.hash = `#${vhid}`;
-              //   }
-              //   window.location.href = url.toString();
-              // }
-              break;
-            default:
-              break;
-          }
+          return; // not expected to happen
+        }
+        switch (searchTabType) {
+          case 'all':
+            const link = results[currentIndex].querySelector('a');
+            if (link instanceof HTMLAnchorElement && link.href) {
+              const clickEvent = new MouseEvent('click', {
+                ctrlKey: e.ctrlKey,
+                metaKey: e.metaKey,
+                shiftKey: e.shiftKey,
+                bubbles: true,
+                cancelable: true,
+                view: window,
+              });
+              link.dispatchEvent(clickEvent);
+            }
+            break;
+          case 'image':
+            // ToDo: it's complicated. Going up and down doesn't work when enlarging an image. More investigation needed.
+            // const vhid = results[currentIndex].querySelector('div')?.dataset.vhid;
+            // if (vhid) {
+            //   const url = new URL(window.location.href);
+            //   const currentHash = url.hash.replace('#', '');
+            //   console.log(currentHash, vhid);
+            //   if (currentHash === vhid) {
+            //       url.hash = '';
+            //   } else {
+            //     url.hash = `#${vhid}`;
+            //   }
+            //   window.location.href = url.toString();
+            // }
+            break;
+          default:
+            break;
         }
         break;
 
@@ -246,6 +228,9 @@ const makeHighlight =
       case 'ArrowLeft':
         {
           // TODO: add support for image search
+          if (e.ctrlKey || e.metaKey) {
+            return;
+          }
           if (searchTabType === 'all') {
             const prevLink = document.querySelector('#pnprev');
             if (prevLink instanceof HTMLAnchorElement && prevLink.href) {
@@ -260,6 +245,9 @@ const makeHighlight =
       case 'l':
       case 'ArrowRight':
         {
+          if (e.ctrlKey || e.metaKey) {
+            return;
+          }
           if (searchTabType === 'all') {
             const nextLink = document.querySelector('#pnnext');
             if (nextLink instanceof HTMLAnchorElement && nextLink.href) {
@@ -273,6 +261,9 @@ const makeHighlight =
       // switch to image search
       case 'i':
         {
+          if (e.ctrlKey || e.metaKey) {
+            return;
+          }
           if (searchTabType !== 'image') {
             const searchParams = new URLSearchParams(window.location.search);
             const query = searchParams.get('q');
@@ -290,6 +281,9 @@ const makeHighlight =
       // switch to all search
       case 'a':
         {
+          if (e.ctrlKey || e.metaKey) {
+            return;
+          }
           if (searchTabType !== 'all') {
             const searchParams = new URLSearchParams(window.location.search);
             const query = searchParams.get('q');

@@ -12,7 +12,7 @@ A lightweight bookmarklet that enhances your Google search experience with intui
 - **l** or **Right Arrow**: Go to the next search results page.
 - **i**: Go to Google Image search.
 - **a**: Go to Google Search All tab.
-- **Enter**: Open the highlighted search result. Open in a new tab with Ctrl + Enter (Win) or Cmd + Enter (macos).
+- **Enter**: Open the highlighted search result. Open in a new tab with Ctrl + Enter (Win) or Cmd + Enter (macos). Open in a new window with Shift + Enter.
 
 ## Roadmap
 
