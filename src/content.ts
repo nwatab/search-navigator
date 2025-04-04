@@ -183,15 +183,33 @@ const makeHighlight =
               const link = results[currentIndex].querySelector('a');
               if (link instanceof HTMLAnchorElement && link.href) {
                 if (
-                  (((window.navigator as any).userAgentData?.platform || '')
+                  ((((window.navigator as any).userAgentData?.platform || '')
                     .toLowerCase()
                     .includes('win') &&
                     e.ctrlKey) ||
-                  e.metaKey
+                    e.metaKey) &&
+                  !e.shiftKey
                 ) {
                   const clickEvent = new MouseEvent('click', {
                     ctrlKey: true,
                     metaKey: true,
+                    bubbles: true,
+                    cancelable: true,
+                    view: window,
+                  });
+                  link.dispatchEvent(clickEvent);
+                } else if (
+                  !(
+                    (((window.navigator as any).userAgentData?.platform || '')
+                      .toLowerCase()
+                      .includes('win') &&
+                      e.ctrlKey) ||
+                    e.metaKey
+                  ) &&
+                  e.shiftKey
+                ) {
+                  const clickEvent = new MouseEvent('click', {
+                    shiftKey: true,
                     bubbles: true,
                     cancelable: true,
                     view: window,
