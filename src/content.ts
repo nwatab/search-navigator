@@ -5,7 +5,10 @@ type ExtractBodyBackgroundRgb = (
   window: Window & typeof globalThis,
   document: Document
 ) => [number, number, number] | null;
-const extractBodyBackgroundRgb: ExtractBodyBackgroundRgb = (window, document) => {
+const extractBodyBackgroundRgb: ExtractBodyBackgroundRgb = (
+  window,
+  document
+) => {
   const bgColor = window.getComputedStyle(document.body).backgroundColor;
   const rgbValues = bgColor.match(/\d+/g)?.map(Number);
   if (!rgbValues || rgbValues.length < 3) return null;
@@ -69,7 +72,9 @@ function determineThemeFromRgb(
   brightnessThreshold: number = 128
 ): 'light' | 'dark' {
   const [r, g, b] = rgb;
-  return (r * 299 + g * 587 + b * 114) / 1000 < brightnessThreshold ? 'dark' : 'light';
+  return (r * 299 + g * 587 + b * 114) / 1000 < brightnessThreshold
+    ? 'dark'
+    : 'light';
 }
 
 function getGoogleSearchTabType(location: Location): 'all' | 'image' | null {
@@ -86,7 +91,13 @@ function getGoogleSearchTabType(location: Location): 'all' | 'image' | null {
 }
 
 const makeHighlight =
-  ({ addClass, removeClass }: { addClass: ClassModifier; removeClass: ClassModifier }) =>
+  ({
+    addClass,
+    removeClass,
+  }: {
+    addClass: ClassModifier;
+    removeClass: ClassModifier;
+  }) =>
   (results: HTMLElement[], index: number, theme: 'dark' | 'light'): void => {
     const className = `sn-selected-${theme}`;
     results.forEach((el) => {
@@ -110,16 +121,22 @@ const makeHighlight =
   }
   const results = getGoogleSearchResults(searchTabType);
   if (currentIndex < 0 || results.length <= currentIndex) {
-    throw new Error(`currentIndex is out of bounds: ${currentIndex} of ${results.length}`);
+    throw new Error(
+      `currentIndex is out of bounds: ${currentIndex} of ${results.length}`
+    );
   }
   const bodyBackgroundRgb = extractBodyBackgroundRgb(window, document);
-  const theme = bodyBackgroundRgb == null ? 'light' : determineThemeFromRgb(bodyBackgroundRgb);
+  const theme =
+    bodyBackgroundRgb == null
+      ? 'light'
+      : determineThemeFromRgb(bodyBackgroundRgb);
   const highlight = makeHighlight({ addClass, removeClass });
   highlight(results, currentIndex, theme);
 
   // Add keydown event listener for all Google Search pages
   document.addEventListener('keydown', (e: KeyboardEvent) => {
-    const activeTag = (document.activeElement && document.activeElement.tagName) || '';
+    const activeTag =
+      (document.activeElement && document.activeElement.tagName) || '';
     if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
       return;
     }
@@ -133,7 +150,11 @@ const makeHighlight =
       case 'j':
       case 'ArrowDown':
         // TODO: add support for image search
-        if (results.length > 0 && currentIndex < results.length - 1 && searchTabType === 'all') {
+        if (
+          results.length > 0 &&
+          currentIndex < results.length - 1 &&
+          searchTabType === 'all'
+        ) {
           currentIndex++;
           highlight(results, currentIndex, theme);
           scrollIntoViewIfOutsideViewport(results[currentIndex]);
@@ -156,7 +177,11 @@ const makeHighlight =
       // open link
       case 'Enter':
         // TODO: add support for image search
-        if (results.length > 0 && currentIndex >= 0 && currentIndex < results.length) {
+        if (
+          results.length > 0 &&
+          currentIndex >= 0 &&
+          currentIndex < results.length
+        ) {
           switch (searchTabType) {
             case 'all':
               const link = results[currentIndex].querySelector('a');
