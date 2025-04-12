@@ -40,5 +40,9 @@ export default {
       },
     }),
     copyPlugin({ src: 'manifest.json', dest: 'dist' }),
+    copyPlugin({ src: '16x16.png', dest: 'dist' }),
+    copyPlugin({ src: '32x32.png', dest: 'dist' }),
+    copyPlugin({ src: '48x48.png', dest: 'dist' }),
+    copyPlugin({ src: '128x128.png', dest: 'dist' }),
   ],
 };
