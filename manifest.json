@@ -11,5 +11,11 @@
       "run_at": "document_end"
     }
   ],
-  "permissions": ["activeTab"]
+  "permissions": ["activeTab"],
+  "icons": {
+    "16": "16x16.png",
+    "32": "32x32.png",
+    "48": "48x48.png",
+    "128": "128x128.png"
+  }
 }
