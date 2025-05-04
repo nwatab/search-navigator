@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         input.select();
       });
 
+      // ToDo: need test for ke down
       input.addEventListener('keydown', (event) => {
         // keys that we swallow and wait for a “real” key
         const swallowKeys = new Set([
@@ -99,33 +100,31 @@ document.addEventListener('DOMContentLoaded', async () => {
           'Alt',
           'Meta', // Cmd / Windows
         ]);
-        // keys we reject outright: reset & blur
-        // Or should we specify acceptable keys?
-        const rejectKeys = new Set([
-          'CapsLock',
-          'NumLock',
-          'ScrollLock',
-          'Tab',
-          'ContextMenu',
-          'Fn',
-          'Unidentified',
-          'Escape',
-          'Eisu',
-          'KanjiMode',
-        ]);
-
         // 0) If it's a pure modifier, just swallow it—don't blur.
         if (swallowKeys.has(event.key)) {
           event.preventDefault();
           return; // stay in the input, wait for a “real” key
         }
 
-        // 1) If it's a reject key, prevent default and blur
-        if (rejectKeys.has(event.key)) {
+        // 1) whitelist test
+        const isCharKey = event.key.length === 1; // letters, digits, punctuation, Space, Brackets, parentheses, at-sign, etc.
+        // const isArrowKey = [
+        //   'ArrowUp',
+        //   'ArrowDown',
+        //   'ArrowLeft',
+        //   'ArrowRight',
+        // ].includes(event.key);
+        // The arrow keys are used by default. To customize them, the default settings should be overridden in the keymap manager.
+        const isFunctionKey = /^F\d{1,2}$/.test(event.key); // F1–F12
+        const isEnter = event.key === 'Enter';
+
+        if (!(isCharKey || isFunctionKey || isEnter)) {
           event.preventDefault();
-          input.blur(); // trigger your blur‐handler to restore originalValue
+          input.blur();
+          // ToDo: Feecback a user that this is not a valid key
           return;
         }
+
         // 2) Now build the combo (this will include event.ctrlKey, etc.)
         const combo = keyConfigToString({
           key: event.key,
