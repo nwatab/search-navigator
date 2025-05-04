@@ -10,32 +10,31 @@ A lightweight bookmarklet that enhances your Google search experience with intui
 - **k** or **↑**: Navigate up through search results.
 - **h** or **←**: Go to the previous search results page.
 - **l** or **→**: Go to the next search results page.
-- **i**: Go to Google Image search.
-- **a**: Go to Google Search All tab.
-- **Enter**: Open the highlighted search result. Open in a new tab with Ctrl + Enter (Win) or Cmd + Enter (macos). Open in a new window with Shift + Enter.
+- **i**: Switch to the Image search tab.
+- **a**: Switch to the All tab.
+- **Enter**: Open the highlighted result; hold `Ctrl` (Windows) or `Cmd` (macOS) to open in a new tab, or hold `Shift` to open in a new window.
+
+All shortcuts except the arrow keys can be customized in the popup.
 
 ## Roadmap
 
-- [ ] YouTube Support
-- [x] Light/Dark Theme Support
-- [x] Customizable Keyboard Shortcuts
-- [x] Scroll up/down only when a selected item is out of the viewport.
-- [x] Google Images
-- [ ] Google Maps
-- [ ] Google Shopping
-- [ ] Google News
-- [ ] Google Video
+- [x] Light/Dark Theme support
+- [x] Keyboard shortcut customization
+- [ ] Switch between All, Images, Videos, Maps, News, and YouTube
+- [ ] YouTube support: move up/down, open, save to “Watch Later”
+- [ ] Image/Video/News support: move up/down, open
 
 ## Developer Contribution Guidelines
 
 To set up the project locally and contribute, follow these steps:
 
 1. **Install Dependencies:**  
-   Run `pnpm run install` to install all necessary packages.
+   Run `pnpm install` to install all dependencies.
 
 2. **Build the Project:**  
-   Execute `pnpm run build` to compile the project. The build artifacts will be generated in the `/dist` directory.
+   Run `pnpm run build` to compile; output goes to `/dist`.
 
 3. **Load the Extension:**  
-   Open `chrome://extensions/` in your Chrome browser and use the "Load unpacked" option to load the `/dist` directory.
+   In Chrome, go to `chrome://extensions/`, click “Load unpacked,” and select the `/dist` folder.
+
    Your contributions are welcome! To ensure your pull request aligns with our goals, please open an issue to discuss your idea before submitting it.
