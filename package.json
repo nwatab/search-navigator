@@ -6,14 +6,15 @@
   "type": "module",
   "scripts": {
     "build": "rollup -c",
-      "format": "prettier --write \"src/**/*.{js,ts,tsx,json,css,scss,md}\"",
-      "format:check": "prettier --check \"src/**/*.{js,ts,tsx,json,css,scss,md}\""
+    "format": "prettier --write \"src/**/*.{js,ts,tsx,json,css,scss,md}\"",
+    "format:check": "prettier --check \"src/**/*.{js,ts,tsx,json,css,scss,md}\""
   },
   "author": "Naoki Watanave",
   "license": "MIT",
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^8.5.0",
+    "@types/chrome": "^0.0.315",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",

@@ -1,0 +1,289 @@
+import type { KeyConfigs } from './key-map-manager';
+import {
+  createKeymapManager,
+  defaultKeyConfigs,
+  keyConfigToString,
+  stringToKeyConfig,
+} from './key-map-manager';
+
+import { storageSync } from './chrome-storage';
+import {
+  MOVE_DOWN_ID,
+  MOVE_UP_ID,
+  NAVIGATE_NEXT_ID,
+  NAVIGATE_PREVIOUS_ID,
+  OPEN_LINK_ID,
+  SWITCH_TO_ALL_SEARCH_ID,
+  SWITCH_TO_IMAGE_SEARCH_ID,
+  UPDATE_KEYMAPPINGS_MESSAGE,
+} from './constants';
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const keymapManager = await createKeymapManager(storageSync);
+  const currentKeyConfigs = keymapManager.getKeyConfigs();
+
+  setupInputFields(currentKeyConfigs);
+  setupKeyCaptureListeners();
+  setupSaveButton();
+  setupResetButton();
+
+  /**
+   * Sets up all input fields with the current key configurations
+   */
+  function setupInputFields(keyConfigs: KeyConfigs<string>): void {
+    const [
+      moveUpInput,
+      moveDownInput,
+      openLinkInput,
+      previousPageInput,
+      nextPageInput,
+      switchToImageSearchInput,
+      switchToAllSearchInput,
+    ] = [
+      MOVE_UP_ID,
+      MOVE_DOWN_ID,
+      OPEN_LINK_ID,
+      NAVIGATE_PREVIOUS_ID,
+      NAVIGATE_NEXT_ID,
+      SWITCH_TO_IMAGE_SEARCH_ID,
+      SWITCH_TO_ALL_SEARCH_ID,
+    ].map((id) => {
+      const el = document.getElementById(id);
+      if (!el) {
+        throw new Error(
+          `setupInputFields: #${id} is missing. Did you rename or remove it?`
+        );
+      }
+      return el as HTMLInputElement;
+    });
+
+    // Set the values using the helper function to convert KeyConfig to display string
+    moveUpInput.value = keyConfigToString(keyConfigs.move_up);
+    moveDownInput.value = keyConfigToString(keyConfigs.move_down);
+    openLinkInput.value = keyConfigToString(keyConfigs.open_link);
+    previousPageInput.value = keyConfigToString(keyConfigs.navigate_previous);
+    nextPageInput.value = keyConfigToString(keyConfigs.navigate_next);
+    switchToImageSearchInput.value = keyConfigToString(
+      keyConfigs.switch_to_image_search
+    );
+    switchToAllSearchInput.value = keyConfigToString(
+      keyConfigs.switch_to_all_search
+    );
+  }
+
+  /**
+   * Sets up event listeners to capture key presses for all shortcut input fields
+   */
+  function setupKeyCaptureListeners(): void {
+    const shortcutInputs = Array.from(
+      document.querySelectorAll('.shortcut-input')
+    ) as HTMLInputElement[];
+
+    shortcutInputs.forEach((input) => {
+      let originalValue: string;
+      let didCapture = false;
+
+      input.addEventListener('focus', () => {
+        originalValue = input.value;
+        didCapture = false;
+        input.value = '';
+        input.placeholder = 'Press';
+        input.select();
+      });
+
+      input.addEventListener('keydown', (event) => {
+        // keys that we swallow and wait for a “real” key
+        const swallowKeys = new Set([
+          'Shift',
+          'Control',
+          'Alt',
+          'Meta', // Cmd / Windows
+        ]);
+        // keys we reject outright: reset & blur
+        // Or should we specify acceptable keys?
+        const rejectKeys = new Set([
+          'CapsLock',
+          'NumLock',
+          'ScrollLock',
+          'Tab',
+          'ContextMenu',
+          'Fn',
+          'Unidentified',
+          'Escape',
+          'Eisu',
+          'KanjiMode',
+        ]);
+
+        // 0) If it's a pure modifier, just swallow it—don't blur.
+        if (swallowKeys.has(event.key)) {
+          event.preventDefault();
+          return; // stay in the input, wait for a “real” key
+        }
+
+        // 1) If it's a reject key, prevent default and blur
+        if (rejectKeys.has(event.key)) {
+          event.preventDefault();
+          input.blur(); // trigger your blur‐handler to restore originalValue
+          return;
+        }
+        // 2) Now build the combo (this will include event.ctrlKey, etc.)
+        const combo = keyConfigToString({
+          key: event.key,
+          ctrl: event.ctrlKey,
+          alt: event.altKey,
+          shift: event.shiftKey,
+          meta: event.metaKey,
+        });
+
+        // 3) Check for conflicts
+        const otherCombos = shortcutInputs
+          .filter((el) => el !== input)
+          .map((el) => el.value)
+          .filter((v) => v);
+
+        if (otherCombos.includes(combo)) {
+          event.preventDefault();
+          alert(`"${combo}" is already in use by another shortcut.`);
+          input.blur();
+          return;
+        }
+
+        // 4) Accept and blur
+        input.value = combo;
+        input.placeholder = '';
+        didCapture = true;
+        input.blur();
+      });
+
+      input.addEventListener('blur', () => {
+        input.placeholder = '';
+        if (!didCapture) {
+          // restore original if no valid combo was captured
+          input.value = originalValue;
+        }
+      });
+    });
+  }
+
+  /**
+   * Sets up the save button to save the key configurations
+   */
+  function setupSaveButton(): void {
+    const saveButton = document.getElementById('save');
+    if (saveButton) {
+      saveButton.addEventListener('click', saveKeyConfigs);
+    }
+  }
+
+  /**
+   * Saves the key configurations from the input fields to storage
+   */
+  async function saveKeyConfigs(): Promise<void> {
+    const [
+      moveUpInput,
+      moveDownInput,
+      openLinkInput,
+      previousPageInput,
+      nextPageInput,
+      switchToImageSearchInput,
+      switchToAllSearchInput,
+    ] = [
+      MOVE_DOWN_ID,
+      MOVE_UP_ID,
+      OPEN_LINK_ID,
+      NAVIGATE_PREVIOUS_ID,
+      NAVIGATE_NEXT_ID,
+      SWITCH_TO_IMAGE_SEARCH_ID,
+      SWITCH_TO_ALL_SEARCH_ID,
+    ].map((id) => {
+      const el = document.getElementById(id);
+      if (!el) {
+        throw new Error(
+          `saveKeyConfigs: #${id} is missing. Did you rename or remove it?`
+        );
+      }
+      return el as HTMLInputElement;
+    });
+
+    const inputs: Record<keyof KeyConfigs<string>, HTMLInputElement | null> = {
+      move_up: moveUpInput,
+      move_down: moveDownInput,
+      open_link: openLinkInput,
+      navigate_previous: previousPageInput,
+      navigate_next: nextPageInput,
+      switch_to_image_search: switchToImageSearchInput,
+      switch_to_all_search: switchToAllSearchInput,
+    };
+
+    const userOverrideConfigs = (
+      Object.keys(inputs) as (keyof KeyConfigs<string>)[]
+    ).reduce(
+      (acc, key) => {
+        const el = inputs[key];
+        if (el?.value) {
+          acc[key] = stringToKeyConfig(el.value);
+        }
+        return acc;
+      },
+      {} as Partial<KeyConfigs<string>>
+    );
+
+    const newKeyConfigs: KeyConfigs<string> = {
+      ...defaultKeyConfigs,
+      ...userOverrideConfigs,
+    };
+
+    await keymapManager.saveKeyConfigs(newKeyConfigs);
+
+    const status = document.getElementById('status');
+    if (status) {
+      status.textContent = 'Settings saved successfully! Reload to apply.';
+      status.className = 'status success';
+      status.style.display = 'block';
+
+      // Hide notification after 3 seconds
+      setTimeout(() => {
+        status.style.display = 'none';
+      }, 3000);
+    }
+    // Send message to current tab to update settings
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs.length > 0 && tabs[0].id) {
+        chrome.tabs.sendMessage(tabs[0].id, {
+          type: UPDATE_KEYMAPPINGS_MESSAGE,
+          keyConfigs: newKeyConfigs,
+        });
+      }
+    });
+  }
+
+  function setupResetButton(): void {
+    const resetButton = document.getElementById('reset');
+    if (!resetButton) {
+      throw new Error(
+        'setupResetButton: #reset button is missing. Did you rename or remove it?'
+      );
+    }
+    resetButton.addEventListener('click', async () => {
+      // 1) Clear from storage
+      await keymapManager.clearKeyConfigs();
+      // 2) Restore defaultKeyConfigs in UI
+      setupInputFields(defaultKeyConfigs);
+      // 3) Notify user
+      const status = document.getElementById('status')!;
+      status.textContent = 'Settings reset to defaults.';
+      status.className = 'status success';
+      status.style.display = 'block';
+      setTimeout(() => (status.style.display = 'none'), 3000);
+      // 4) ToDo: Broadcast the default back to the page
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]?.id) {
+          chrome.tabs.sendMessage(tabs[0].id, {
+            type: UPDATE_KEYMAPPINGS_MESSAGE,
+            keyConfigs: defaultKeyConfigs,
+          });
+        }
+      });
+    });
+  }
+});
