@@ -5,6 +5,12 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.6.1] - 2025-05-05
+
+### Fixed
+
+- Replace an error-prone blacklist with a whitelist for customizable shortcut keys to avoid a bug.
+
 ## [1.6.0] - 2025-05-04
 
 ### Added
@@ -52,6 +58,7 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ---
 
+[1.6.1]: https://github.com/nwatab/search-navigator/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/nwatab/search-navigator/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/nwatab/search-navigator/compare/v1.4.2...v1.5.0
 [1.4.2]: https://github.com/nwatab/search-navigator/compare/v1.4.1...v1.4.2
