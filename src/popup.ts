@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         input.select();
       });
 
-      // ToDo: need test for ke down
+      // ToDo: need test for key down
       input.addEventListener('keydown', (event) => {
         // keys that we swallow and wait for a “real” key
         const swallowKeys = new Set([
