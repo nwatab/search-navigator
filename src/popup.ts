@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!(isCharKey || isFunctionKey || isEnter)) {
           event.preventDefault();
           input.blur();
-          // ToDo: Feecback a user that this is not a valid key
+          // ToDo: Feedback a user that this is not a valid key
           return;
         }
 
