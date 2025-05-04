@@ -1,8 +1,16 @@
 {
   "manifest_version": 3,
   "name": "Search navigator",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Let you navigate search results with shortcut keys",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16x16.png",
+      "48": "icon48x48.png",
+      "128": "icon128x128.png"
+    }
+  },
   "content_scripts": [
     {
       "matches": ["https://www.google.com/search*"],
@@ -11,11 +19,11 @@
       "run_at": "document_end"
     }
   ],
-  "permissions": ["activeTab"],
+  "permissions": ["storage", "activeTab"],
   "icons": {
-    "16": "16x16.png",
-    "32": "32x32.png",
-    "48": "48x48.png",
-    "128": "128x128.png"
+    "16": "icon16x16.png",
+    "32": "icon32x32.png",
+    "48": "icon48x48.png",
+    "128": "icon128x128.png"
   }
 }

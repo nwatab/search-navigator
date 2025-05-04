@@ -1,120 +1,21 @@
+import { storageSync } from './chrome-storage';
+import { createKeymapManager } from './key-map-manager';
 import './style.scss';
+import {
+  addClass,
+  determineThemeFromRgb,
+  extractBodyBackgroundRgb,
+  getGoogleSearchResults,
+  getGoogleSearchTabType,
+  makeHighlight,
+  removeClass,
+  scrollIntoViewIfOutsideViewport,
+} from './ui-handler';
 
-// side effects
-type ExtractBodyBackgroundRgb = (
-  window: Window & typeof globalThis,
-  document: Document
-) => [number, number, number] | null;
-const extractBodyBackgroundRgb: ExtractBodyBackgroundRgb = (
-  window,
-  document
-) => {
-  const bgColor = window.getComputedStyle(document.body).backgroundColor;
-  const rgbValues = bgColor.match(/\d+/g)?.map(Number);
-  if (!rgbValues || rgbValues.length < 3) return null;
-  return [rgbValues[0], rgbValues[1], rgbValues[2]];
-};
-type ClassModifier = (el: Element, className: string) => Element;
-const addClass: ClassModifier = (el, className) => {
-  el.classList.add(className);
-  return el;
-};
-const removeClass: ClassModifier = (el, className) => {
-  el.classList.remove(className);
-  return el;
-};
-
-const scrollIntoViewIfOutsideViewport = (el: Element) => {
-  const rect = el.getBoundingClientRect();
-  if (rect.top < 0 || rect.bottom > window.innerHeight) {
-    el.scrollIntoView({ behavior: 'instant', block: 'center' });
-  }
-  return el;
-};
-
-function getGoogleSearchResultsWithDivG(): HTMLElement[] {
-  return Array.from(document.querySelectorAll('div.g'));
-}
-
-function getGoogleSearchResultsWithH3(tabType: 'all' | 'image') {
-  const searchRoot = document.getElementById('search');
-  if (!searchRoot) return [];
-
-  const h3Elements = Array.from(searchRoot.getElementsByTagName('h3'));
-
-  const getAncestor = (element: HTMLElement, levels: number) => {
-    let current: HTMLElement | null = element;
-    for (let i = 0; i < levels; i++) {
-      current = current?.parentElement || current;
-    }
-    return current;
-  };
-  // magic numbers depending on actual DOM structure
-  const levels = tabType === 'all' ? 9 : 2;
-  return [...new Set(h3Elements.map((h3) => getAncestor(h3, levels)))];
-}
-
-const getGoogleSearchResults = (tabType: 'all' | 'image'): HTMLElement[] => {
-  const resultsDivG = getGoogleSearchResultsWithDivG();
-  if (resultsDivG.length > 0) {
-    return resultsDivG;
-  }
-  const resultsH3 = getGoogleSearchResultsWithH3(tabType);
-  if (resultsH3.length > 0) {
-    return resultsH3;
-  }
-  return [];
-};
-
-// business logic pure functions
-function determineThemeFromRgb(
-  rgb: [number, number, number],
-  brightnessThreshold: number = 128
-): 'light' | 'dark' {
-  const [r, g, b] = rgb;
-  return (r * 299 + g * 587 + b * 114) / 1000 < brightnessThreshold
-    ? 'dark'
-    : 'light';
-}
-
-function getGoogleSearchTabType(location: Location): 'all' | 'image' | null {
-  const searchParams = new URLSearchParams(location.search);
-  const udm = searchParams.get('udm');
-  switch (udm) {
-    case null:
-      return 'all';
-    case '2':
-      return 'image';
-    default:
-      return null;
-  }
-}
-
-const makeHighlight =
-  ({
-    addClass,
-    removeClass,
-  }: {
-    addClass: ClassModifier;
-    removeClass: ClassModifier;
-  }) =>
-  (results: HTMLElement[], index: number, theme: 'dark' | 'light'): void => {
-    const className = `sn-selected-${theme}`;
-    results.forEach((el) => {
-      removeClass(el, 'sn-selected-dark');
-      removeClass(el, 'sn-selected-light');
-    });
-
-    if (index >= 0 && index < results.length) {
-      addClass(results[index], className);
-    }
-  };
-
-(() => {
+(async () => {
   let currentIndex: number = 0;
-
+  const keymapManager = await createKeymapManager(storageSync);
   const searchTabType = getGoogleSearchTabType(window.location);
-  console.log('searchTabType', searchTabType);
   if (!searchTabType) {
     // Only all and image tabs are supported for now
     return;
@@ -135,170 +36,138 @@ const makeHighlight =
 
   // Add keydown event listener for all Google Search pages
   document.addEventListener('keydown', (e: KeyboardEvent) => {
-    const activeTag =
-      (document.activeElement && document.activeElement.tagName) || '';
-    if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
+    if (
+      ['INPUT', 'TEXTAREA'].includes(
+        (document.activeElement && document.activeElement.tagName) || ''
+      )
+    ) {
       return;
     }
 
-    switch (e.key) {
+    if (keymapManager.isKeyMatch(e, 'move_down') || e.key === 'ArrowDown') {
       // down
-      case 'j':
-      case 'ArrowDown':
-        if (e.ctrlKey || e.metaKey) {
-          return;
-        }
-        // TODO: add support for image search
-        if (
-          results.length > 0 &&
-          currentIndex < results.length - 1 &&
-          searchTabType === 'all'
-        ) {
-          currentIndex++;
-          highlight(results, currentIndex, theme);
-          scrollIntoViewIfOutsideViewport(results[currentIndex]);
-          e.preventDefault();
-        }
-        break;
-
+      // TODO: add support for image search
+      e.preventDefault();
+      if (
+        results.length > 0 &&
+        currentIndex < results.length - 1 &&
+        searchTabType === 'all'
+      ) {
+        currentIndex++;
+        highlight(results, currentIndex, theme);
+        scrollIntoViewIfOutsideViewport(results[currentIndex]);
+      }
+    } else if (keymapManager.isKeyMatch(e, 'move_up') || e.key === 'ArrowUp') {
       // up
-      case 'k':
-      case 'ArrowUp':
-        if (e.ctrlKey || e.metaKey) {
-          return;
-        }
-        // TODO: add support for image search
-        if (results.length > 0 && currentIndex > 0 && searchTabType === 'all') {
-          currentIndex--;
-          highlight(results, currentIndex, theme);
-          scrollIntoViewIfOutsideViewport(results[currentIndex]);
-          e.preventDefault();
-        }
-        break;
-
+      // TODO: add support for image search
+      e.preventDefault();
+      if (results.length > 0 && currentIndex > 0 && searchTabType === 'all') {
+        currentIndex--;
+        highlight(results, currentIndex, theme);
+        scrollIntoViewIfOutsideViewport(results[currentIndex]);
+      }
+    } else if (keymapManager.isKeyMatch(e, 'open_link')) {
       // open link
-      case 'Enter':
-        // TODO: add support for image search
-        if (
-          !(
-            0 < results.length &&
-            0 <= currentIndex &&
-            currentIndex < results.length
-          )
-        ) {
-          return; // not expected to happen
-        }
-        switch (searchTabType) {
-          case 'all':
-            const link = results[currentIndex].querySelector('a');
-            if (link instanceof HTMLAnchorElement && link.href) {
-              const clickEvent = new MouseEvent('click', {
-                ctrlKey: e.ctrlKey,
-                metaKey: e.metaKey,
-                shiftKey: e.shiftKey,
-                bubbles: true,
-                cancelable: true,
-                view: window,
-              });
-              link.dispatchEvent(clickEvent);
-            }
-            break;
-          case 'image':
-            // ToDo: it's complicated. Going up and down doesn't work when enlarging an image. More investigation needed.
-            // const vhid = results[currentIndex].querySelector('div')?.dataset.vhid;
-            // if (vhid) {
-            //   const url = new URL(window.location.href);
-            //   const currentHash = url.hash.replace('#', '');
-            //   console.log(currentHash, vhid);
-            //   if (currentHash === vhid) {
-            //       url.hash = '';
-            //   } else {
-            //     url.hash = `#${vhid}`;
-            //   }
-            //   window.location.href = url.toString();
-            // }
-            break;
-          default:
-            break;
-        }
-        break;
-
+      e.preventDefault();
+      if (
+        !(
+          0 < results.length &&
+          0 <= currentIndex &&
+          currentIndex < results.length
+        )
+      ) {
+        return; // not expected to happen
+      }
+      switch (searchTabType) {
+        case 'all':
+          const link = results[currentIndex].querySelector('a');
+          if (link instanceof HTMLAnchorElement && link.href) {
+            const clickEvent = new MouseEvent('click', {
+              ctrlKey: e.ctrlKey,
+              metaKey: e.metaKey,
+              shiftKey: e.shiftKey,
+              bubbles: true,
+              cancelable: true,
+              view: window,
+            });
+            link.dispatchEvent(clickEvent);
+          }
+          break;
+        case 'image':
+          // TODO: add support for image search. It's complicated. Going up and down doesn't work when enlarging an image. More investigation needed.
+          // const vhid = results[currentIndex].querySelector('div')?.dataset.vhid;
+          // if (vhid) {
+          //   const url = new URL(window.location.href);
+          //   const currentHash = url.hash.replace('#', '');
+          //   console.log(currentHash, vhid);
+          //   if (currentHash === vhid) {
+          //       url.hash = '';
+          //   } else {
+          //     url.hash = `#${vhid}`;
+          //   }
+          //   window.location.href = url.toString();
+          // }
+          break;
+        default:
+          break;
+      }
+    } else if (
+      keymapManager.isKeyMatch(e, 'navigate_previous') ||
+      e.key === 'ArrowLeft'
+    ) {
       // previous page
-      case 'h':
-      case 'ArrowLeft':
-        {
-          // TODO: add support for image search
-          if (e.ctrlKey || e.metaKey) {
-            return;
-          }
-          if (searchTabType === 'all') {
-            const prevLink = document.querySelector('#pnprev');
-            if (prevLink instanceof HTMLAnchorElement && prevLink.href) {
-              window.location.href = prevLink.href;
-            }
-            e.preventDefault();
-          }
+      e.preventDefault();
+      // TODO: add support for image search
+      if (e.ctrlKey || e.metaKey) {
+        return;
+      }
+      if (searchTabType === 'all') {
+        const prevLink = document.querySelector('#pnprev');
+        if (prevLink instanceof HTMLAnchorElement && prevLink.href) {
+          window.location.href = prevLink.href;
         }
-        break;
-
+      }
+    } else if (
+      keymapManager.isKeyMatch(e, 'navigate_next') ||
+      e.key === 'ArrowRight'
+    ) {
       // next page
-      case 'l':
-      case 'ArrowRight':
-        {
-          if (e.ctrlKey || e.metaKey) {
-            return;
-          }
-          if (searchTabType === 'all') {
-            const nextLink = document.querySelector('#pnnext');
-            if (nextLink instanceof HTMLAnchorElement && nextLink.href) {
-              window.location.href = nextLink.href;
-            }
-            e.preventDefault();
-          }
+      e.preventDefault();
+      if (searchTabType === 'all') {
+        const nextLink = document.querySelector('#pnnext');
+        if (nextLink instanceof HTMLAnchorElement && nextLink.href) {
+          window.location.href = nextLink.href;
         }
-        break;
-
+      }
+    } else if (keymapManager.isKeyMatch(e, 'switch_to_image_search')) {
       // switch to image search
-      case 'i':
-        {
-          if (e.ctrlKey || e.metaKey) {
-            return;
-          }
-          if (searchTabType !== 'image') {
-            const searchParams = new URLSearchParams(window.location.search);
-            const query = searchParams.get('q');
+      e.preventDefault();
+      if (e.ctrlKey || e.metaKey) {
+        return;
+      }
+      if (searchTabType !== 'image') {
+        const searchParams = new URLSearchParams(window.location.search);
+        const query = searchParams.get('q');
 
-            if (query) {
-              // Construct image search URL
-              const imageSearchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
-              window.location.href = imageSearchUrl;
-            }
-            e.preventDefault();
-          }
+        if (query) {
+          // Construct image search URL
+          const imageSearchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
+          window.location.href = imageSearchUrl;
         }
-        break;
-
+      }
+    } else if (keymapManager.isKeyMatch(e, 'switch_to_all_search')) {
       // switch to all search
-      case 'a':
-        {
-          if (e.ctrlKey || e.metaKey) {
-            return;
-          }
-          if (searchTabType !== 'all') {
-            const searchParams = new URLSearchParams(window.location.search);
-            const query = searchParams.get('q');
-            if (!query) {
-              window.location.href = 'https://www.google.com';
-            } else {
-              const allSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-              window.location.href = allSearchUrl;
-            }
-            e.preventDefault();
-          }
+      e.preventDefault();
+      if (searchTabType !== 'all') {
+        const searchParams = new URLSearchParams(window.location.search);
+        const query = searchParams.get('q');
+        if (!query) {
+          window.location.href = 'https://www.google.com';
+        } else {
+          const allSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+          window.location.href = allSearchUrl;
         }
-        break;
-      default:
-        break;
+      }
     }
   });
 })();

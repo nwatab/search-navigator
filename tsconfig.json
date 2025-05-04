@@ -3,10 +3,12 @@
     "target": "ES2015",
     "module": "ESNext",
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "sourceMap": true,
     "outDir": "dist",
-    "lib": ["ES2015", "DOM"]
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "esModuleInterop": true,
+    "types": ["chrome"]
   },
   "include": ["src/**/*"]
 }

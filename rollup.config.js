@@ -20,29 +20,49 @@ function copyPlugin({ src, dest }) {
   };
 }
 
-export default {
-  input: 'src/content.ts',
-  output: {
-    file: 'dist/content.js',
-    format: 'iife',
-    sourcemap: true,
+// Create separate configs for each entry point
+export default [
+  {
+    input: 'src/content.ts',
+    output: {
+      file: 'dist/content.js',
+      format: 'iife',
+      sourcemap: true,
+    },
+    plugins: [
+      typescript(),
+      scss({
+        fileName: 'style.css',
+        processor: () => postcss([autoprefixer()]),
+        outputStyle: 'compressed',
+      }),
+      terser({
+        compress: {
+          drop_console: true,
+        },
+      }),
+      copyPlugin({ src: 'manifest.json', dest: 'dist' }),
+      copyPlugin({ src: 'icons/icon16x16.png', dest: 'dist' }),
+      copyPlugin({ src: 'icons/icon32x32.png', dest: 'dist' }),
+      copyPlugin({ src: 'icons/icon48x48.png', dest: 'dist' }),
+      copyPlugin({ src: 'icons/icon128x128.png', dest: 'dist' }),
+      copyPlugin({ src: 'src/popup.html', dest: 'dist' }),
+    ],
   },
-  plugins: [
-    typescript(),
-    scss({
-      fileName: 'style.css',
-      processor: () => postcss([autoprefixer()]),
-      outputStyle: 'compressed',
-    }),
-    terser({
-      compress: {
-        drop_console: true,
-      },
-    }),
-    copyPlugin({ src: 'manifest.json', dest: 'dist' }),
-    copyPlugin({ src: '16x16.png', dest: 'dist' }),
-    copyPlugin({ src: '32x32.png', dest: 'dist' }),
-    copyPlugin({ src: '48x48.png', dest: 'dist' }),
-    copyPlugin({ src: '128x128.png', dest: 'dist' }),
-  ],
-};
+  {
+    input: 'src/popup.ts',
+    output: {
+      file: 'dist/popup.js',
+      format: 'iife',
+      sourcemap: true,
+    },
+    plugins: [
+      typescript(),
+      terser({
+        compress: {
+          drop_console: true,
+        },
+      }),
+    ],
+  },
+];
