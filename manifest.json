@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Search navigator",
-  "version": "1.6.1",
-  "description": "Let you navigate search results with shortcut keys",
+  "version": "1.6.2",
+  "description": "Navigate search results with shortcuts",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
