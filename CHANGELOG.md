@@ -5,6 +5,14 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.6.2] - 2025-05-05
+
+### Fixed
+
+- Fix modifier key to click a link not working. In customization of open link, modifer keys are no longer allowed.
+
+- Remove gradient background of popup.
+
 ## [1.6.1] - 2025-05-05
 
 ### Fixed
@@ -58,6 +66,7 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ---
 
+[1.6.2]: https://github.com/nwatab/search-navigator/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/nwatab/search-navigator/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/nwatab/search-navigator/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/nwatab/search-navigator/compare/v1.4.2...v1.5.0
