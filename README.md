@@ -16,7 +16,8 @@ A lightweight bookmarklet that enhances your Google search experience with intui
 
 All shortcuts except the arrow keys can be customized in the popup.
 
-**Customization:**
+### Customization
+
 Open the popup to customize your shortcut keys.  
 **Note:** Arrow keys are fixed by default and cannot be changed at this time.
 
