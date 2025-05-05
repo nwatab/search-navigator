@@ -12,7 +12,7 @@ export interface KeyConfig<T extends string> {
 export interface KeyConfigs<T extends string> {
   move_up: KeyConfig<T>;
   move_down: KeyConfig<T>;
-  open_link: KeyConfig<T>;
+  open_link: Pick<KeyConfig<T>, 'key'>; // open link only needs the key
   navigate_previous: KeyConfig<T>;
   navigate_next: KeyConfig<T>;
   switch_to_image_search: KeyConfig<T>;
@@ -42,10 +42,6 @@ export const defaultKeyConfigs: KeyConfigs<string> = {
   move_down: { key: 'j', ctrl: false, alt: false, shift: false, meta: false },
   open_link: {
     key: 'Enter',
-    ctrl: false,
-    alt: false,
-    shift: false,
-    meta: false,
   },
   navigate_previous: {
     key: 'h',
@@ -95,13 +91,20 @@ const REVERSE_KEY_MAP: Record<string, string> = {
 } as const;
 
 // helper functions
-export function keyConfigToString<T extends string>(cfg: KeyConfig<T>): string {
-  console.log(cfg);
+export function keyConfigToString<T extends string>(cfg: KeyConfig<T>): string;
+export function keyConfigToString<T extends string>(
+  cfg: Pick<KeyConfig<T>, 'key'>
+): string;
+
+export function keyConfigToString<T extends string>(
+  cfg: KeyConfig<T> | Pick<KeyConfig<T>, 'key'>
+): string {
   const parts: string[] = [];
-  if (cfg.ctrl) parts.push('Ctrl');
-  if (cfg.alt) parts.push('Alt');
-  if (cfg.shift) parts.push('Shift');
-  if (cfg.meta) parts.push(navigator.platform.includes('Mac') ? 'Cmd' : 'Win');
+  if ('ctrl' in cfg && cfg.ctrl) parts.push('Ctrl');
+  if ('alt' in cfg && cfg.alt) parts.push('Alt');
+  if ('shift' in cfg && cfg.shift) parts.push('Shift');
+  if ('meta' in cfg && cfg.meta)
+    parts.push(navigator.platform.includes('Mac') ? 'Cmd' : 'Win');
   if (!['Control', 'Alt', 'Shift', 'Meta'].includes(cfg.key)) {
     parts.push(SPECIAL_KEY_MAP[cfg.key] || cfg.key);
   }
@@ -153,6 +156,10 @@ export const createKeymapManager = async (
       return current;
     },
     isKeyMatch(e, action) {
+      if (action === 'open_link') {
+        const cfg = current[action];
+        return e.key === cfg.key;
+      }
       const cfg = current[action];
       return cfg
         ? e.key === cfg.key &&

@@ -4,7 +4,7 @@ A lightweight bookmarklet that enhances your Google search experience with intui
 
 ## Usage
 
-1. **Keyboard Navigation:**
+**Keyboard Navigation:**
 
 - **j** or **↓**: Navigate down through search results.
 - **k** or **↑**: Navigate up through search results.
