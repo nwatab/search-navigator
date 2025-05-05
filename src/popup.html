@@ -64,6 +64,13 @@
         color: var(--secondary-text);
       }
 
+      .note {
+        display: block;
+        font-size: 0.75rem; /* smaller text */
+        color: #666; /* subtle color */
+        margin-top: 0.25rem; /* space between label and note */
+      }
+
       .shortcut-input {
         width: 60px;
         text-align: center;
@@ -163,12 +170,20 @@
       </div>
 
       <div class="shortcut-row">
-        <div class="shortcut-label">Open link</div>
-        <input type="text" id="openLink" class="shortcut-input" value="Enter" />
+        <div class="label-block">
+          <label for="openLink" class="shortcut-label">Open link</label>
+          <small class="note">No modifier keys allowed</small>
+        </div>
+        <input
+          type="text"
+          id="openLink"
+          class="shortcut-input no-modifiers"
+          value="Enter"
+        />
       </div>
 
       <div class="shortcut-row">
-        <div class="shortcut-label">Previous page</div>
+        <label class="shortcut-label" for="previousPage">Previous page</label>
         <input
           type="text"
           id="previousPage"

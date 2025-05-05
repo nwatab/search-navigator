@@ -126,13 +126,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // 2) Now build the combo (this will include event.ctrlKey, etc.)
-        const combo = keyConfigToString({
-          key: event.key,
-          ctrl: event.ctrlKey,
-          alt: event.altKey,
-          shift: event.shiftKey,
-          meta: event.metaKey,
-        });
+        const combo =
+          input.id === OPEN_LINK_ID
+            ? keyConfigToString({
+                key: event.key,
+              })
+            : keyConfigToString({
+                key: event.key,
+                ctrl: event.ctrlKey,
+                alt: event.altKey,
+                shift: event.shiftKey,
+                meta: event.metaKey,
+              });
 
         // 3) Check for conflicts
         const otherCombos = shortcutInputs
