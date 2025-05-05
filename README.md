@@ -4,7 +4,7 @@ A lightweight bookmarklet that enhances your Google search experience with intui
 
 ## Usage
 
-1. **Keyboard Navigation:**
+### Keyboard Navigation
 
 - **j** or **↓**: Navigate down through search results.
 - **k** or **↑**: Navigate up through search results.
@@ -15,6 +15,11 @@ A lightweight bookmarklet that enhances your Google search experience with intui
 - **Enter**: Open the highlighted result; hold `Ctrl` (Windows) or `Cmd` (macOS) to open in a new tab, or hold `Shift` to open in a new window.
 
 All shortcuts except the arrow keys can be customized in the popup.
+
+### Customization
+
+Open the popup to customize your shortcut keys.  
+**Note:** Arrow keys are fixed by default and cannot be changed at this time.
 
 ## Roadmap
 
