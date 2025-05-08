@@ -17,6 +17,10 @@ export interface KeyConfigs<T extends string> {
   navigate_next: KeyConfig<T>;
   switch_to_image_search: KeyConfig<T>;
   switch_to_all_search: KeyConfig<T>;
+  switch_to_videos: KeyConfig<T>;
+  switch_to_shopping: KeyConfig<T>;
+  switch_to_news: KeyConfig<T>;
+  switch_to_map: KeyConfig<T>;
 }
 
 export type Action = keyof KeyConfigs<string>;
@@ -66,6 +70,34 @@ export const defaultKeyConfigs: KeyConfigs<string> = {
   },
   switch_to_all_search: {
     key: 'a',
+    ctrl: false,
+    alt: false,
+    shift: false,
+    meta: false,
+  },
+  switch_to_videos: {
+    key: 'v',
+    ctrl: false,
+    alt: false,
+    shift: false,
+    meta: false,
+  },
+  switch_to_shopping: {
+    key: 's',
+    ctrl: false,
+    alt: false,
+    shift: false,
+    meta: false,
+  },
+  switch_to_news: {
+    key: 'n',
+    ctrl: false,
+    alt: false,
+    shift: false,
+    meta: false,
+  },
+  switch_to_map: {
+    key: 'm',
     ctrl: false,
     alt: false,
     shift: false,

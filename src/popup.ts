@@ -39,6 +39,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       nextPageInput,
       switchToImageSearchInput,
       switchToAllSearchInput,
+      switchToVideosInput,
+      switchToShoppingInput,
+      switchToNewsInput,
+      switchToMapInput
     ] = [
       MOVE_UP_ID,
       MOVE_DOWN_ID,
@@ -47,6 +51,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       NAVIGATE_NEXT_ID,
       SWITCH_TO_IMAGE_SEARCH_ID,
       SWITCH_TO_ALL_SEARCH_ID,
+      'switchToVideos',
+      'switchToShopping',
+      'switchToNews',
+      'switchToMap'
     ].map((id) => {
       const el = document.getElementById(id);
       if (!el) {
@@ -69,6 +77,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     switchToAllSearchInput.value = keyConfigToString(
       keyConfigs.switch_to_all_search
     );
+    switchToVideosInput.value = keyConfigToString(keyConfigs.switch_to_videos);
+    switchToShoppingInput.value = keyConfigToString(keyConfigs.switch_to_shopping);
+    switchToNewsInput.value = keyConfigToString(keyConfigs.switch_to_news);
+    switchToMapInput.value = keyConfigToString(keyConfigs.switch_to_map);
   }
 
   /**
@@ -93,7 +105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // ToDo: need test for key down
       input.addEventListener('keydown', (event) => {
-        // keys that we swallow and wait for a “real” key
+        // keys that we swallow and wait for a "real" key
         const swallowKeys = new Set([
           'Shift',
           'Control',
@@ -103,7 +115,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // 0) If it's a pure modifier, just swallow it—don't blur.
         if (swallowKeys.has(event.key)) {
           event.preventDefault();
-          return; // stay in the input, wait for a “real” key
+          return; // stay in the input, wait for a "real" key
         }
 
         // 1) whitelist test
@@ -191,6 +203,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       nextPageInput,
       switchToImageSearchInput,
       switchToAllSearchInput,
+      switchToVideosInput,
+      switchToShoppingInput,
+      switchToNewsInput,
+      switchToMapInput
     ] = [
       MOVE_DOWN_ID,
       MOVE_UP_ID,
@@ -199,6 +215,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       NAVIGATE_NEXT_ID,
       SWITCH_TO_IMAGE_SEARCH_ID,
       SWITCH_TO_ALL_SEARCH_ID,
+      'switchToVideos',
+      'switchToShopping',
+      'switchToNews',
+      'switchToMap'
     ].map((id) => {
       const el = document.getElementById(id);
       if (!el) {
@@ -217,6 +237,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       navigate_next: nextPageInput,
       switch_to_image_search: switchToImageSearchInput,
       switch_to_all_search: switchToAllSearchInput,
+      switch_to_videos: switchToVideosInput,
+      switch_to_shopping: switchToShoppingInput,
+      switch_to_news: switchToNewsInput,
+      switch_to_map: switchToMapInput
     };
 
     const userOverrideConfigs = (
