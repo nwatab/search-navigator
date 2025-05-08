@@ -5,6 +5,12 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.7.0] - 2025-05-09
+
+### Added
+
+- Switch search tabs between videos, news, shopping, and map
+
 ## [1.6.2] - 2025-05-05
 
 ### Fixed
