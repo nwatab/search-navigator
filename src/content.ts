@@ -168,6 +168,50 @@ import {
           window.location.href = allSearchUrl;
         }
       }
+    } else if (keymapManager.isKeyMatch(e, 'switch_to_videos')) {
+      // switch to videos tab
+      e.preventDefault();
+      if (searchTabType !== 'videos') {
+        const searchParams = new URLSearchParams(window.location.search);
+        const query = searchParams.get('q');
+        if (query) {
+          const videosUrl = `https://www.google.com/search?tbm=vid&q=${encodeURIComponent(query)}`;
+          window.location.href = videosUrl;
+        }
+      }
+    } else if (keymapManager.isKeyMatch(e, 'switch_to_shopping')) {
+      // switch to shopping tab
+      e.preventDefault();
+      if (searchTabType !== 'shopping') {
+        const searchParams = new URLSearchParams(window.location.search);
+        const query = searchParams.get('q');
+        if (query) {
+          const shoppingUrl = `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(query)}`;
+          window.location.href = shoppingUrl;
+        }
+      }
+    } else if (keymapManager.isKeyMatch(e, 'switch_to_news')) {
+      // switch to news tab
+      e.preventDefault();
+      if (searchTabType !== 'news') {
+        const searchParams = new URLSearchParams(window.location.search);
+        const query = searchParams.get('q');
+        if (query) {
+          const newsUrl = `https://www.google.com/search?tbm=nws&q=${encodeURIComponent(query)}`;
+          window.location.href = newsUrl;
+        }
+      }
+    } else if (keymapManager.isKeyMatch(e, 'switch_to_map')) {
+      // switch to map tab
+      e.preventDefault();
+      if (searchTabType !== 'map') {
+        const searchParams = new URLSearchParams(window.location.search);
+        const query = searchParams.get('q');
+        if (query) {
+          const mapUrl = `https://www.google.com/maps/search/${encodeURIComponent(query)}`;
+          window.location.href = mapUrl;
+        }
+      }
     }
   });
 })();

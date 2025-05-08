@@ -79,14 +79,26 @@ export function determineThemeFromRgb(
 
 export function getGoogleSearchTabType(
   location: Location
-): 'all' | 'image' | null {
+): 'all' | 'image' | 'videos' | 'shopping' | 'news' | 'map' | null {
   const searchParams = new URLSearchParams(location.search);
   const udm = searchParams.get('udm');
-  switch (udm) {
+  const tbm = searchParams.get('tbm');
+  const isMaps = location.hostname.includes('maps.google.');
+  if (isMaps || location.pathname.startsWith('/maps')) {
+    return 'map';
+  }
+  switch (tbm) {
+    case undefined:
     case null:
       return 'all';
-    case '2':
+    case 'isch':
       return 'image';
+    case 'vid':
+      return 'videos';
+    case 'shop':
+      return 'shopping';
+    case 'nws':
+      return 'news';
     default:
       return null;
   }
