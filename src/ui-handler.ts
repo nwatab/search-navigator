@@ -34,7 +34,9 @@ export function getGoogleSearchResultsWithDivG(): HTMLElement[] {
   return Array.from(document.querySelectorAll('div.g'));
 }
 
-export function getGoogleSearchResultsWithH3(tabType: 'all' | 'image') {
+export function getGoogleSearchResultsWithH3(
+  tabType: 'all' | 'image' | 'videos' | 'shopping' | 'news'
+) {
   const searchRoot = document.getElementById('search');
   if (!searchRoot) return [];
 
@@ -52,8 +54,11 @@ export function getGoogleSearchResultsWithH3(tabType: 'all' | 'image') {
   return [...new Set(h3Elements.map((h3) => getAncestor(h3, levels)))];
 }
 
+/**
+ * Return value should have at least one element, but it may fall back to an empty array if none are found
+ */
 export const getGoogleSearchResults = (
-  tabType: 'all' | 'image'
+  tabType: 'all' | 'image' | 'videos' | 'shopping' | 'news'
 ): HTMLElement[] => {
   const resultsDivG = getGoogleSearchResultsWithDivG();
   if (resultsDivG.length > 0) {
@@ -79,19 +84,16 @@ export function determineThemeFromRgb(
 
 export function getGoogleSearchTabType(
   location: Location
-): 'all' | 'image' | 'videos' | 'shopping' | 'news' | 'map' | null {
+): 'all' | 'image' | 'videos' | 'shopping' | 'news' | null {
   const searchParams = new URLSearchParams(location.search);
   const udm = searchParams.get('udm');
   const tbm = searchParams.get('tbm');
-  const isMaps = location.hostname.includes('maps.google.');
-  if (isMaps || location.pathname.startsWith('/maps')) {
-    return 'map';
+  // Not supporting maps.google. or /maps because there is nothing much to navigate there
+  if (udm === null && tbm === null) {
+    return null;
   }
   switch (tbm) {
-    case undefined:
-    case null:
-      return 'all';
-    case 'isch':
+    case 'isch': // Imase SearCH
       return 'image';
     case 'vid':
       return 'videos';
@@ -99,9 +101,31 @@ export function getGoogleSearchTabType(
       return 'shopping';
     case 'nws':
       return 'news';
-    default:
-      return null;
   }
+  switch (udm) {
+    // https://medium.com/@tanyongsheng0805/every-google-udm-in-the-world-6ee9741434c9
+    // #2: Images
+    // #6: Learn
+    // #7: Videos
+    // #12: News
+    // #14: Web
+    // #15: Attractions
+    // #18: Forums
+    // #28: Shopping
+    // #36: Books
+    // #37: Products
+    // #44: Visual matches
+    // #48: Exact matches
+    case '2':
+      return 'image';
+    case '7':
+      return 'videos';
+    case '12':
+      return 'news';
+    case '28':
+      return 'shopping';
+  }
+  return null; // not expected to be here
 }
 
 export const makeHighlight =
