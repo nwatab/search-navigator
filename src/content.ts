@@ -21,7 +21,10 @@ import {
     return;
   }
   const results = getGoogleSearchResults(searchTabType);
-  if (currentIndex < 0 || results.length <= currentIndex) {
+  if (
+    results.length > 0 &&
+    (currentIndex < 0 || results.length <= currentIndex)
+  ) {
     throw new Error(
       `currentIndex is out of bounds: ${currentIndex} of ${results.length}`
     );
@@ -204,13 +207,11 @@ import {
     } else if (keymapManager.isKeyMatch(e, 'switch_to_map')) {
       // switch to map tab
       e.preventDefault();
-      if (searchTabType !== 'map') {
-        const searchParams = new URLSearchParams(window.location.search);
-        const query = searchParams.get('q');
-        if (query) {
-          const mapUrl = `https://www.google.com/maps/search/${encodeURIComponent(query)}`;
-          window.location.href = mapUrl;
-        }
+      const searchParams = new URLSearchParams(window.location.search);
+      const query = searchParams.get('q');
+      if (query) {
+        const mapUrl = `https://www.google.com/maps/search/${encodeURIComponent(query)}`;
+        window.location.href = mapUrl;
       }
     }
   });
