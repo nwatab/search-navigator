@@ -11,7 +11,10 @@ A lightweight bookmarklet that enhances your Google search experience with intui
 - **h** or **←**: Go to the previous search results page.
 - **l** or **→**: Go to the next search results page.
 - **i**: Switch to the Image search tab.
-- **a**: Switch to the All tab.
+- **v**. Switch to the Video search tab
+- **n**. Switch to the News search tab
+- **s**. Switch to the Shopping search tab
+- **a**: Switch to the All search tab.
 - **Enter**: Open the highlighted result; hold `Ctrl` (Windows) or `Cmd` (macOS) to open in a new tab, or hold `Shift` to open in a new window.
 
 All shortcuts except the arrow keys can be customized in the popup.
