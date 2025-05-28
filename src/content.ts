@@ -15,9 +15,13 @@ import {
 (async () => {
   let currentIndex: number = 0;
   const keymapManager = await createKeymapManager(storageSync);
-  const searchTabType = getGoogleSearchTabType(window.location);
+  const searchTabType = getGoogleSearchTabType(
+    new URLSearchParams(window.location.search)
+  );
   if (!searchTabType) {
-    // Only all and image tabs are supported for now
+    console.error(
+      'Unable to determine search tab type. This extension only works on Google Search pages.'
+    );
     return;
   }
   const results = getGoogleSearchResults(searchTabType);
