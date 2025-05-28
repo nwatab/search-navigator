@@ -30,14 +30,17 @@ export const scrollIntoViewIfOutsideViewport = (el: Element) => {
   return el;
 };
 
-export function getGoogleSearchResultsWithDivG(): HTMLElement[] {
-  return Array.from(document.querySelectorAll('div.g'));
+export function getGoogleSearchResultsWithDivG(
+  doc: Document = document
+): HTMLElement[] {
+  return Array.from(doc.querySelectorAll('div.g'));
 }
 
 export function getGoogleSearchResultsWithH3(
-  tabType: 'all' | 'image' | 'videos' | 'shopping' | 'news'
+  tabType: 'all' | 'image' | 'videos' | 'shopping' | 'news',
+  doc: Document = document
 ) {
-  const searchRoot = document.getElementById('search');
+  const searchRoot = doc.getElementById('search');
   if (!searchRoot) return [];
 
   const h3Elements = Array.from(searchRoot.getElementsByTagName('h3'));
@@ -58,13 +61,14 @@ export function getGoogleSearchResultsWithH3(
  * Return value should have at least one element, but it may fall back to an empty array if none are found
  */
 export const getGoogleSearchResults = (
-  tabType: 'all' | 'image' | 'videos' | 'shopping' | 'news'
+  tabType: 'all' | 'image' | 'videos' | 'shopping' | 'news',
+  doc: Document = document
 ): HTMLElement[] => {
-  const resultsDivG = getGoogleSearchResultsWithDivG();
+  const resultsDivG = getGoogleSearchResultsWithDivG(doc);
   if (resultsDivG.length > 0) {
     return resultsDivG;
   }
-  const resultsH3 = getGoogleSearchResultsWithH3(tabType);
+  const resultsH3 = getGoogleSearchResultsWithH3(tabType, doc);
   if (resultsH3.length > 0) {
     return resultsH3;
   }
@@ -83,14 +87,18 @@ export function determineThemeFromRgb(
 }
 
 export function getGoogleSearchTabType(
-  location: Location
+  urlSearchParams: URLSearchParams
 ): 'all' | 'image' | 'videos' | 'shopping' | 'news' | null {
-  const searchParams = new URLSearchParams(location.search);
-  const udm = searchParams.get('udm');
-  const tbm = searchParams.get('tbm');
+  const udm = urlSearchParams.get('udm');
+  const tbm = urlSearchParams.get('tbm');
+  const q = urlSearchParams.get('q');
+  if (q === null) {
+    console.warn('No search query found in URL parameters.');
+    return null; // No search query, cannot determine tab type
+  }
   // Not supporting maps.google. or /maps because there is nothing much to navigate there
   if (udm === null && tbm === null) {
-    return null;
+    return 'all';
   }
   switch (tbm) {
     case 'isch': // Imase SearCH

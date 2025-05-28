@@ -8,7 +8,7 @@
     "outDir": "dist",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "esModuleInterop": true,
-    "types": ["chrome"]
+    "types": ["chrome", "jest"]
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "__tests__/**/*"]
 }
