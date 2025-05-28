@@ -98,7 +98,7 @@ export function getGoogleSearchTabType(
   }
   // Not supporting maps.google. or /maps because there is nothing much to navigate there
   if (udm === null && tbm === null) {
-    return null;
+    return 'all';
   }
   switch (tbm) {
     case 'isch': // Imase SearCH
