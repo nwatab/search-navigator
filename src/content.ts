@@ -24,7 +24,7 @@ import {
     );
     return;
   }
-  const results = getGoogleSearchResults(searchTabType);
+  const results = getGoogleSearchResults(searchTabType, document);
   if (
     results.length > 0 &&
     (currentIndex < 0 || results.length <= currentIndex)
