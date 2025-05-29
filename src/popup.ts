@@ -1,12 +1,12 @@
-import type { KeyConfigs } from './key-map-manager';
+import type { KeyConfigs } from './services/keymap-manager';
 import {
   createKeymapManager,
   defaultKeyConfigs,
   keyConfigToString,
   stringToKeyConfig,
-} from './key-map-manager';
+} from './services/keymap-manager';
 
-import { storageSync } from './chrome-storage';
+import { storageSync } from './services/chrome-storage';
 import {
   MOVE_DOWN_ID,
   MOVE_UP_ID,
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       switchToVideosInput,
       switchToShoppingInput,
       switchToNewsInput,
-      switchToMapInput
+      switchToMapInput,
     ] = [
       MOVE_UP_ID,
       MOVE_DOWN_ID,
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       'switchToVideos',
       'switchToShopping',
       'switchToNews',
-      'switchToMap'
+      'switchToMap',
     ].map((id) => {
       const el = document.getElementById(id);
       if (!el) {
@@ -78,7 +78,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       keyConfigs.switch_to_all_search
     );
     switchToVideosInput.value = keyConfigToString(keyConfigs.switch_to_videos);
-    switchToShoppingInput.value = keyConfigToString(keyConfigs.switch_to_shopping);
+    switchToShoppingInput.value = keyConfigToString(
+      keyConfigs.switch_to_shopping
+    );
     switchToNewsInput.value = keyConfigToString(keyConfigs.switch_to_news);
     switchToMapInput.value = keyConfigToString(keyConfigs.switch_to_map);
   }
@@ -206,7 +208,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       switchToVideosInput,
       switchToShoppingInput,
       switchToNewsInput,
-      switchToMapInput
+      switchToMapInput,
     ] = [
       MOVE_DOWN_ID,
       MOVE_UP_ID,
@@ -218,7 +220,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       'switchToVideos',
       'switchToShopping',
       'switchToNews',
-      'switchToMap'
+      'switchToMap',
     ].map((id) => {
       const el = document.getElementById(id);
       if (!el) {
@@ -240,7 +242,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       switch_to_videos: switchToVideosInput,
       switch_to_shopping: switchToShoppingInput,
       switch_to_news: switchToNewsInput,
-      switch_to_map: switchToMapInput
+      switch_to_map: switchToMapInput,
     };
 
     const userOverrideConfigs = (

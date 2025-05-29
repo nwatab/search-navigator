@@ -3,7 +3,7 @@ import path from 'path';
 import {
   getGoogleSearchResults,
   getGoogleSearchTabType,
-} from '../src/ui-handler';
+} from '../src/services';
 
 describe('ui-handler', () => {
   it('get results on all tab for query "quantum field theory"', async () => {

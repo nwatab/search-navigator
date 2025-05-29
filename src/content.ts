@@ -1,5 +1,5 @@
-import { storageSync } from './chrome-storage';
-import { createKeymapManager } from './key-map-manager';
+import { storageSync } from './services/chrome-storage';
+import { createKeymapManager } from './services/keymap-manager';
 import './style.scss';
 import {
   addClass,
@@ -10,7 +10,7 @@ import {
   makeHighlight,
   removeClass,
   scrollIntoViewIfOutsideViewport,
-} from './ui-handler';
+} from './services';
 
 (async () => {
   let currentIndex: number = 0;

@@ -1,4 +1,4 @@
-import { UPDATE_KEYMAPPINGS_MESSAGE } from './constants';
+import { UPDATE_KEYMAPPINGS_MESSAGE } from '../constants';
 import type { ChromeStorage } from './chrome-storage';
 
 export interface KeyConfig<T extends string> {
