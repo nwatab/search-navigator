@@ -6,7 +6,6 @@ export function getGoogleSearchTabType(
   const tbm = urlSearchParams.get('tbm');
   const q = urlSearchParams.get('q');
   if (q === null) {
-    console.warn('No search query found in URL parameters.');
     return null; // No search query, cannot determine tab type
   }
   // Not supporting maps.google. or /maps because there is nothing much to navigate there

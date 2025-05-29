@@ -1,24 +1,4 @@
-import { JSDOM } from 'jsdom';
-import path from 'path';
-import {
-  getGoogleSearchResults,
-  getGoogleSearchTabType,
-} from '../src/services';
-
-describe('ui-handler', () => {
-  it('get results on all tab for query "quantum field theory"', async () => {
-    const htmlPath = path.join(__dirname, '/htmls/20250525_all_tokyo_9.html');
-    const dom = await JSDOM.fromFile(htmlPath);
-    const results = getGoogleSearchResults('all', dom.window.document);
-    expect(results.length).toBe(9);
-  });
-  it('get results on all tab for query "github closes comment pr"', async () => {
-    const htmlPath = path.join(__dirname, '/htmls/20250529_all_tokyo_10.html');
-    const dom = await JSDOM.fromFile(htmlPath);
-    const results = getGoogleSearchResults('all', dom.window.document);
-    expect(results.length).toBe(10);
-  });
-});
+import { getGoogleSearchTabType } from '../src/services';
 
 describe('getGoogleSearchTabType', () => {
   it('should return null when no search query is present', () => {

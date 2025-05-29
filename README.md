@@ -40,7 +40,7 @@ To set up the project locally and contribute, follow these steps:
    Run `pnpm install` to install all dependencies.
 
 2. **Build the Project:**  
-   Run `pnpm run build` to compile; output goes to `/dist`.
+   Run `pnpm run build:dev` or `pnpm run build:prod` to compile; output goes to `/dist`.
 
 3. **Load the Extension:**  
    In Chrome, go to `chrome://extensions/`, click “Load unpacked,” and select the `/dist` folder.

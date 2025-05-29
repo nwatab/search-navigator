@@ -27,19 +27,42 @@ export function getGoogleSearchResultsWithH3(
 }
 
 /**
- * Return value should have at least one element, but it may fall back to an empty array if none are found
+ * Return an array of visible DIV children (not display:none, not aria-hidden="true").
  */
+const getVisibleDivs = (el: Element): HTMLDivElement[] =>
+  Array.from(el.children).filter((child): child is HTMLDivElement => {
+    if (child.tagName !== 'DIV') return false;
+    const style = child.getAttribute('style') || '';
+    const isHiddenStyle = /\bdisplay\s*:\s*none\b/.test(style);
+    const isAriaHidden = child.getAttribute('aria-hidden') === 'true';
+    return !isHiddenStyle && !isAriaHidden;
+  });
+
+/**
+ * Recursively collect all visible DIVs under `el` that contain exactly one <h3>.
+ * If a DIV contains >1 <h3>, dig into its children; if 0, skip.
+ */
+const collectSingleH3Divs = (el: Element): HTMLDivElement[] =>
+  getVisibleDivs(el).flatMap((div) => {
+    const h3s = div.querySelectorAll('h3');
+    return h3s.length === 1
+      ? [div] // leaf match
+      : h3s.length > 1
+        ? collectSingleH3Divs(div) // dig deeper
+        : []; // skip
+  });
+
 export const getGoogleSearchResults = (
   tabType: 'all' | 'image' | 'videos' | 'shopping' | 'news',
   doc: Document = document
-): HTMLElement[] => {
-  const resultsDivG = getGoogleSearchResultsWithDivG(doc);
-  if (resultsDivG.length > 0) {
-    return resultsDivG;
+): HTMLDivElement[] => {
+  const root = (doc.getElementById('rso') ??
+    doc.getElementById('search')) as HTMLDivElement | null;
+
+  if (!root) {
+    console.warn('No search root found in the document.');
+    return [];
   }
-  const resultsH3 = getGoogleSearchResultsWithH3(tabType, doc);
-  if (resultsH3.length > 0) {
-    return resultsH3;
-  }
-  return [];
+
+  return collectSingleH3Divs(root);
 };
