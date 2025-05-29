@@ -1,6 +1,7 @@
 export default {
   preset: 'ts-jest',
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
+  setupFiles: ['<rootDir>/jest.setup.js'],
   transform: {
     '^.+\\.ts$': [
       'ts-jest',
