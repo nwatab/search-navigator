@@ -5,11 +5,27 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.7.2] - 2025-05-29
+
+### Fixed
+
+- Fix Google search results scraping algorithm (#42)
+- Fix "People also ask" section to be selectable and openable (#6)
+
+### Maintenance
+
+- Set up Jest
+- Added GitHub Actions to run tests on pull requests against main
+
 ## [1.7.1] - 2025-05-29
 
 ### Fixed
 
-- Fix tab type detector to work on all tab (#35).
+- Fix tab type detector to work on all tabs (#35).
+
+### Maintenance
+
+- Set up Jest
 
 ## [1.7.0] - 2025-05-09
 
@@ -78,6 +94,7 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ---
 
+[1.7.2]: https://github.com/nwatab/search-navigator/compare/v1.7.1...v1.7.2
 [1.7.1]: https://github.com/nwatab/search-navigator/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/nwatab/search-navigator/compare/v1.6.2...v1.7.0
 [1.6.2]: https://github.com/nwatab/search-navigator/compare/v1.6.1...v1.6.2
