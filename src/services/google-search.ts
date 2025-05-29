@@ -27,54 +27,42 @@ export function getGoogleSearchResultsWithH3(
 }
 
 /**
- * Return an array of ELEMENT_NODE DIV children
- * that are visible (not display:none, not aria-hidden="true").
+ * Return an array of visible DIV children (not display:none, not aria-hidden="true").
  */
-function getVisibleDivs(el: Element): HTMLDivElement[] {
-  return Array.from(el.children).filter((child): child is HTMLDivElement => {
+const getVisibleDivs = (el: Element): HTMLDivElement[] =>
+  Array.from(el.children).filter((child): child is HTMLDivElement => {
     if (child.tagName !== 'DIV') return false;
-    // Only treat inline style="display: none" or aria-hidden="true" as hidden:
-    const inlineStyle = child.getAttribute('style') || '';
-    const isHiddenStyle = /\bdisplay\s*:\s*none\b/.test(inlineStyle);
+    const style = child.getAttribute('style') || '';
+    const isHiddenStyle = /\bdisplay\s*:\s*none\b/.test(style);
     const isAriaHidden = child.getAttribute('aria-hidden') === 'true';
     return !isHiddenStyle && !isAriaHidden;
   });
-}
 
 /**
- * Drill down as long as there is exactly one visible DIV child.
- * Purely recursive, no mutation.
- * @param {HTMLDivElement} el
- * @returns {HTMLDivElement}
+ * Recursively collect all visible DIVs under `el` that contain exactly one <h3>.
+ * If a DIV contains >1 <h3>, dig into its children; if 0, skip.
  */
-function drillSingleVisibleDiv(el: HTMLDivElement): HTMLDivElement {
-  const visibleDivs = getVisibleDivs(el);
-  const [onlyChild] = visibleDivs;
-  return onlyChild && visibleDivs.length === 1
-    ? drillSingleVisibleDiv(onlyChild)
-    : el;
-}
+const collectSingleH3Divs = (el: Element): HTMLDivElement[] =>
+  getVisibleDivs(el).flatMap((div) => {
+    const h3s = div.querySelectorAll('h3');
+    return h3s.length === 1
+      ? [div] // leaf match
+      : h3s.length > 1
+        ? collectSingleH3Divs(div) // dig deeper
+        : []; // skip
+  });
 
-/**
- * Return value should have at least one element, but it may fall back to an empty array if none are found
- */
 export const getGoogleSearchResults = (
   tabType: 'all' | 'image' | 'videos' | 'shopping' | 'news',
   doc: Document = document
 ): HTMLDivElement[] => {
-  // getElementById('serach') then, narrow down div elements while it has only one dive elements.
-
-  const searchRoot = (doc.getElementById('rso') ??
+  const root = (doc.getElementById('rso') ??
     doc.getElementById('search')) as HTMLDivElement | null;
-  if (!searchRoot) {
+
+  if (!root) {
     console.warn('No search root found in the document.');
     return [];
   }
 
-  const divLeaf = drillSingleVisibleDiv(searchRoot);
-  const divElementsThatContainsH3 = Array.from(divLeaf.children).filter(
-    (el): el is HTMLDivElement =>
-      el.tagName.toLowerCase() === 'div' && el.querySelector('h3') !== null
-  );
-  return divElementsThatContainsH3;
+  return collectSingleH3Divs(root);
 };
