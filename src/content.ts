@@ -8,6 +8,7 @@ import {
   getGoogleSearchResults,
   getGoogleSearchTabType,
   makeHighlight,
+  makeUnhighlight,
   removeClass,
   scrollIntoViewIfOutsideViewport,
 } from './services';
@@ -38,7 +39,9 @@ import {
     bodyBackgroundRgb == null
       ? 'light'
       : determineThemeFromRgb(bodyBackgroundRgb);
-  const highlight = makeHighlight({ addClass, removeClass });
+  const highlight = makeHighlight(addClass, scrollIntoViewIfOutsideViewport);
+  const unhighlight = makeUnhighlight(removeClass);
+
   highlight(results, currentIndex, theme);
 
   // Add keydown event listener for all Google Search pages
@@ -60,18 +63,18 @@ import {
         currentIndex < results.length - 1 &&
         searchTabType === 'all'
       ) {
+        unhighlight(results, currentIndex);
         currentIndex++;
         highlight(results, currentIndex, theme);
-        scrollIntoViewIfOutsideViewport(results[currentIndex]);
       }
     } else if (keymapManager.isKeyMatch(e, 'move_up') || e.key === 'ArrowUp') {
       // up
       // TODO: add support for image search
       e.preventDefault();
       if (results.length > 0 && currentIndex > 0 && searchTabType === 'all') {
+        unhighlight(results, currentIndex);
         currentIndex--;
         highlight(results, currentIndex, theme);
-        scrollIntoViewIfOutsideViewport(results[currentIndex]);
       }
     } else if (keymapManager.isKeyMatch(e, 'open_link')) {
       // open link
