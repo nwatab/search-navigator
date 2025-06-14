@@ -30,4 +30,23 @@ describe('get google search results', () => {
     const results = getGoogleSearchResults('image', dom.window.document);
     expect(results.length).toBe(201);
   });
+
+  it('get news results for query "Schloss Johannisberg"', async () => {
+    const htmlPath = path.join(
+      __dirname,
+      '/htmls/20250615-news-schloss-johannisberg-tokyo.html'
+    );
+    const dom = await JSDOM.fromFile(htmlPath);
+    const results = getGoogleSearchResults('news', dom.window.document);
+    expect(results.length).toBe(10);
+  });
+  it('get video results for query "J. Brahms Piano Concerto No.2"', async () => {
+    const htmlPath = path.join(
+      __dirname,
+      '/htmls/20250615-video-j.brahms-piano-concerto-no.2-tokyo.html'
+    );
+    const dom = await JSDOM.fromFile(htmlPath);
+    const results = getGoogleSearchResults('videos', dom.window.document);
+    expect(results.length).toBe(10);
+  });
 });
