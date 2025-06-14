@@ -58,11 +58,7 @@ import {
       // down
       // TODO: add support for image search
       e.preventDefault();
-      if (
-        results.length > 0 &&
-        currentIndex < results.length - 1 &&
-        searchTabType === 'all'
-      ) {
+      if (results.length > 0 && currentIndex < results.length - 1) {
         unhighlight(results, currentIndex);
         currentIndex++;
         highlight(results, currentIndex, theme);
@@ -71,7 +67,7 @@ import {
       // up
       // TODO: add support for image search
       e.preventDefault();
-      if (results.length > 0 && currentIndex > 0 && searchTabType === 'all') {
+      if (results.length > 0 && currentIndex > 0) {
         unhighlight(results, currentIndex);
         currentIndex--;
         highlight(results, currentIndex, theme);
@@ -88,38 +84,21 @@ import {
       ) {
         return; // not expected to happen
       }
-      switch (searchTabType) {
-        case 'all':
-          const link = results[currentIndex].querySelector('a');
-          if (link instanceof HTMLAnchorElement && link.href) {
-            const clickEvent = new MouseEvent('click', {
-              ctrlKey: e.ctrlKey,
-              metaKey: e.metaKey,
-              shiftKey: e.shiftKey,
-              bubbles: true,
-              cancelable: true,
-              view: window,
-            });
-            link.dispatchEvent(clickEvent);
-          }
-          break;
-        case 'image':
-          // TODO: add support for image search. It's complicated. Going up and down doesn't work when enlarging an image. More investigation needed.
-          // const vhid = results[currentIndex].querySelector('div')?.dataset.vhid;
-          // if (vhid) {
-          //   const url = new URL(window.location.href);
-          //   const currentHash = url.hash.replace('#', '');
-          //   console.log(currentHash, vhid);
-          //   if (currentHash === vhid) {
-          //       url.hash = '';
-          //   } else {
-          //     url.hash = `#${vhid}`;
-          //   }
-          //   window.location.href = url.toString();
-          // }
-          break;
-        default:
-          break;
+      const link = results[currentIndex].querySelector(
+        'a[href]'
+      ) as HTMLAnchorElement;
+      if (!link?.href) return;
+      const { ctrlKey, metaKey, shiftKey } = e;
+      if (ctrlKey || metaKey) {
+        // Ctrl+Click or Cmd+Click → new tab
+        window.open(link.href, '_blank');
+      } else if (shiftKey) {
+        // Shift+Click → new window (popup)
+        // any non-undefined “features” string forces a new window
+        window.open(link.href, '_blank', '');
+      } else {
+        // plain Enter/Click → same tab
+        link.click(); // for accessibility
       }
     } else if (
       keymapManager.isKeyMatch(e, 'navigate_previous') ||
@@ -131,7 +110,7 @@ import {
       if (e.ctrlKey || e.metaKey) {
         return;
       }
-      if (searchTabType === 'all') {
+      if (['all', 'videos', 'shopping', 'news'].includes(searchTabType)) {
         const prevLink = document.querySelector('#pnprev');
         if (prevLink instanceof HTMLAnchorElement && prevLink.href) {
           window.location.href = prevLink.href;
@@ -143,7 +122,7 @@ import {
     ) {
       // next page
       e.preventDefault();
-      if (searchTabType === 'all') {
+      if (['all', 'videos', 'shopping', 'news'].includes(searchTabType)) {
         const nextLink = document.querySelector('#pnnext');
         if (nextLink instanceof HTMLAnchorElement && nextLink.href) {
           window.location.href = nextLink.href;
