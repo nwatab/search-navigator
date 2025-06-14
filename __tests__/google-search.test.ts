@@ -15,10 +15,19 @@ describe('get google search results', () => {
     const results = getGoogleSearchResults('all', dom.window.document);
     expect(results.length).toBe(10);
   });
-  it('get results on image tab for query "場の量子論"', async () => {
+  it('get results on all tab for query "場の量子論"', async () => {
     const htmlPath = path.join(__dirname, '/htmls/20250529_all_tokyo_8.html');
     const dom = await JSDOM.fromFile(htmlPath);
     const results = getGoogleSearchResults('image', dom.window.document);
     expect(results.length).toBe(8);
+  });
+  it('get image results for query "château-chalon"', async () => {
+    const htmlPath = path.join(
+      __dirname,
+      '/htmls/20250614-image-château-chalon-tokyo.html'
+    );
+    const dom = await JSDOM.fromFile(htmlPath);
+    const results = getGoogleSearchResults('image', dom.window.document);
+    expect(results.length).toBe(201);
   });
 });
