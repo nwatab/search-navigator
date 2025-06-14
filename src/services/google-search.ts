@@ -1,31 +1,3 @@
-// Google search result selectors
-export function getGoogleSearchResultsWithDivG(
-  doc: Document = document
-): HTMLElement[] {
-  return Array.from(doc.querySelectorAll('div.g'));
-}
-
-export function getGoogleSearchResultsWithH3(
-  tabType: 'all' | 'image' | 'videos' | 'shopping' | 'news',
-  doc: Document = document
-) {
-  const searchRoot = doc.getElementById('search');
-  if (!searchRoot) return [];
-
-  const h3Elements = Array.from(searchRoot.getElementsByTagName('h3'));
-
-  const getAncestor = (element: HTMLElement, levels: number) => {
-    let current: HTMLElement | null = element;
-    for (let i = 0; i < levels; i++) {
-      current = current?.parentElement || current;
-    }
-    return current;
-  };
-  // magic numbers depending on actual DOM structure
-  const levels = tabType === 'all' ? 9 : 2;
-  return [...new Set(h3Elements.map((h3) => getAncestor(h3, levels)))];
-}
-
 /**
  * Return an array of visible DIV children (not display:none, not aria-hidden="true").
  */
@@ -38,17 +10,17 @@ const getVisibleDivs = (el: Element): HTMLDivElement[] =>
     return !isHiddenStyle && !isAriaHidden;
   });
 
-/**
- * Recursively collect all visible DIVs under `el` that contain exactly one <h3>.
- * If a DIV contains >1 <h3>, dig into its children; if 0, skip.
- */
-const collectSingleH3Divs = (el: Element): HTMLDivElement[] =>
+const collectSingleHeadings = (
+  tabType: 'all' | 'image' | 'videos' | 'shopping' | 'news',
+  el: Element
+): HTMLDivElement[] =>
   getVisibleDivs(el).flatMap((div) => {
-    const h3s = div.querySelectorAll('h3');
-    return h3s.length === 1
+    const selector = tabType === 'news' ? 'div[role="heading"]' : 'h3';
+    const headings = div.querySelectorAll(selector);
+    return headings.length === 1
       ? [div] // leaf match
-      : h3s.length > 1
-        ? collectSingleH3Divs(div) // dig deeper
+      : headings.length > 1
+        ? collectSingleHeadings(tabType, div) // dig deeper
         : []; // skip
   });
 
@@ -64,5 +36,5 @@ export const getGoogleSearchResults = (
     return [];
   }
 
-  return collectSingleH3Divs(root);
+  return collectSingleHeadings(tabType, root);
 };
