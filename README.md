@@ -1,3 +1,7 @@
+# Search Navigator
+
+[![test](https://github.com/nwatab/search-navigator/actions/workflows/main.yml/badge.svg)](https://github.com/nwatab/search-navigator/actions/workflows/main.yml)
+
 ## What is this?
 
 A lightweight bookmarklet that enhances your Google search experience with intuitive keyboard navigation and quick category switching.
