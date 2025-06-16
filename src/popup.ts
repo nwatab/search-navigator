@@ -15,6 +15,7 @@ import {
   OPEN_LINK_ID,
   SWITCH_TO_ALL_SEARCH_ID,
   SWITCH_TO_IMAGE_SEARCH_ID,
+  SWITCH_TO_YOUTUBE_ID,
   UPDATE_KEYMAPPINGS_MESSAGE,
 } from './constants';
 
@@ -43,6 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       switchToShoppingInput,
       switchToNewsInput,
       switchToMapInput,
+      switchToYoutubeInput,
     ] = [
       MOVE_UP_ID,
       MOVE_DOWN_ID,
@@ -55,6 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       'switchToShopping',
       'switchToNews',
       'switchToMap',
+      SWITCH_TO_YOUTUBE_ID,
     ].map((id) => {
       const el = document.getElementById(id);
       if (!el) {
@@ -83,6 +86,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     );
     switchToNewsInput.value = keyConfigToString(keyConfigs.switch_to_news);
     switchToMapInput.value = keyConfigToString(keyConfigs.switch_to_map);
+    switchToYoutubeInput.value = keyConfigToString(
+      keyConfigs.switch_to_youtube
+    );
   }
 
   /**
@@ -209,6 +215,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       switchToShoppingInput,
       switchToNewsInput,
       switchToMapInput,
+      switchToYoutubeInput,
     ] = [
       MOVE_DOWN_ID,
       MOVE_UP_ID,
@@ -221,6 +228,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       'switchToShopping',
       'switchToNews',
       'switchToMap',
+      SWITCH_TO_YOUTUBE_ID,
     ].map((id) => {
       const el = document.getElementById(id);
       if (!el) {
@@ -243,6 +251,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       switch_to_shopping: switchToShoppingInput,
       switch_to_news: switchToNewsInput,
       switch_to_map: switchToMapInput,
+      switch_to_youtube: switchToYoutubeInput,
     };
 
     const userOverrideConfigs = (
