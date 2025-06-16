@@ -280,20 +280,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       status.className = 'status success';
       status.style.display = 'block';
 
+      chrome.runtime.sendMessage({
+        type: UPDATE_KEYMAPPINGS_MESSAGE,
+        keyConfigs: newKeyConfigs,
+      });
       // Hide notification after 3 seconds
       setTimeout(() => {
         status.style.display = 'none';
       }, 3000);
     }
-    // Send message to current tab to update settings
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs.length > 0 && tabs[0].id) {
-        chrome.tabs.sendMessage(tabs[0].id, {
-          type: UPDATE_KEYMAPPINGS_MESSAGE,
-          keyConfigs: newKeyConfigs,
-        });
-      }
-    });
+    // Send message to background script to update settings across all tabs
   }
 
   function setupResetButton(): void {
@@ -313,16 +309,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       status.textContent = 'Settings reset to defaults.';
       status.className = 'status success';
       status.style.display = 'block';
-      setTimeout(() => (status.style.display = 'none'), 3000);
-      // 4) ToDo: Broadcast the default back to the page
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs[0]?.id) {
-          chrome.tabs.sendMessage(tabs[0].id, {
-            type: UPDATE_KEYMAPPINGS_MESSAGE,
-            keyConfigs: defaultKeyConfigs,
-          });
-        }
+      // Send message to background script to update settings across all tabs
+      chrome.runtime.sendMessage({
+        type: UPDATE_KEYMAPPINGS_MESSAGE,
+        keyConfigs: defaultKeyConfigs,
       });
+      setTimeout(() => (status.style.display = 'none'), 3000);
     });
   }
 });

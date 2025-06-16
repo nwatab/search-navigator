@@ -1,5 +1,6 @@
 import { storageSync } from './services/chrome-storage';
 import { createKeymapManager } from './services/keymap-manager';
+import { UPDATE_KEYMAPPINGS_MESSAGE } from './constants';
 import './style.scss';
 import {
   addClass,
@@ -208,6 +209,15 @@ import {
         const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
         window.location.href = youtubeUrl;
       }
+    }
+  });
+
+  // Listen for keymap updates from background script
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === UPDATE_KEYMAPPINGS_MESSAGE) {
+      // Update the keymap manager with new configurations
+      keymapManager.saveKeyConfigs(message.keyConfigs);
+      sendResponse({ success: true });
     }
   });
 })();
