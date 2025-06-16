@@ -1,6 +1,8 @@
-# Search Navigator
+[![Tests](https://github.com/nwatab/search-navigator/actions/workflows/main.yml/badge.svg)](https://github.com/nwatab/search-navigator/actions/workflows/main.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![version](https://img.shields.io/github/v/tag/nwatab/search-navigator?label=version&sort=semver)](https://github.com/nwatab/search-navigator/releases)
 
-[![test](https://github.com/nwatab/search-navigator/actions/workflows/main.yml/badge.svg)](https://github.com/nwatab/search-navigator/actions/workflows/main.yml)
+# Search Navigator
 
 ## What is this?
 
