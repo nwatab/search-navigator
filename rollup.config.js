@@ -55,6 +55,24 @@ export default [
     ].filter(Boolean), // Filter out false values
   },
   {
+    input: 'src/background.ts',
+    output: {
+      file: 'dist/background.js',
+      format: 'iife',
+      sourcemap: true,
+    },
+    plugins: [
+      typescript(),
+      // Only apply terser with compression in production mode
+      ENV === 'prod' &&
+        terser({
+          compress: {
+            drop_console: true,
+          },
+        }),
+    ].filter(Boolean), // Filter out false values
+  },
+  {
     input: 'src/popup.ts',
     output: {
       file: 'dist/popup.js',

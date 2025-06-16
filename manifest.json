@@ -11,6 +11,9 @@
       "128": "icon128x128.png"
     }
   },
+  "background": {
+    "service_worker": "background.js"
+  },
   "content_scripts": [
     {
       "matches": ["https://www.google.com/search*"],
@@ -19,7 +22,7 @@
       "run_at": "document_end"
     }
   ],
-  "permissions": ["storage", "activeTab"],
+  "permissions": ["storage", "activeTab", "tabs"],
   "icons": {
     "16": "icon16x16.png",
     "32": "icon32x32.png",
