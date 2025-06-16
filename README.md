@@ -10,12 +10,16 @@ A lightweight bookmarklet that enhances your Google search experience with intui
 - **k** or **↑**: Navigate up through search results.
 - **h** or **←**: Go to the previous search results page.
 - **l** or **→**: Go to the next search results page.
-- **i**: Switch to the Image search tab.
-- **v**. Switch to the Video search tab
-- **n**. Switch to the News search tab
-- **s**. Switch to the Shopping search tab
+- **i**: Switch to the Images search tab.
+- **v**: Switch to the Videos search tab.
+- **n**: Switch to the News search tab.
+- **s**: Switch to the Shopping search tab.
 - **a**: Switch to the All search tab.
+- **m**: Go to Google Maps (opens in same tab).
+- **y**: Go to YouTube (opens in same tab).
 - **Enter**: Open the highlighted result; hold `Ctrl` (Windows) or `Cmd` (macOS) to open in a new tab, or hold `Shift` to open in a new window.
+
+**Note:** The **i**, **v**, **n**, **s**, and **a** shortcuts switch between Google search tabs and allow you to navigate back. The **m** and **y** shortcuts take you to external services (Google Maps and YouTube) and are one-way navigation.
 
 All shortcuts except the arrow keys can be customized in the popup.
 
@@ -28,9 +32,10 @@ Open the popup to customize your shortcut keys.
 
 - [x] Light/Dark Theme support
 - [x] Keyboard shortcut customization
-- [ ] Switch between All, Images, Videos, Maps, News, and YouTube
+- [x] Switch between All, Images, Videos, News, and Shopping search tabs
+- [x] Navigate to Google Maps and YouTube with current search query
 - [ ] YouTube support: move up/down, open, save to “Watch Later”
-- [ ] Image/Video/News support: move up/down, open
+- [x] Image/Video/News support: move up/down, open
 
 ## Developer Contribution Guidelines
 

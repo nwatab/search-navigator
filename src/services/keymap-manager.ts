@@ -21,6 +21,7 @@ export interface KeyConfigs<T extends string> {
   switch_to_shopping: KeyConfig<T>;
   switch_to_news: KeyConfig<T>;
   switch_to_map: KeyConfig<T>;
+  switch_to_youtube: KeyConfig<T>;
 }
 
 export type Action = keyof KeyConfigs<string>;
@@ -98,6 +99,13 @@ export const defaultKeyConfigs: KeyConfigs<string> = {
   },
   switch_to_map: {
     key: 'm',
+    ctrl: false,
+    alt: false,
+    shift: false,
+    meta: false,
+  },
+  switch_to_youtube: {
+    key: 'y',
     ctrl: false,
     alt: false,
     shift: false,

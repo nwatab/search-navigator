@@ -199,6 +199,15 @@ import {
         const mapUrl = `https://www.google.com/maps/search/${encodeURIComponent(query)}`;
         window.location.href = mapUrl;
       }
+    } else if (keymapManager.isKeyMatch(e, 'switch_to_youtube')) {
+      // switch to YouTube
+      e.preventDefault();
+      const searchParams = new URLSearchParams(window.location.search);
+      const query = searchParams.get('q');
+      if (query) {
+        const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+        window.location.href = youtubeUrl;
+      }
     }
   });
 })();
