@@ -1,38 +1,52 @@
-[![Tests](https://github.com/nwatab/search-navigator/actions/workflows/main.yml/badge.svg)](https://github.com/nwatab/search-navigator/actions/workflows/main.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![version](https://img.shields.io/github/v/tag/nwatab/search-navigator?label=version&sort=semver)](https://github.com/nwatab/search-navigator/releases)
-
 # Search Navigator
+
+[![Tests](https://github.com/nwatab/search-navigator/actions/workflows/main.yml/badge.svg)](https://github.com/nwatab/search-navigator/actions/workflows/main.yml)
+[![Chrome Web Store Users](https://img.shields.io/chrome-web-store/users/fpinaaaiplppifhmkjdfkimodkkdnoha)](https://chrome.google.com/webstore/detail/search-result-navigator/fpinaaaiplppifhmkjdfkimodkkdnoha)
+[![Chrome Web Store Rating](https://img.shields.io/chrome-web-store/rating/fpinaaaiplppifhmkjdfkimodkkdnoha)](https://chrome.google.com/webstore/detail/search-result-navigator/fpinaaaiplppifhmkjdfkimodkkdnoha)
 
 ## What is this?
 
-A lightweight bookmarklet that enhances your Google search experience with intuitive keyboard navigation and quick category switching.
+A lightweight Google Chrome extension that enhances your Google search experience with intuitive keyboard navigation and quick category switching.
+
+## Installation
+
+### Chrome Web Store
+
+Install the extension directly from the Chrome Web Store:
+
+**[Install Search Navigator](https://chromewebstore.google.com/detail/search-navigator/fpinaaaiplppifhmkjdfkimodkkdnoha)**
+
+### Manual Installation
+
+For development or if you prefer to install manually:
+
+1. Download the latest release from [Releases](https://github.com/nwatab/search-navigator/releases)
+2. Extract the ZIP file
+3. Open Chrome and go to `chrome://extensions/`
+4. Enable "Developer mode" in the top right
+5. Click "Load unpacked" and select the extracted folder
 
 ## Usage
 
-### Keyboard Navigation
+Navigate Google search results with your keyboard:
 
-- **j** or **↓**: Navigate down through search results.
-- **k** or **↑**: Navigate up through search results.
-- **h** or **←**: Go to the previous search results page.
-- **l** or **→**: Go to the next search results page.
-- **i**: Switch to the Images search tab.
-- **v**: Switch to the Videos search tab.
-- **n**: Switch to the News search tab.
-- **s**: Switch to the Shopping search tab.
-- **a**: Switch to the All search tab.
-- **m**: Go to Google Maps (opens in same tab).
-- **y**: Go to YouTube (opens in same tab).
-- **Enter**: Open the highlighted result; hold `Ctrl` (Windows) or `Cmd` (macOS) to open in a new tab, or hold `Shift` to open in a new window.
+**Navigation**
 
-**Note:** The **i**, **v**, **n**, **s**, and **a** shortcuts switch between Google search tabs and allow you to navigate back. The **m** and **y** shortcuts take you to external services (Google Maps and YouTube) and are one-way navigation.
+- `j/k` or `↓/↑` - Move through results
+- `h/l` or `←/→` - Previous/next page
+- `Enter` - Open result (+ `Ctrl`/`Cmd` for new tab, `Shift` for new window)
 
-All shortcuts except the arrow keys can be customized in the popup.
+  _Note: Navigation controls are currently not supported on YouTube and Shopping pages_
 
-### Customization
+**Search Tabs**
 
-Open the popup to customize your shortcut keys.  
-**Note:** Arrow keys are fixed by default and cannot be changed at this time.
+- `a` - All • `i` - Images • `v` - Videos • `n` - News • `s` - Shopping
+
+**Quick Access**
+
+- `m` - Google Maps • `y` - YouTube
+
+**Customize shortcuts** by clicking the extension icon. Arrow keys cannot be changed.
 
 ## Roadmap
 
