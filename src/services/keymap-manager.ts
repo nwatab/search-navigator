@@ -192,7 +192,6 @@ export const createKeymapManager = async (
 
   return {
     getKeyConfigs() {
-      console.log('getKeyConfigs', current);
       return current;
     },
     isKeyMatch(e, action) {
