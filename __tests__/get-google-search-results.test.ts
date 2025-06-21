@@ -1,8 +1,11 @@
 import { JSDOM } from 'jsdom';
 import path from 'path';
-import { getGoogleSearchResults } from '../src/services';
+import {
+  getGoogleSearchResults,
+  getYouTubeSearchResults,
+} from '../src/services';
 
-describe('get google search results', () => {
+describe('get Google search results', () => {
   it('get results on all tab for query "quantum field theory"', async () => {
     const htmlPath = path.join(__dirname, '/htmls/20250525_all_tokyo_9.html');
     const dom = await JSDOM.fromFile(htmlPath);
