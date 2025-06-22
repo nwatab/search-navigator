@@ -1,3 +1,5 @@
+import { waitForSelector } from './dom-utils';
+
 /**
  * Return an array of visible children (not display:none, not aria-hidden="true").
  */
@@ -26,14 +28,23 @@ const collectSingleHeadingsForGoogle = (
   });
 };
 
+export type GoogleSearchTabType =
+  | 'all'
+  | 'image'
+  | 'videos'
+  | 'shopping'
+  | 'news';
+export type PageType = GoogleSearchTabType | 'youtube-search-result';
+
+function getSearchRootSelector(pageType: PageType): string {
+  if (pageType === 'youtube-search-result') {
+    return '#contents';
+  }
+  return '#rso, #search';
+}
+
 function getSearchRoot(
-  pageType:
-    | 'all'
-    | 'image'
-    | 'videos'
-    | 'shopping'
-    | 'news'
-    | 'youtube-search-result',
+  pageType: PageType,
   doc: Document
 ): HTMLDivElement | null {
   if (pageType === 'youtube-search-result') {
@@ -50,14 +61,13 @@ export interface YouTubeSearchOptions {
 }
 
 export const getGoogleSearchResults = (
-  tabType: 'all' | 'image' | 'videos' | 'shopping' | 'news',
+  tabType: GoogleSearchTabType,
   doc: Document = document
 ): HTMLDivElement[] => {
   const root = getSearchRoot(tabType, doc);
 
   if (!root) {
-    console.warn('No search root found in the document.');
-    return [];
+    throw new Error('No search root found in the document.');
   }
 
   return collectSingleHeadingsForGoogle(root, tabType);
@@ -97,3 +107,27 @@ export const getYouTubeSearchResults = (
   const elements = root.querySelectorAll(combinedSelector);
   return Array.from(elements) as HTMLDivElement[];
 };
+
+export function getSearchResults(
+  doc: Document,
+  pageType: PageType
+): HTMLDivElement[] {
+  if (pageType === 'youtube-search-result') {
+    return getYouTubeSearchResults(doc, {
+      shorts: false,
+      ads: false,
+      mix: true,
+    });
+  }
+  return getGoogleSearchResults(pageType, doc);
+}
+
+export async function waitForSearchRoot(
+  doc: Document = document,
+  pageType: PageType,
+  timeout = 5_000
+): Promise<HTMLDivElement> {
+  const selector = getSearchRootSelector(pageType);
+  const el = await waitForSelector(doc, selector, timeout);
+  return el as HTMLDivElement;
+}

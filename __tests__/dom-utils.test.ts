@@ -1,46 +1,8 @@
 import {
-  extractBodyBackgroundRgb,
   addClass,
   removeClass,
   scrollIntoViewIfOutsideViewport,
 } from '../src/services/dom-utils';
-import { JSDOM } from 'jsdom';
-
-describe('extractBodyBackgroundRgb', () => {
-  let dom: JSDOM;
-  let window: Window & typeof globalThis;
-  let document: Document;
-
-  beforeEach(() => {
-    dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
-    window = dom.window as unknown as Window & typeof globalThis;
-    document = dom.window.document;
-  });
-
-  it('should extract RGB values from body background color', () => {
-    const mockGetComputedStyle = jest.fn();
-    mockGetComputedStyle.mockReturnValue({
-      backgroundColor: 'rgb(255, 255, 255)',
-    });
-    window.getComputedStyle = mockGetComputedStyle;
-
-    const result = extractBodyBackgroundRgb(window, document);
-
-    expect(result).toEqual([255, 255, 255]);
-  });
-
-  it('should return null for invalid color format', () => {
-    const mockGetComputedStyle = jest.fn();
-    mockGetComputedStyle.mockReturnValue({
-      backgroundColor: 'transparent',
-    });
-    window.getComputedStyle = mockGetComputedStyle;
-
-    const result = extractBodyBackgroundRgb(window, document);
-
-    expect(result).toBeNull();
-  });
-});
 
 describe('addClass', () => {
   let element: HTMLElement;

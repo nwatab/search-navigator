@@ -1,32 +1,33 @@
-import { storageSync } from './services/chrome-storage';
-import { createKeymapManager } from './services/keymap-manager';
 import { UPDATE_KEYMAPPINGS_MESSAGE } from './constants';
-import './style.scss';
 import {
   addClass,
   determineThemeFromRgb,
-  extractBodyBackgroundRgb,
-  getGoogleSearchResults,
-  getGoogleSearchTabType,
+  extractBackgroundRgb,
+  getPageType,
+  getSearchResults,
+  makeDetectTheme,
   makeHighlight,
   makeUnhighlight,
+  PageType,
   removeClass,
   scrollIntoViewIfOutsideViewport,
+  waitForSearchRoot,
 } from './services';
+import { storageSync } from './services/chrome-storage';
+import { createKeymapManager } from './services/keymap-manager';
+import './style.scss';
 
 (async () => {
   let currentIndex: number = 0;
   const keymapManager = await createKeymapManager(storageSync);
-  const searchTabType = getGoogleSearchTabType(
-    new URLSearchParams(window.location.search)
-  );
-  if (!searchTabType) {
-    console.error(
-      'Unable to determine search tab type. This extension only works on Google Search pages.'
-    );
-    return;
-  }
-  const results = getGoogleSearchResults(searchTabType, document);
+  const pageType = getPageType(window.location);
+  // ON YouTube search, you need wait for client rendering. Search root is
+  // shown with 8-10 search results, which is enough to cover a viewport.
+  // More results are streamed very quickly. Those results are not taken at this moment,
+  // so when a user scrolls down, `getSearchResults` is called again.
+  await waitForSearchRoot(document, pageType);
+  let results = getSearchResults(document, pageType);
+  console.log(results);
   if (
     results.length > 0 &&
     (currentIndex < 0 || results.length <= currentIndex)
@@ -35,11 +36,11 @@ import {
       `currentIndex is out of bounds: ${currentIndex} of ${results.length}`
     );
   }
-  const bodyBackgroundRgb = extractBodyBackgroundRgb(window, document);
-  const theme =
-    bodyBackgroundRgb == null
-      ? 'light'
-      : determineThemeFromRgb(bodyBackgroundRgb);
+  const detectTheme = makeDetectTheme(
+    extractBackgroundRgb,
+    determineThemeFromRgb
+  );
+  const theme = detectTheme(window, document, pageType);
   const highlight = makeHighlight(addClass, scrollIntoViewIfOutsideViewport);
   const unhighlight = makeUnhighlight(removeClass);
 
@@ -59,6 +60,16 @@ import {
       // down
       // TODO: add support for image search
       e.preventDefault();
+      const dynamicLoadPageTypes: PageType[] = [
+        'image',
+        'youtube-search-result',
+      ] as const;
+      if (
+        currentIndex === results.length - 1 &&
+        dynamicLoadPageTypes.includes(pageType)
+      ) {
+        results = getSearchResults(document, pageType);
+      }
       if (results.length > 0 && currentIndex < results.length - 1) {
         unhighlight(results, currentIndex);
         currentIndex++;
@@ -111,7 +122,7 @@ import {
       if (e.ctrlKey || e.metaKey) {
         return;
       }
-      if (['all', 'videos', 'shopping', 'news'].includes(searchTabType)) {
+      if (['all', 'videos', 'shopping', 'news'].includes(pageType)) {
         const prevLink = document.querySelector('#pnprev');
         if (prevLink instanceof HTMLAnchorElement && prevLink.href) {
           window.location.href = prevLink.href;
@@ -123,7 +134,7 @@ import {
     ) {
       // next page
       e.preventDefault();
-      if (['all', 'videos', 'shopping', 'news'].includes(searchTabType)) {
+      if (['all', 'videos', 'shopping', 'news'].includes(pageType)) {
         const nextLink = document.querySelector('#pnnext');
         if (nextLink instanceof HTMLAnchorElement && nextLink.href) {
           window.location.href = nextLink.href;
@@ -135,7 +146,7 @@ import {
       if (e.ctrlKey || e.metaKey) {
         return;
       }
-      if (searchTabType !== 'image') {
+      if (pageType !== 'image') {
         const searchParams = new URLSearchParams(window.location.search);
         const query = searchParams.get('q');
 
@@ -148,7 +159,7 @@ import {
     } else if (keymapManager.isKeyMatch(e, 'switch_to_all_search')) {
       // switch to all search
       e.preventDefault();
-      if (searchTabType !== 'all') {
+      if (pageType !== 'all') {
         const searchParams = new URLSearchParams(window.location.search);
         const query = searchParams.get('q');
         if (!query) {
@@ -161,7 +172,7 @@ import {
     } else if (keymapManager.isKeyMatch(e, 'switch_to_videos')) {
       // switch to videos tab
       e.preventDefault();
-      if (searchTabType !== 'videos') {
+      if (pageType !== 'videos') {
         const searchParams = new URLSearchParams(window.location.search);
         const query = searchParams.get('q');
         if (query) {
@@ -172,7 +183,7 @@ import {
     } else if (keymapManager.isKeyMatch(e, 'switch_to_shopping')) {
       // switch to shopping tab
       e.preventDefault();
-      if (searchTabType !== 'shopping') {
+      if (pageType !== 'shopping') {
         const searchParams = new URLSearchParams(window.location.search);
         const query = searchParams.get('q');
         if (query) {
@@ -183,7 +194,7 @@ import {
     } else if (keymapManager.isKeyMatch(e, 'switch_to_news')) {
       // switch to news tab
       e.preventDefault();
-      if (searchTabType !== 'news') {
+      if (pageType !== 'news') {
         const searchParams = new URLSearchParams(window.location.search);
         const query = searchParams.get('q');
         if (query) {

@@ -1,3 +1,5 @@
+import type { PageType } from './get-search-results';
+
 // Google search tab type detection
 export function getGoogleSearchTabType(
   urlSearchParams: URLSearchParams
@@ -46,4 +48,29 @@ export function getGoogleSearchTabType(
       return 'shopping';
   }
   return null; // not expected to be here
+}
+
+export function getPageType(location: Location): PageType {
+  const url = new URL(location.href);
+
+  if (url.hostname === 'www.google.com') {
+    const searchParam = new URLSearchParams(location.search);
+    const tabType = getGoogleSearchTabType(searchParam);
+    if (!tabType) {
+      throw new Error(
+        "Can't to determine search tab type for: " + location.href
+      );
+    }
+    return tabType;
+  }
+
+  if (
+    url.hostname === 'www.youtube.com' &&
+    url.pathname === '/results' &&
+    url.searchParams.has('search_query')
+  ) {
+    return 'youtube-search-result';
+  }
+
+  throw new Error(`Unexpected host: ${url}`);
 }

@@ -1,19 +1,3 @@
-// DOM manipulation utilities
-export type ExtractBodyBackgroundRgb = (
-  window: Window & typeof globalThis,
-  document: Document
-) => [number, number, number] | null;
-
-export const extractBodyBackgroundRgb: ExtractBodyBackgroundRgb = (
-  window,
-  document
-) => {
-  const bgColor = window.getComputedStyle(document.body).backgroundColor;
-  const rgbValues = bgColor.match(/\d+/g)?.map(Number);
-  if (!rgbValues || rgbValues.length < 3) return null;
-  return [rgbValues[0], rgbValues[1], rgbValues[2]];
-};
-
 export type ClassModifier = (el: Element, className: string) => Element;
 
 export const addClass: ClassModifier = (el, className) => {
@@ -33,3 +17,34 @@ export const scrollIntoViewIfOutsideViewport = (el: Element) => {
   }
   return el;
 };
+
+/**
+ * Waits for a specific selector to appear in the document.
+ * @param selector - document.querySelector selector string
+ * @param doc - Document object
+ * @param timeout - ms（regect when not found in this time）
+ */
+export function waitForSelector(
+  doc: Document,
+  selector: string,
+  timeout = 5_000
+): Promise<Element> {
+  return new Promise((resolve, reject) => {
+    const found = doc.querySelector(selector);
+    if (found) return resolve(found);
+
+    const obs = new MutationObserver((_, observer) => {
+      const el = doc.querySelector(selector);
+      if (el) {
+        observer.disconnect();
+        resolve(el);
+      }
+    });
+    obs.observe(doc.body, { childList: true, subtree: true });
+
+    setTimeout(() => {
+      obs.disconnect();
+      reject(new Error(`"${selector}" was not found in ${timeout}ms`));
+    }, timeout);
+  });
+}
