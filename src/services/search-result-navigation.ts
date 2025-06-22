@@ -1,9 +1,9 @@
-import type { PageType } from './get-search-results';
+import type { GoogleSearchTabType, PageType } from './get-search-results';
 
 // Google search tab type detection
 export function getGoogleSearchTabType(
   urlSearchParams: URLSearchParams
-): 'all' | 'image' | 'videos' | 'shopping' | 'news' | null {
+): GoogleSearchTabType | null {
   const udm = urlSearchParams.get('udm');
   const tbm = urlSearchParams.get('tbm');
   const q = urlSearchParams.get('q');
@@ -50,27 +50,33 @@ export function getGoogleSearchTabType(
   return null; // not expected to be here
 }
 
-export function getPageType(location: Location): PageType {
-  const url = new URL(location.href);
+export const makeGetPageType =
+  (
+    getGoogleSearchTabType: (
+      urlSearchParams: URLSearchParams
+    ) => GoogleSearchTabType | null
+  ) =>
+  (location: Location): PageType => {
+    const url = new URL(location.href);
 
-  if (url.hostname === 'www.google.com') {
-    const searchParam = new URLSearchParams(location.search);
-    const tabType = getGoogleSearchTabType(searchParam);
-    if (!tabType) {
-      throw new Error(
-        "Can't to determine search tab type for: " + location.href
-      );
+    if (url.hostname === 'www.google.com') {
+      const searchParam = new URLSearchParams(location.search);
+      const tabType = getGoogleSearchTabType(searchParam);
+      if (!tabType) {
+        throw new Error(
+          "Can't to determine search tab type for: " + location.href
+        );
+      }
+      return tabType;
     }
-    return tabType;
-  }
 
-  if (
-    url.hostname === 'www.youtube.com' &&
-    url.pathname === '/results' &&
-    url.searchParams.has('search_query')
-  ) {
-    return 'youtube-search-result';
-  }
+    if (
+      url.hostname === 'www.youtube.com' &&
+      url.pathname === '/results' &&
+      url.searchParams.has('search_query')
+    ) {
+      return 'youtube-search-result';
+    }
 
-  throw new Error(`Unexpected host: ${url}`);
-}
+    throw new Error(`Unexpected host: ${url}`);
+  };

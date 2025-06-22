@@ -1,5 +1,5 @@
 import {
-  storageSync,
+  makeStorageSync,
   type ChromeStorage,
 } from '../src/services/chrome-storage';
 
@@ -22,10 +22,15 @@ const mockChrome = {
 (global as any).chrome = mockChrome;
 
 describe('Chrome Storage', () => {
+  let storageSync: ChromeStorage;
+
   beforeEach(() => {
     // Reset all mocks before each test
     jest.clearAllMocks();
     mockChrome.runtime.lastError = null;
+
+    // Create storageSync instance with mocked chrome storage
+    storageSync = makeStorageSync(mockChrome.storage.sync as any);
   });
 
   describe('storageSync.get', () => {

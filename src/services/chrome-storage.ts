@@ -7,10 +7,12 @@ export type ChromeStorage = {
   clear(): Promise<void>;
 };
 
-export const storageSync: ChromeStorage = {
+export const makeStorageSync = (
+  storageSync: chrome.storage.SyncStorageArea
+) => ({
   get<T = any>(keys?: string | string[] | { [key: string]: any }): Promise<T> {
     return new Promise((resolve, reject) => {
-      chrome.storage.sync.get(keys ?? null, (result) => {
+      storageSync.get(keys ?? null, (result) => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
         } else {
@@ -22,7 +24,7 @@ export const storageSync: ChromeStorage = {
 
   set(items: { [key: string]: any }): Promise<void> {
     return new Promise((resolve, reject) => {
-      chrome.storage.sync.set(items, () => {
+      storageSync.set(items, () => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
         } else {
@@ -34,7 +36,7 @@ export const storageSync: ChromeStorage = {
 
   remove(keys: string | string[]): Promise<void> {
     return new Promise((resolve, reject) => {
-      chrome.storage.sync.remove(keys, () => {
+      storageSync.remove(keys, () => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
         } else {
@@ -55,4 +57,4 @@ export const storageSync: ChromeStorage = {
       });
     });
   },
-};
+});
