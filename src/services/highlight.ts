@@ -16,7 +16,8 @@ export const makeHighlight =
     options: {
       autoExpand?: boolean;
       scrollIntoView?: boolean;
-    } = { autoExpand: true, scrollIntoView: true }
+      simulateHover?: boolean;
+    } = { autoExpand: true, scrollIntoView: true, simulateHover: true }
   ): void => {
     const className = `sn-selected-${theme}`;
     if (typeof index !== 'number' || index < 0 || index >= results.length) {
@@ -48,6 +49,18 @@ export const makeHighlight =
         accordionClickElement.dispatchEvent(clickEvent);
       }
     }
+    if (options.simulateHover) {
+      const thumbEl = result.querySelector<HTMLElement>('ytd-thumbnail');
+      if (thumbEl) {
+        thumbEl.dispatchEvent(
+          new MouseEvent('mouseenter', {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+          })
+        );
+      }
+    }
   };
 
 /**
@@ -57,7 +70,13 @@ export const makeHighlight =
  */
 export const makeUnhighlight =
   (removeClass: ClassModifier) =>
-  (results: HTMLElement[], index: number): void => {
+  (
+    results: HTMLElement[],
+    index: number,
+    options: {
+      simulateHover?: boolean;
+    } = { simulateHover: true }
+  ): void => {
     // throw invalid index
     if (typeof index === 'number' && (index < 0 || index >= results.length)) {
       throw new Error('Invalid index provided for unhighlight');
@@ -81,5 +100,18 @@ export const makeUnhighlight =
         view: window,
       });
       accordionClickElement.dispatchEvent(clickEvent);
+    }
+
+    if (options.simulateHover) {
+      const thumbEl = result.querySelector<HTMLElement>('ytd-thumbnail');
+      if (thumbEl) {
+        thumbEl.dispatchEvent(
+          new MouseEvent('mouseleave', {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+          })
+        );
+      }
     }
   };
