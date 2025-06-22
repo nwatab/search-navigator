@@ -1,9 +1,6 @@
 import { JSDOM } from 'jsdom';
 import path from 'path';
-import {
-  getGoogleSearchResults,
-  getYouTubeSearchResults,
-} from '../src/services';
+import { getGoogleSearchResults } from '../src/services';
 
 describe('get Google search results', () => {
   it('get results on all tab for query "quantum field theory"', async () => {
