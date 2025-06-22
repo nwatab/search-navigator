@@ -1,24 +1,19 @@
 import { UPDATE_KEYMAPPINGS_MESSAGE } from './constants';
 import {
-  addClass,
-  determineThemeFromRgb,
-  extractBackgroundRgb,
+  detectTheme,
   getPageType,
   getSearchResults,
-  makeDetectTheme,
-  makeHighlight,
-  makeUnhighlight,
-  PageType,
-  removeClass,
-  scrollIntoViewIfOutsideViewport,
+  highlight,
+  keymapManagerPromise,
+  unhighlight,
   waitForSearchRoot,
-} from './services';
-import { storageSync } from './services/chrome-storage';
-import { createKeymapManager } from './services/keymap-manager';
+} from './dependency-injection';
+import type { PageType } from './services';
+
 import './style.scss';
 
 (async () => {
-  const keymapManager = await createKeymapManager(storageSync);
+  const keymapManager = await keymapManagerPromise;
 
   async function init() {
     let currentIndex: number = 0;
@@ -37,13 +32,7 @@ import './style.scss';
         `currentIndex is out of bounds: ${currentIndex} of ${results.length}`
       );
     }
-    const detectTheme = makeDetectTheme(
-      extractBackgroundRgb,
-      determineThemeFromRgb
-    );
     const theme = detectTheme(window, document, pageType);
-    const highlight = makeHighlight(addClass, scrollIntoViewIfOutsideViewport);
-    const unhighlight = makeUnhighlight(removeClass);
 
     highlight(results, currentIndex, theme);
 
