@@ -29,7 +29,6 @@ import './style.scss';
     // so when a user scrolls down, `getSearchResults` is called again.
     await waitForSearchRoot(document, pageType);
     let results = getSearchResults(document, pageType);
-    console.log(results.length, 'search results found');
     if (
       results.length > 0 &&
       (currentIndex < 0 || results.length <= currentIndex)
@@ -85,7 +84,6 @@ import './style.scss';
         if (results.length > 0 && currentIndex > 0) {
           unhighlight(results, currentIndex);
           currentIndex--;
-          console.log(currentIndex);
           highlight(results, currentIndex, theme);
         }
       } else if (keymapManager.isKeyMatch(e, 'open_link')) {
@@ -230,28 +228,8 @@ import './style.scss';
 
   init();
 
-  // Override history.pushState and history.replaceState to reinitialize on YouTube top to search results
-  const originalPushState = history.pushState;
-  history.pushState = function (
-    this: History,
-    data: any,
-    title: string,
-    url?: string | URL | null
-  ): void {
-    originalPushState.call(this, data, title, url);
-    init();
-  };
-
-  const originalReplaceState = history.replaceState;
-  history.replaceState = function (
-    this: History,
-    data: any,
-    title: string,
-    url?: string | URL | null
-  ): void {
-    originalReplaceState.call(this, data, title, url);
-    init();
-  };
+  // YouTube navigation event listener
+  document.addEventListener('yt-navigate-finish', init);
 
   // popstate (back/forward) event listener
   window.addEventListener('popstate', init);
