@@ -27,7 +27,6 @@ import './style.scss';
   // so when a user scrolls down, `getSearchResults` is called again.
   await waitForSearchRoot(document, pageType);
   let results = getSearchResults(document, pageType);
-  console.log(results);
   if (
     results.length > 0 &&
     (currentIndex < 0 || results.length <= currentIndex)
