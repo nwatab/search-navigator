@@ -1,4 +1,37 @@
-import { determineThemeFromRgb } from '../src/services/theme-detection';
+import path from 'path';
+import { JSDOM } from 'jsdom';
+import {
+  determineThemeFromRgb,
+  extractBackgroundRgb,
+} from '../src/services/theme-detection';
+
+describe('extractRgbFromHtml', () => {
+  it('should detect light color from YouTube search result', async () => {
+    const htmlPath = path.join(
+      __dirname,
+      '/htmls/20250622-youtube-lake-natron-flamingos-tokyo.html'
+    );
+    const dom = await JSDOM.fromFile(htmlPath);
+    const windowGlobal = dom.window as unknown as Window & typeof globalThis;
+    const document = windowGlobal.document;
+    const documentEl = document.documentElement;
+    const rgb = extractBackgroundRgb(windowGlobal, documentEl);
+    expect(rgb).toEqual([255, 255, 255]); // Expecting white background
+  });
+
+  it('should detect dark color from YouTube search result', async () => {
+    const htmlPath = path.join(
+      __dirname,
+      '/htmls/20250620-youtube-search-result-prokofiev-piano-concerto-3-tokyo.html'
+    );
+    const dom = await JSDOM.fromFile(htmlPath);
+    const windowGlobal = dom.window as unknown as Window & typeof globalThis;
+    const document = windowGlobal.document;
+    const documentEl = document.documentElement;
+    const rgb = extractBackgroundRgb(windowGlobal, documentEl);
+    expect(rgb).toEqual([15, 15, 15]); // Expecting white background
+  });
+});
 
 describe('determineThemeFromRgb', () => {
   it('should handle edge cases', () => {
