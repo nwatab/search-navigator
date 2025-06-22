@@ -22,8 +22,8 @@ export const makeHighlight =
     if (typeof index !== 'number' || index < 0 || index >= results.length) {
       throw new Error('Invalid index provided for highlight');
     }
-
-    addClass(results[index], className);
+    const result = results[index];
+    addClass(result, className);
 
     // Scroll element into view if needed
     if (options.scrollIntoView) {
@@ -64,8 +64,9 @@ export const makeUnhighlight =
     }
 
     // Unhighlight specific element
-    removeClass(results[index], 'sn-selected-dark');
-    removeClass(results[index], 'sn-selected-light');
+    const result = results[index];
+    removeClass(result, 'sn-selected-dark');
+    removeClass(result, 'sn-selected-light');
     const relatedQuestionPair = results[index].querySelector(
       '.related-question-pair'
     );
