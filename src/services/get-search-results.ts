@@ -77,12 +77,6 @@ export const getYouTubeSearchResults = (
   doc: Document = document,
   options: YouTubeSearchOptions = {}
 ): HTMLDivElement[] => {
-  const root = getSearchRoot('youtube-search-result', doc);
-  if (!root) {
-    console.warn('No search root found in the document.');
-    return [];
-  }
-
   const { shorts = false, mix = false, ads = false } = options;
 
   // Build a single selector based on options
@@ -104,7 +98,7 @@ export const getYouTubeSearchResults = (
   const combinedSelector = selectors.join(',');
 
   // Single DOM query
-  const elements = root.querySelectorAll(combinedSelector);
+  const elements = doc.querySelectorAll(combinedSelector);
   return Array.from(elements) as HTMLDivElement[];
 };
 
