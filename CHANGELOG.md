@@ -5,16 +5,36 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
-## [1.8.0] - 1025-06-18
+## [1.9.0] - 2025-06-24
+
+### Added
+
+- Add YouTube Scroll up/down, open navigation (#32)
+
+### Maintenance
+
+- Refactor to separate dependency injections
+
+## [1.8.0] - 2025-06-18
+
+### Added
 
 - Add YouTube shortcut key
+
+### Fixed
+
 - Instantly apply shortcut key changes without reloading
+
+### Maintenance
+
 - Add more unit tests
 
 ## [1.7.3] - 2025-06-15
 
+### Fixed
+
 - Fix Google Image search scroll and click (#31)
-- Fix Google Video search scroll and click (#32)
+- Fix Google Video search scroll and click
 - Fix Google News scroll and click
 
 ## [1.7.2] - 2025-05-29
@@ -106,7 +126,8 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ---
 
-[1.800]: https://github.com/nwatab/search-navigator/compare/v1.7.3...v1.8.0
+[1.9.0]: https://github.com/nwatab/search-navigator/compare/v1.8.0...v1.9.0
+[1.8.0]: https://github.com/nwatab/search-navigator/compare/v1.7.3...v1.8.0
 [1.7.3]: https://github.com/nwatab/search-navigator/compare/v1.7.2...v1.7.3
 [1.7.2]: https://github.com/nwatab/search-navigator/compare/v1.7.1...v1.7.2
 [1.7.1]: https://github.com/nwatab/search-navigator/compare/v1.7.0...v1.7.1
