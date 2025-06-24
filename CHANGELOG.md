@@ -5,6 +5,12 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.9.1] - 2025-06-24
+
+### Fixed
+
+- Fixed popup.ts's invalid import
+
 ## [1.9.0] - 2025-06-24
 
 ### Added
@@ -126,6 +132,7 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ---
 
+[1.9.1]: https://github.com/nwatab/search-navigator/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/nwatab/search-navigator/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/nwatab/search-navigator/compare/v1.7.3...v1.8.0
 [1.7.3]: https://github.com/nwatab/search-navigator/compare/v1.7.2...v1.7.3
