@@ -6,7 +6,7 @@ import {
   stringToKeyConfig,
 } from './services/keymap-manager';
 
-import { storageSync } from './services/chrome-storage';
+import { storageSync } from './dependency-injection';
 import {
   MOVE_DOWN_ID,
   MOVE_UP_ID,

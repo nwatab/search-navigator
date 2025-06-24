@@ -19,7 +19,7 @@ import {
   getSearchRootSelector,
 } from './services';
 
-const storageSync = makeStorageSync(chrome.storage.sync);
+export const storageSync = makeStorageSync(chrome.storage.sync);
 export const keymapManagerPromise = createKeymapManager(storageSync);
 export const detectTheme = makeDetectTheme(
   extractBackgroundRgb,
