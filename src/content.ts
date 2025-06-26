@@ -34,7 +34,11 @@ import './style.scss';
     }
     const theme = detectTheme(window, document, pageType);
 
-    highlight(results, currentIndex, theme);
+    highlight(results, currentIndex, theme, {
+      autoExpand: true,
+      scrollIntoView: false,
+      simulateHover: true,
+    });
 
     // Add keydown event listener for all Google Search pages
     document.addEventListener('keydown', (e: KeyboardEvent) => {
