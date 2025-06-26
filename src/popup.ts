@@ -16,6 +16,10 @@ import {
   SWITCH_TO_ALL_SEARCH_ID,
   SWITCH_TO_IMAGE_SEARCH_ID,
   SWITCH_TO_YOUTUBE_ID,
+  SWITCH_TO_VIDEOS_ID,
+  SWITCH_TO_SHOPPING_ID,
+  SWITCH_TO_NEWS_ID,
+  SWITCH_TO_MAP_ID,
   UPDATE_KEYMAPPINGS_MESSAGE,
 } from './constants';
 
@@ -53,10 +57,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       NAVIGATE_NEXT_ID,
       SWITCH_TO_IMAGE_SEARCH_ID,
       SWITCH_TO_ALL_SEARCH_ID,
-      'switchToVideos',
-      'switchToShopping',
-      'switchToNews',
-      'switchToMap',
+      SWITCH_TO_VIDEOS_ID,
+      SWITCH_TO_SHOPPING_ID,
+      SWITCH_TO_NEWS_ID,
+      SWITCH_TO_MAP_ID,
       SWITCH_TO_YOUTUBE_ID,
     ].map((id) => {
       const el = document.getElementById(id);
