@@ -3,7 +3,7 @@ export interface KeyConfig<T extends string> {
   ctrl: boolean;
   alt: boolean;
   shift: boolean;
-  meta: boolean; // Cmd (macOS) or Windows key (Windows0)
+  meta: boolean; // Cmd (macOS) or Windows key (Windows)
 }
 
 const SPECIAL_KEY_MAP: Record<string, string> = {
