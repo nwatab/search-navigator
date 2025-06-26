@@ -6,3 +6,4 @@ export * from './highlight';
 export * from './theme-detection';
 export * from './keymap-manager';
 export * from './chrome-storage';
+export * from './keymap-utils';

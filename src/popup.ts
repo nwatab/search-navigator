@@ -1,11 +1,10 @@
-import type { KeyConfigs } from './services/keymap-manager';
+import type { KeyConfigs } from './services';
 import {
   createKeymapManager,
   defaultKeyConfigs,
   keyConfigToString,
   stringToKeyConfig,
-} from './services/keymap-manager';
-
+} from './services';
 import { storageSync } from './dependency-injection';
 import {
   MOVE_DOWN_ID,
