@@ -52,6 +52,7 @@ export default [
       copyPlugin({ src: 'icons/icon48x48.png', dest: 'dist' }),
       copyPlugin({ src: 'icons/icon128x128.png', dest: 'dist' }),
       copyPlugin({ src: 'src/popup.html', dest: 'dist' }),
+copyPlugin({ src: 'src/popup.css', dest: 'dist' }),
     ].filter(Boolean), // Filter out false values
   },
   {
