@@ -17,10 +17,16 @@ async function broadcastKeymapUpdate(
   keyConfigs: KeyConfigs<string>
 ): Promise<void> {
   try {
-    // Query all tabs that match Google search pattern
-    const tabs = await chrome.tabs.query({
-      url: 'https://www.google.com/search*',
-    });
+    // Query all tabs that match Google search and YouTube patterns
+    const urlPatterns = [
+      'https://www.google.com/search*',
+      'https://www.youtube.com/*',
+    ] as const;
+    const [googleTabs, youtubeTabs] = await Promise.all(
+      urlPatterns.map((url) => chrome.tabs.query({ url }))
+    );
+
+    const tabs = [...googleTabs, ...youtubeTabs];
 
     // Send the keymap update message to each matching tab
     const promises = tabs.map(async (tab) => {

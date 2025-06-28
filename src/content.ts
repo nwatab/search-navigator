@@ -231,8 +231,21 @@ import './style.scss';
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === UPDATE_KEYMAPPINGS_MESSAGE) {
       // Update the keymap manager with new configurations
-      keymapManager.saveKeyConfigs(message.keyConfigs);
-      sendResponse({ success: true });
+      // The saveKeyConfigs method updates both storage and in-memory state
+      keymapManager
+        .saveKeyConfigs(message.keyConfigs)
+        .then(() => {
+          sendResponse({ success: true });
+        })
+        .catch((error) => {
+          console.error('Error saving key configs:', error);
+          sendResponse({ success: false, error: error.message });
+        });
+
+      // Return true to indicate we will send a response asynchronously. Otherwise, change is not reflected.
+      // > By default, the sendResponse callback must be called synchronously. If you want to do asynchronous work to get the value passed to sendResponse, you must return a literal true (not just a truthy value) from the event listener. Doing so will keep the message channel open to the other end until sendResponse is called.
+      // https://developer.chrome.com/docs/extensions/develop/concepts/messaging
+      return true;
     }
   });
 })();
