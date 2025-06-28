@@ -12,7 +12,6 @@ body {
   margin: 0;
   padding: 0;
   background: transparent;
-  overflow: hidden;
 }
 
 .container {
@@ -100,7 +99,7 @@ h3 {
 }
 
 button {
-  margin-top: 20px;
+  margin-top: 4px;
   padding: 8px 16px;
   background-color: var(--primary-color);
   color: white;
@@ -123,7 +122,6 @@ button:active {
 }
 
 .status {
-  margin-top: 15px;
   padding: 10px;
   border-radius: 6px;
   display: none;
@@ -135,6 +133,12 @@ button:active {
   background-color: rgba(230, 244, 234, 0.7);
   color: #137333;
   border: 1px solid rgba(19, 115, 51, 0.2);
+}
+
+.error {
+  background-color: rgba(252, 232, 230, 0.7);
+  color: #d93025;
+  border: 1px solid rgba(217, 48, 37, 0.2);
 }
 
 .button-container {
