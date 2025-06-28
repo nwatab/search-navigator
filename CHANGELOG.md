@@ -5,6 +5,19 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.9.2] - 2025-06-28
+
+### Fixed
+
+- Fix to stop scrolling on load.
+- Fix to mix up of move up / down shortcut key customization.
+- Fix a communication between content and background to immediately .update shortcut customization.
+- Polish popup design.
+
+### Maintenance
+
+- Replace element IDs placeholders with actual IDs on build.
+
 ## [1.9.1] - 2025-06-24
 
 ### Fixed
@@ -132,6 +145,7 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ---
 
+[1.9.2]: https://github.com/nwatab/search-navigator/compare/v1.9.1...v1.9.2
 [1.9.1]: https://github.com/nwatab/search-navigator/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/nwatab/search-navigator/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/nwatab/search-navigator/compare/v1.7.3...v1.8.0
