@@ -4,6 +4,38 @@ import postcss from 'postcss';
 import scss from 'rollup-plugin-scss';
 import copy from 'rollup-plugin-copy';
 import autoprefixer from 'autoprefixer';
+import { readFileSync } from 'fs';
+
+// Function to extract constants from the TypeScript constants file
+function getConstants() {
+  const constantsContent = readFileSync('./src/constants.ts', 'utf8');
+  const constants = {};
+
+  // Parse the constants from the TypeScript file
+  const lines = constantsContent.split('\n');
+  for (const line of lines) {
+    const match = line.match(/export const (\w+) = ['"](.+?)['"];/);
+    if (match) {
+      constants[match[1]] = match[2];
+    }
+  }
+
+  return constants;
+}
+
+// Transform function to replace placeholder constants with actual values
+function replaceConstantsInHtml(contents) {
+  const constants = getConstants();
+  let transformed = contents.toString();
+
+  // Replace any __CONSTANT_NAME__ placeholders with actual values
+  Object.entries(constants).forEach(([constantName, value]) => {
+    const regex = new RegExp(`__${constantName}__`, 'g');
+    transformed = transformed.replace(regex, value);
+  });
+
+  return transformed;
+}
 
 // Get environment from ENV variable (defaults to 'dev' if not set)
 const ENV = process.env.ENV || 'dev';
@@ -74,7 +106,11 @@ export default [
         }),
       copy({
         targets: [
-          { src: 'src/popup.html', dest: 'dist' },
+          {
+            src: 'src/popup.html',
+            dest: 'dist',
+            transform: replaceConstantsInHtml,
+          },
           { src: 'src/popup.css', dest: 'dist' },
         ],
       }),
