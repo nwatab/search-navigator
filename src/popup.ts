@@ -206,93 +206,101 @@ document.addEventListener('DOMContentLoaded', async () => {
    * Saves the key configurations from the input fields to storage
    */
   async function saveKeyConfigs(): Promise<void> {
-    const [
-      moveUpInput,
-      moveDownInput,
-      openLinkInput,
-      previousPageInput,
-      nextPageInput,
-      switchToImageSearchInput,
-      switchToAllSearchInput,
-      switchToVideosInput,
-      switchToShoppingInput,
-      switchToNewsInput,
-      switchToMapInput,
-      switchToYoutubeInput,
-    ] = [
-      MOVE_DOWN_ID,
-      MOVE_UP_ID,
-      OPEN_LINK_ID,
-      NAVIGATE_PREVIOUS_ID,
-      NAVIGATE_NEXT_ID,
-      SWITCH_TO_IMAGE_SEARCH_ID,
-      SWITCH_TO_ALL_SEARCH_ID,
-      'switchToVideos',
-      'switchToShopping',
-      'switchToNews',
-      'switchToMap',
-      SWITCH_TO_YOUTUBE_ID,
-    ].map((id) => {
-      const el = document.getElementById(id);
-      if (!el) {
-        throw new Error(
-          `saveKeyConfigs: #${id} is missing. Did you rename or remove it?`
-        );
-      }
-      return el as HTMLInputElement;
-    });
-
-    const inputs: Record<keyof KeyConfigs<string>, HTMLInputElement | null> = {
-      move_up: moveUpInput,
-      move_down: moveDownInput,
-      open_link: openLinkInput,
-      navigate_previous: previousPageInput,
-      navigate_next: nextPageInput,
-      switch_to_image_search: switchToImageSearchInput,
-      switch_to_all_search: switchToAllSearchInput,
-      switch_to_videos: switchToVideosInput,
-      switch_to_shopping: switchToShoppingInput,
-      switch_to_news: switchToNewsInput,
-      switch_to_map: switchToMapInput,
-      switch_to_youtube: switchToYoutubeInput,
-    };
-
-    const userOverrideConfigs = (
-      Object.keys(inputs) as (keyof KeyConfigs<string>)[]
-    ).reduce(
-      (acc, key) => {
-        const el = inputs[key];
-        if (el?.value) {
-          acc[key] = stringToKeyConfig(el.value);
-        }
-        return acc;
-      },
-      {} as Partial<KeyConfigs<string>>
-    );
-
-    const newKeyConfigs: KeyConfigs<string> = {
-      ...defaultKeyConfigs,
-      ...userOverrideConfigs,
-    };
-
-    await keymapManager.saveKeyConfigs(newKeyConfigs);
-
     const status = document.getElementById('status');
-    if (status) {
-      status.textContent = 'Settings saved successfully! Reload to apply.';
-      status.className = 'status success';
-      status.style.display = 'block';
+
+    try {
+      const [
+        moveUpInput,
+        moveDownInput,
+        openLinkInput,
+        previousPageInput,
+        nextPageInput,
+        switchToImageSearchInput,
+        switchToAllSearchInput,
+        switchToVideosInput,
+        switchToShoppingInput,
+        switchToNewsInput,
+        switchToMapInput,
+        switchToYoutubeInput,
+      ] = [
+        MOVE_DOWN_ID,
+        MOVE_UP_ID,
+        OPEN_LINK_ID,
+        NAVIGATE_PREVIOUS_ID,
+        NAVIGATE_NEXT_ID,
+        SWITCH_TO_IMAGE_SEARCH_ID,
+        SWITCH_TO_ALL_SEARCH_ID,
+        'switchToVideos',
+        'switchToShopping',
+        'switchToNews',
+        'switchToMap',
+        SWITCH_TO_YOUTUBE_ID,
+      ].map((id) => {
+        const el = document.getElementById(id);
+        if (!el) {
+          throw new Error(
+            `saveKeyConfigs: #${id} is missing. Did you rename or remove it?`
+          );
+        }
+        return el as HTMLInputElement;
+      });
+
+      const inputs: Record<keyof KeyConfigs<string>, HTMLInputElement | null> =
+        {
+          move_up: moveUpInput,
+          move_down: moveDownInput,
+          open_link: openLinkInput,
+          navigate_previous: previousPageInput,
+          navigate_next: nextPageInput,
+          switch_to_image_search: switchToImageSearchInput,
+          switch_to_all_search: switchToAllSearchInput,
+          switch_to_videos: switchToVideosInput,
+          switch_to_shopping: switchToShoppingInput,
+          switch_to_news: switchToNewsInput,
+          switch_to_map: switchToMapInput,
+          switch_to_youtube: switchToYoutubeInput,
+        };
+
+      const userOverrideConfigs = (
+        Object.keys(inputs) as (keyof KeyConfigs<string>)[]
+      ).reduce(
+        (acc, key) => {
+          const el = inputs[key];
+          if (el?.value) {
+            acc[key] = stringToKeyConfig(el.value);
+          }
+          return acc;
+        },
+        {} as Partial<KeyConfigs<string>>
+      );
+
+      const newKeyConfigs: KeyConfigs<string> = {
+        ...defaultKeyConfigs,
+        ...userOverrideConfigs,
+      };
+
+      await keymapManager.saveKeyConfigs(newKeyConfigs);
 
       chrome.runtime.sendMessage({
         type: UPDATE_KEYMAPPINGS_MESSAGE,
         keyConfigs: newKeyConfigs,
       });
-      // Hide notification after 3 seconds
-      setTimeout(() => {
-        status.style.display = 'none';
-      }, 3000);
+
+      // Close popup immediately on successful save
+      window.close();
+    } catch (error) {
+      console.error('Failed to save key configurations:', error);
+      if (status) {
+        status.textContent = `Error saving settings: ${error instanceof Error ? error.message : 'Unknown error'}`;
+        status.className = 'status error';
+        status.style.display = 'block';
+
+        // Hide error after 5 seconds
+        setTimeout(() => {
+          status.style.display = 'none';
+        }, 5000);
+      }
     }
-    // Send message to background script to update settings across all tabs
   }
 
   function setupResetButton(): void {
@@ -303,21 +311,33 @@ document.addEventListener('DOMContentLoaded', async () => {
       );
     }
     resetButton.addEventListener('click', async () => {
-      // 1) Clear from storage
-      await keymapManager.clearKeyConfigs();
-      // 2) Restore defaultKeyConfigs in UI
-      setupInputFields(defaultKeyConfigs);
-      // 3) Notify user
       const status = document.getElementById('status')!;
-      status.textContent = 'Settings reset to defaults.';
-      status.className = 'status success';
-      status.style.display = 'block';
-      // Send message to background script to update settings across all tabs
-      chrome.runtime.sendMessage({
-        type: UPDATE_KEYMAPPINGS_MESSAGE,
-        keyConfigs: defaultKeyConfigs,
-      });
-      setTimeout(() => (status.style.display = 'none'), 3000);
+
+      try {
+        // 1) Clear from storage
+        await keymapManager.clearKeyConfigs();
+        // 2) Restore defaultKeyConfigs in UI
+        setupInputFields(defaultKeyConfigs);
+
+        // Send message to background script to update settings across all tabs
+        chrome.runtime.sendMessage({
+          type: UPDATE_KEYMAPPINGS_MESSAGE,
+          keyConfigs: defaultKeyConfigs,
+        });
+
+        // Close popup immediately on successful reset
+        window.close();
+      } catch (error) {
+        console.error('Failed to reset key configurations:', error);
+        status.textContent = `Error resetting settings: ${error instanceof Error ? error.message : 'Unknown error'}`;
+        status.className = 'status error';
+        status.style.display = 'block';
+
+        // Hide error after 5 seconds
+        setTimeout(() => {
+          status.style.display = 'none';
+        }, 5000);
+      }
     });
   }
 });

@@ -27,6 +27,7 @@
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
     "rollup": "^3.0.0",
+    "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-scss": "^4.0.1",
     "sass": "^1.85.1",
     "ts-jest": "^29.3.4",

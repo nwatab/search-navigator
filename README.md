@@ -38,7 +38,7 @@ Navigate Google search results with your keyboard:
 
   _Note: Navigation controls are currently not supported on Shopping pages_
 
-**Search Tabs**
+**Switch Between Tabs**
 
 - `a` - All • `i` - Images • `v` - Videos • `n` - News • `s` - Shopping
 

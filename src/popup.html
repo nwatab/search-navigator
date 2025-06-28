@@ -2,166 +2,18 @@
 <html>
   <head>
     <title>Shortcut key settings</title>
-    <style>
-      :root {
-        --glass-bg: rgba(255, 255, 255, 0.25);
-        --glass-border: rgba(255, 255, 255, 0.18);
-        --glass-shadow: rgba(0, 0, 0, 0.1);
-        --primary-color: #4285f4;
-        --text-color: #333;
-        --secondary-text: rgba(50, 50, 50, 0.8);
-      }
-
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        background: transparent;
-        overflow: hidden;
-      }
-
-      .container {
-        width: 250px;
-        padding: 20px;
-        /* glassmorphic base */
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        background-color: rgba(255, 255, 255, 0.25);
-
-        /* raised bevel */
-        border-top: 1px solid rgba(255, 255, 255, 0.9);
-        border-left: 1px solid rgba(255, 255, 255, 0.9);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-        border-right: 1px solid rgba(0, 0, 0, 0.2);
-
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-        color: #333;
-        font-family:
-          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-          Cantarell, sans-serif;
-        line-height: 1.5;
-      }
-
-      h2 {
-        margin-top: 0;
-        color: var(--primary-color);
-        font-weight: 500;
-        margin-bottom: 20px;
-      }
-
-      .shortcut-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-      }
-
-      .shortcut-label {
-        flex: 1;
-        font-weight: 500;
-        font-size: small;
-        color: var(--secondary-text);
-      }
-
-      .note {
-        display: block;
-        font-size: 0.75rem; /* smaller text */
-        color: #666; /* subtle color */
-        margin-top: 0.25rem; /* space between label and note */
-      }
-
-      .shortcut-input {
-        width: 60px;
-        text-align: center;
-        padding: 8px;
-        border-radius: 6px;
-        border: 1px solid var(--glass-border);
-        background: rgba(255, 255, 255, 0.5);
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
-        box-shadow:
-          inset 1px 1px 2px rgba(0, 0, 0, 0.2),
-          inset -1px -1px 2px rgba(255, 255, 255, 0.8);
-        transition: all 0.2s ease;
-      }
-
-      .shortcut-input:focus {
-        outline: none;
-        box-shadow:
-          inset 1px 1px 2px rgba(66, 133, 244, 0.2),
-          inset -1px -1px 2px rgba(66, 133, 244, 0.8);
-      }
-
-      .shortcut-input:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-      }
-
-      button {
-        margin-top: 20px;
-        padding: 8px 16px;
-        background-color: var(--primary-color);
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
-        box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
-      }
-
-      button:hover {
-        background-color: #3367d6;
-        transform: translateY(-1px);
-      }
-
-      button:active {
-        transform: translateY(1px);
-      }
-
-      .status {
-        margin-top: 15px;
-        padding: 10px;
-        border-radius: 6px;
-        display: none;
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
-      }
-
-      .success {
-        background-color: rgba(230, 244, 234, 0.7);
-        color: #137333;
-        border: 1px solid rgba(19, 115, 51, 0.2);
-      }
-
-      .button-container {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 20px;
-      }
-    </style>
+    <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
     <div class="container">
       <h2>Shortcut Settings</h2>
-
-      <div class="shortcut-row">
-        <div class="shortcut-label">Move down</div>
-        <input
-          type="text"
-          id="moveDown"
-          class="shortcut-input"
-          maxlength="1"
-          value="j"
-        />
-      </div>
+      <h3>Navigation</h3>
 
       <div class="shortcut-row">
         <div class="shortcut-label">Move up</div>
         <input
           type="text"
-          id="moveUp"
+          id="__MOVE_UP_ID__"
           class="shortcut-input"
           maxlength="1"
           value="k"
@@ -169,23 +21,36 @@
       </div>
 
       <div class="shortcut-row">
+        <div class="shortcut-label">Move down</div>
+        <input
+          type="text"
+          id="__MOVE_DOWN_ID__"
+          class="shortcut-input"
+          maxlength="1"
+          value="j"
+        />
+      </div>
+
+      <div class="shortcut-row">
         <div class="label-block">
-          <label for="openLink" class="shortcut-label">Open link</label>
+          <label for="__OPEN_LINK_ID__" class="shortcut-label">Open link</label>
           <small class="note">No modifier keys allowed</small>
         </div>
         <input
           type="text"
-          id="openLink"
+          id="__OPEN_LINK_ID__"
           class="shortcut-input no-modifiers"
           value="Enter"
         />
       </div>
 
       <div class="shortcut-row">
-        <label class="shortcut-label" for="previousPage">Previous page</label>
+        <label class="shortcut-label" for="__NAVIGATE_PREVIOUS_ID__"
+          >Previous page</label
+        >
         <input
           type="text"
-          id="previousPage"
+          id="__NAVIGATE_PREVIOUS_ID__"
           class="shortcut-input"
           maxlength="1"
           value="h"
@@ -196,29 +61,20 @@
         <div class="shortcut-label">Next page</div>
         <input
           type="text"
-          id="nextPage"
+          id="__NAVIGATE_NEXT_ID__"
           class="shortcut-input"
           maxlength="1"
           value="l"
         />
       </div>
 
-      <div class="shortcut-row">
-        <div class="shortcut-label">Switch to Image</div>
-        <input
-          type="text"
-          id="switchToImageSearch"
-          class="shortcut-input"
-          maxlength="1"
-          value="i"
-        />
-      </div>
+      <h3>Switch between tabs</h3>
 
       <div class="shortcut-row">
         <div class="shortcut-label">Switch to All</div>
         <input
           type="text"
-          id="switchToAllSearch"
+          id="__SWITCH_TO_ALL_SEARCH_ID__"
           class="shortcut-input"
           maxlength="1"
           value="a"
@@ -226,40 +82,55 @@
       </div>
 
       <div class="shortcut-row">
-        <div class="shortcut-label">Switch to Video</div>
+        <div class="shortcut-label">Switch to Images</div>
         <input
           type="text"
-          id="switchToVideos"
+          id="__SWITCH_TO_IMAGE_SEARCH_ID__"
+          class="shortcut-input"
+          maxlength="1"
+          value="i"
+        />
+      </div>
+
+      <div class="shortcut-row">
+        <div class="shortcut-label">Switch to Videos</div>
+        <input
+          type="text"
+          id="__SWITCH_TO_VIDEOS_ID__"
           class="shortcut-input"
           maxlength="1"
           value="v"
         />
       </div>
-      <div class="shortcut-row">
-        <div class="shortcut-label">Switch to Shopping</div>
-        <input
-          type="text"
-          id="switchToShopping"
-          class="shortcut-input"
-          maxlength="1"
-          value="s"
-        />
-      </div>
+
       <div class="shortcut-row">
         <div class="shortcut-label">Switch to News</div>
         <input
           type="text"
-          id="switchToNews"
+          id="__SWITCH_TO_NEWS_ID__"
           class="shortcut-input"
           maxlength="1"
           value="n"
         />
       </div>
+
+      <div class="shortcut-row">
+        <div class="shortcut-label">Switch to Shopping</div>
+        <input
+          type="text"
+          id="__SWITCH_TO_SHOPPING_ID__"
+          class="shortcut-input"
+          maxlength="1"
+          value="s"
+        />
+      </div>
+      <h3>External sites</h3>
+
       <div class="shortcut-row">
         <div class="shortcut-label">Switch to Map</div>
         <input
           type="text"
-          id="switchToMap"
+          id="__SWITCH_TO_MAP_ID__"
           class="shortcut-input"
           maxlength="1"
           value="m"
@@ -270,20 +141,20 @@
         <div class="shortcut-label">Switch to YouTube</div>
         <input
           type="text"
-          id="switchToYouTube"
+          id="__SWITCH_TO_YOUTUBE_ID__"
           class="shortcut-input"
           maxlength="1"
           value="y"
         />
       </div>
 
+      <div id="status" class="status"></div>
       <div class="button-container">
         <button id="reset" style="margin-right: 8px; background-color: #aaa">
           Reset
         </button>
         <button id="save">Save</button>
       </div>
-      <div id="status" class="status"></div>
     </div>
 
     <script src="popup.js"></script>
