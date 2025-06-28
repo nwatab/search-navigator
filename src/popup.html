@@ -49,6 +49,13 @@
         margin-bottom: 20px;
       }
 
+      h3 {
+        margin-top: 16px;
+        color: var(--primary-color);
+        font-weight: 500;
+        font-size: normal;
+      }
+
       .shortcut-row {
         display: flex;
         justify-content: space-between;
@@ -145,7 +152,7 @@
   <body>
     <div class="container">
       <h2>Shortcut Settings</h2>
-
+      <h3>Navigation</h3>
       <div class="shortcut-row">
         <div class="shortcut-label">Move down</div>
         <input
@@ -203,16 +210,7 @@
         />
       </div>
 
-      <div class="shortcut-row">
-        <div class="shortcut-label">Switch to Image</div>
-        <input
-          type="text"
-          id="switchToImageSearch"
-          class="shortcut-input"
-          maxlength="1"
-          value="i"
-        />
-      </div>
+      <h3>Switch between tabs</h3>
 
       <div class="shortcut-row">
         <div class="shortcut-label">Switch to All</div>
@@ -226,7 +224,18 @@
       </div>
 
       <div class="shortcut-row">
-        <div class="shortcut-label">Switch to Video</div>
+        <div class="shortcut-label">Switch to Images</div>
+        <input
+          type="text"
+          id="switchToImageSearch"
+          class="shortcut-input"
+          maxlength="1"
+          value="i"
+        />
+      </div>
+
+      <div class="shortcut-row">
+        <div class="shortcut-label">Switch to Videos</div>
         <input
           type="text"
           id="switchToVideos"
@@ -235,16 +244,7 @@
           value="v"
         />
       </div>
-      <div class="shortcut-row">
-        <div class="shortcut-label">Switch to Shopping</div>
-        <input
-          type="text"
-          id="switchToShopping"
-          class="shortcut-input"
-          maxlength="1"
-          value="s"
-        />
-      </div>
+
       <div class="shortcut-row">
         <div class="shortcut-label">Switch to News</div>
         <input
@@ -255,6 +255,19 @@
           value="n"
         />
       </div>
+
+      <div class="shortcut-row">
+        <div class="shortcut-label">Switch to Shopping</div>
+        <input
+          type="text"
+          id="switchToShopping"
+          class="shortcut-input"
+          maxlength="1"
+          value="s"
+        />
+      </div>
+      <h3>External sites</h3>
+
       <div class="shortcut-row">
         <div class="shortcut-label">Switch to Map</div>
         <input
