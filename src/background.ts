@@ -18,14 +18,13 @@ async function broadcastKeymapUpdate(
 ): Promise<void> {
   try {
     // Query all tabs that match Google search and YouTube patterns
-    const [googleTabs, youtubeTabs] = await Promise.all([
-      chrome.tabs.query({
-        url: 'https://www.google.com/search*',
-      }),
-      chrome.tabs.query({
-        url: 'https://www.youtube.com/*',
-      }),
-    ]);
+    const urlPatterns = [
+      'https://www.google.com/search*',
+      'https://www.youtube.com/*',
+    ] as const;
+    const [googleTabs, youtubeTabs] = await Promise.all(
+      urlPatterns.map((url) => chrome.tabs.query({ url }))
+    );
 
     const tabs = [...googleTabs, ...youtubeTabs];
 
