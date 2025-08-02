@@ -310,34 +310,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         'setupResetButton: #reset button is missing. Did you rename or remove it?'
       );
     }
-    resetButton.addEventListener('click', async () => {
-      const status = document.getElementById('status')!;
-
-      try {
-        // 1) Clear from storage
-        await keymapManager.clearKeyConfigs();
-        // 2) Restore defaultKeyConfigs in UI
-        setupInputFields(defaultKeyConfigs);
-
-        // Send message to background script to update settings across all tabs
-        chrome.runtime.sendMessage({
-          type: UPDATE_KEYMAPPINGS_MESSAGE,
-          keyConfigs: defaultKeyConfigs,
-        });
-
-        // Close popup immediately on successful reset
-        window.close();
-      } catch (error) {
-        console.error('Failed to reset key configurations:', error);
-        status.textContent = `Error resetting settings: ${error instanceof Error ? error.message : 'Unknown error'}`;
-        status.className = 'status error';
-        status.style.display = 'block';
-
-        // Hide error after 5 seconds
-        setTimeout(() => {
-          status.style.display = 'none';
-        }, 5000);
-      }
+    resetButton.addEventListener('click', () => {
+      // Only restore default values in the UI without saving to storage
+      setupInputFields(defaultKeyConfigs);
     });
   }
 });
