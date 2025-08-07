@@ -2,6 +2,7 @@ import {
   makeStorageSync,
   makeHighlight,
   makeUnhighlight,
+  makeExpandSection,
   createKeymapManager,
   addClass,
   removeClass,
@@ -30,6 +31,7 @@ export const highlight = makeHighlight(
   scrollIntoViewIfOutsideViewport
 );
 export const unhighlight = makeUnhighlight(removeClass);
+export const expandSection = makeExpandSection();
 export const getPageType = makeGetPageType(getGoogleSearchTabType);
 export const getSearchResults = makeGetSearchResults(
   getGoogleSearchResults,
