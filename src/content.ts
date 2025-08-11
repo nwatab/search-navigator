@@ -1,4 +1,7 @@
-import { UPDATE_KEYMAPPINGS_MESSAGE } from './constants';
+import {
+  PEOPLE_ALSO_ASK_ACCORDION_TIMEOUT,
+  UPDATE_KEYMAPPINGS_MESSAGE,
+} from './constants';
 import {
   detectTheme,
   getPageType,
@@ -9,6 +12,7 @@ import {
   waitForSearchRoot,
 } from './dependency-injection';
 import type { PageType } from './services';
+import { togglePeopleAlsoAskAccordion } from './services';
 
 import './style.scss';
 
@@ -35,7 +39,6 @@ import './style.scss';
     const theme = detectTheme(window, document, pageType);
 
     highlight(results, currentIndex, theme, {
-      autoExpand: true,
       scrollIntoView: false,
       simulateHover: true,
     });
@@ -66,7 +69,10 @@ import './style.scss';
         if (results.length > 0 && currentIndex < results.length - 1) {
           unhighlight(results, currentIndex);
           currentIndex++;
-          highlight(results, currentIndex, theme);
+          highlight(results, currentIndex, theme, {
+            simulateHover: false,
+            scrollIntoView: true,
+          });
         }
       } else if (
         keymapManager.isKeyMatch(e, 'move_up') ||
@@ -77,10 +83,13 @@ import './style.scss';
         if (results.length > 0 && currentIndex > 0) {
           unhighlight(results, currentIndex);
           currentIndex--;
-          highlight(results, currentIndex, theme);
+          highlight(results, currentIndex, theme, {
+            simulateHover: true,
+            scrollIntoView: true,
+          });
         }
       } else if (keymapManager.isKeyMatch(e, 'open_link')) {
-        // open link
+        // open link or expand section
         e.preventDefault();
         if (
           !(
@@ -91,6 +100,38 @@ import './style.scss';
         ) {
           return; // not expected to happen
         }
+
+        // Check if this is a "People also ask" section first
+        const currentResult = results[currentIndex];
+        const hasRelatedQuestionPair = currentResult.querySelector(
+          '.related-question-pair'
+        );
+
+        // This is a "People also ask" section, toggle expansion
+        // ToDo: `open_link` (Mostly Enter key) should open a link in an expanded accordion, instead of closing it.
+        if (hasRelatedQuestionPair) {
+          togglePeopleAlsoAskAccordion(currentResult);
+
+          setTimeout(() => {
+            const newResults = getSearchResults(document, pageType);
+            if (newResults.length > 0) {
+              results = newResults;
+              // Ensure currentIndex is still valid after recalculation
+              if (currentIndex >= results.length) {
+                currentIndex = results.length - 1;
+              }
+              // Re-highlight the current element in case DOM structure changed
+              // Note: Don't unhighlight first as it would collapse the expanded section
+              highlight(results, currentIndex, theme, {
+                scrollIntoView: false,
+                simulateHover: true,
+              });
+            }
+          }, PEOPLE_ALSO_ASK_ACCORDION_TIMEOUT);
+          return;
+        }
+
+        // Otherwise, handle as regular link opening
         const link = results[currentIndex].querySelector(
           'a[href]'
         ) as HTMLAnchorElement;
@@ -101,7 +142,7 @@ import './style.scss';
           window.open(link.href, '_blank');
         } else if (shiftKey) {
           // Shift+Click → new window (popup)
-          // any non-undefined “features” string forces a new window
+          // any non-undefined "features" string forces a new window
           window.open(link.href, '_blank', '');
         } else {
           // plain Enter/Click → same tab

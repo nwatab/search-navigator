@@ -9,12 +9,18 @@ jest.mock('../src/services/dom-utils', () => ({
 
 describe('makeHighlight', () => {
   let addClass: jest.Mock;
+  let simulateYouTubeHover: jest.Mock;
   let highlight: ReturnType<typeof makeHighlight>;
   let results: HTMLElement[];
 
   beforeEach(() => {
     addClass = jest.fn();
-    highlight = makeHighlight(addClass, scrollIntoViewIfOutsideViewport);
+    simulateYouTubeHover = jest.fn();
+    highlight = makeHighlight(
+      addClass,
+      scrollIntoViewIfOutsideViewport,
+      simulateYouTubeHover
+    );
 
     // Setup DOM elements
     document.body.innerHTML = '';
@@ -56,55 +62,6 @@ describe('makeHighlight', () => {
     expect(scrollIntoViewIfOutsideViewport).not.toHaveBeenCalled();
   });
 
-  it('should expand related questions when autoExpand is true', () => {
-    // Setup related question element
-    const div = document.createElement('div');
-    div.innerHTML = `
-      <div class="related-question-pair">
-        <div jsname="test" jsaction="test" role="button" aria-expanded="false"></div>
-      </div>
-    `;
-    document.body.appendChild(div);
-    results = [div];
-
-    // Mock dispatchEvent
-    const mockDispatchEvent = jest.fn();
-    const accordionElement = div.querySelector('[jsname][role="button"]');
-    if (accordionElement) {
-      accordionElement.dispatchEvent = mockDispatchEvent;
-    }
-
-    highlight(results, 0, 'light');
-
-    expect(mockDispatchEvent).toHaveBeenCalledTimes(1);
-    // Check that a MouseEvent was created with the right options
-    expect(mockDispatchEvent.mock.calls[0][0].type).toBe('click');
-    expect(mockDispatchEvent.mock.calls[0][0].bubbles).toBeTruthy();
-  });
-
-  it('should not expand related questions when autoExpand is false', () => {
-    // Setup related question element
-    const div = document.createElement('div');
-    div.innerHTML = `
-      <div class="related-question-pair">
-        <div jsname="test" jsaction="test" role="button" aria-expanded="false"></div>
-      </div>
-    `;
-    document.body.appendChild(div);
-    results = [div];
-
-    // Mock dispatchEvent
-    const mockDispatchEvent = jest.fn();
-    const accordionElement = div.querySelector('[jsname][role="button"]');
-    if (accordionElement) {
-      accordionElement.dispatchEvent = mockDispatchEvent;
-    }
-
-    highlight(results, 0, 'light', { autoExpand: false });
-
-    expect(mockDispatchEvent).not.toHaveBeenCalled();
-  });
-
   it('should throw an error for invalid index', () => {
     expect(() => highlight(results, -1, 'light')).toThrow('Invalid index');
     expect(() => highlight(results, 3, 'light')).toThrow('Invalid index');
@@ -113,12 +70,14 @@ describe('makeHighlight', () => {
 
 describe('makeUnhighlight', () => {
   let removeClass: jest.Mock;
+  let simulateYouTubeHover: jest.Mock;
   let unhighlight: ReturnType<typeof makeUnhighlight>;
   let results: HTMLElement[];
 
   beforeEach(() => {
     removeClass = jest.fn();
-    unhighlight = makeUnhighlight(removeClass);
+    simulateYouTubeHover = jest.fn();
+    unhighlight = makeUnhighlight(removeClass, simulateYouTubeHover);
 
     // Setup DOM elements
     document.body.innerHTML = '';
@@ -141,7 +100,7 @@ describe('makeUnhighlight', () => {
     expect(removeClass).toHaveBeenCalledWith(results[1], 'sn-selected-light');
   });
 
-  it('should collapse expanded related questions', () => {
+  it('should not collapse expanded related questions (keep them open)', () => {
     // Setup related question element
     const div = document.createElement('div');
     div.innerHTML = `
@@ -161,10 +120,8 @@ describe('makeUnhighlight', () => {
 
     unhighlight(results, 0);
 
-    expect(mockDispatchEvent).toHaveBeenCalledTimes(1);
-    // Check that a MouseEvent was created with the right options
-    expect(mockDispatchEvent.mock.calls[0][0].type).toBe('click');
-    expect(mockDispatchEvent.mock.calls[0][0].bubbles).toBeTruthy();
+    // The accordion should NOT be collapsed (no click event dispatched)
+    expect(mockDispatchEvent).not.toHaveBeenCalled();
   });
 
   it('should not collapse if no expanded related questions', () => {

@@ -1,22 +1,23 @@
 import {
-  makeStorageSync,
-  makeHighlight,
-  makeUnhighlight,
-  createKeymapManager,
   addClass,
-  removeClass,
-  scrollIntoViewIfOutsideViewport,
-  getGoogleSearchTabType,
-  makeGetPageType,
+  createKeymapManager,
   determineThemeFromRgb,
   extractBackgroundRgb,
-  makeDetectTheme,
   getGoogleSearchResults,
-  getYouTubeSearchResults,
-  makeGetSearchResults,
-  makeWaitForSearchRoot,
-  waitForSelector,
+  getGoogleSearchTabType,
   getSearchRootSelector,
+  getYouTubeSearchResults,
+  makeDetectTheme,
+  makeGetPageType,
+  makeGetSearchResults,
+  makeHighlight,
+  makeStorageSync,
+  makeUnhighlight,
+  makeWaitForSearchRoot,
+  removeClass,
+  scrollIntoViewIfOutsideViewport,
+  simulateYouTubeHover,
+  waitForSelector,
 } from './services';
 
 export const storageSync = makeStorageSync(chrome.storage.sync);
@@ -27,9 +28,10 @@ export const detectTheme = makeDetectTheme(
 );
 export const highlight = makeHighlight(
   addClass,
-  scrollIntoViewIfOutsideViewport
+  scrollIntoViewIfOutsideViewport,
+  simulateYouTubeHover
 );
-export const unhighlight = makeUnhighlight(removeClass);
+export const unhighlight = makeUnhighlight(removeClass, simulateYouTubeHover);
 export const getPageType = makeGetPageType(getGoogleSearchTabType);
 export const getSearchResults = makeGetSearchResults(
   getGoogleSearchResults,

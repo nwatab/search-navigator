@@ -3,6 +3,7 @@ node_modules/
 .DS_Store
 .vscode/
 coverage/
+.github/copilot-instructions.md
 
 # Lock files from other package managers
 bun.lock*

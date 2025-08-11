@@ -2,22 +2,94 @@
 import { ClassModifier } from './dom-utils';
 
 /**
+ * Helper function to click a specific accordion element in "People also ask" sections
+ * Note: Not currently used but will be needed for future features
+ * @param element - The parent element containing the accordion
+ * @param expanded - The target state: true to expand, false to collapse
+ */
+export const clickPeopleAlsoAskAccordion = (
+  element: HTMLElement,
+  expanded: boolean
+): void => {
+  const relatedQuestionPair = element.querySelector('.related-question-pair');
+  if (!relatedQuestionPair) return;
+
+  const selector = `div[jsname][jsaction][role="button"][aria-expanded="${expanded}"]`;
+  const accordionElement = element.querySelector(selector);
+
+  if (accordionElement) {
+    accordionElement.dispatchEvent(
+      new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+      })
+    );
+  }
+};
+
+/**
+ * Helper function to toggle accordion elements in "People also ask" sections
+ * Finds any accordion button and clicks it to toggle its current state
+ * @param element - The parent element containing the accordion
+ */
+export const togglePeopleAlsoAskAccordion = (element: HTMLElement): void => {
+  const relatedQuestionPair = element.querySelector('.related-question-pair');
+  if (!relatedQuestionPair) return;
+
+  const selector = 'div[jsname][jsaction][role="button"][aria-expanded]';
+  const accordionElement = element.querySelector(selector);
+
+  if (accordionElement) {
+    accordionElement.dispatchEvent(
+      new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+      })
+    );
+  }
+};
+
+/**
+ * Helper function to simulate YouTube thumbnail hover
+ */
+export const simulateYouTubeHover = (
+  element: HTMLElement,
+  eventType: 'mouseenter' | 'mouseleave'
+): void => {
+  const thumbEl = element.querySelector<HTMLElement>('ytd-thumbnail');
+  if (thumbEl) {
+    thumbEl.dispatchEvent(
+      new MouseEvent(eventType, {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+      })
+    );
+  }
+};
+
+/**
  * Creates a function that highlights an element at the specified index
  */
 export const makeHighlight =
   (
     addClass: ClassModifier,
-    scrollIntoViewIfOutsideViewport: (el: Element) => Element
+    scrollIntoViewIfOutsideViewport: (el: Element) => Element,
+    simulateYouTubeHover: (
+      element: HTMLElement,
+      eventType: 'mouseenter' | 'mouseleave'
+    ) => void
   ) =>
   (
     results: HTMLElement[],
     index: number,
     theme: 'dark' | 'light',
     options: {
-      autoExpand?: boolean;
       scrollIntoView?: boolean;
       simulateHover?: boolean;
-    } = { autoExpand: true, scrollIntoView: true, simulateHover: true }
+    } = { scrollIntoView: true, simulateHover: true }
   ): void => {
     const className = `sn-selected-${theme}`;
     if (typeof index !== 'number' || index < 0 || index >= results.length) {
@@ -31,35 +103,8 @@ export const makeHighlight =
       scrollIntoViewIfOutsideViewport(results[index]);
     }
 
-    // Handle People also ask
-    if (options.autoExpand) {
-      const relatedQuestionPair = results[index].querySelector(
-        '.related-question-pair'
-      );
-      const accordionClickElement = results[index].querySelector(
-        'div[jsname][jsaction][role="button"][aria-expanded="false"]'
-      );
-
-      if (relatedQuestionPair && accordionClickElement) {
-        const clickEvent = new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-          view: window,
-        });
-        accordionClickElement.dispatchEvent(clickEvent);
-      }
-    }
     if (options.simulateHover) {
-      const thumbEl = result.querySelector<HTMLElement>('ytd-thumbnail');
-      if (thumbEl) {
-        thumbEl.dispatchEvent(
-          new MouseEvent('mouseenter', {
-            bubbles: true,
-            cancelable: true,
-            view: window,
-          })
-        );
-      }
+      simulateYouTubeHover(result, 'mouseenter');
     }
   };
 
@@ -69,7 +114,13 @@ export const makeHighlight =
  * If index is omitted, unhighlights all elements
  */
 export const makeUnhighlight =
-  (removeClass: ClassModifier) =>
+  (
+    removeClass: ClassModifier,
+    simulateYouTubeHover: (
+      element: HTMLElement,
+      eventType: 'mouseenter' | 'mouseleave'
+    ) => void
+  ) =>
   (
     results: HTMLElement[],
     index: number,
@@ -86,32 +137,10 @@ export const makeUnhighlight =
     const result = results[index];
     removeClass(result, 'sn-selected-dark');
     removeClass(result, 'sn-selected-light');
-    const relatedQuestionPair = results[index].querySelector(
-      '.related-question-pair'
-    );
-    const accordionClickElement = results[index].querySelector(
-      'div[jsname][jsaction][role="button"][aria-expanded="true"]'
-    );
 
-    if (relatedQuestionPair && accordionClickElement) {
-      const clickEvent = new MouseEvent('click', {
-        bubbles: true,
-        cancelable: true,
-        view: window,
-      });
-      accordionClickElement.dispatchEvent(clickEvent);
-    }
+    // Collapse expanded accordion if present
 
     if (options.simulateHover) {
-      const thumbEl = result.querySelector<HTMLElement>('ytd-thumbnail');
-      if (thumbEl) {
-        thumbEl.dispatchEvent(
-          new MouseEvent('mouseleave', {
-            bubbles: true,
-            cancelable: true,
-            view: window,
-          })
-        );
-      }
+      simulateYouTubeHover(result, 'mouseleave');
     }
   };
