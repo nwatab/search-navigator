@@ -1,24 +1,23 @@
 import {
-  makeStorageSync,
-  makeHighlight,
-  makeUnhighlight,
-  simulateYouTubeHover,
-  clickPeopleAlsoAskAccordion,
-  createKeymapManager,
   addClass,
-  removeClass,
-  scrollIntoViewIfOutsideViewport,
-  getGoogleSearchTabType,
-  makeGetPageType,
+  createKeymapManager,
   determineThemeFromRgb,
   extractBackgroundRgb,
-  makeDetectTheme,
   getGoogleSearchResults,
-  getYouTubeSearchResults,
-  makeGetSearchResults,
-  makeWaitForSearchRoot,
-  waitForSelector,
+  getGoogleSearchTabType,
   getSearchRootSelector,
+  getYouTubeSearchResults,
+  makeDetectTheme,
+  makeGetPageType,
+  makeGetSearchResults,
+  makeHighlight,
+  makeStorageSync,
+  makeUnhighlight,
+  makeWaitForSearchRoot,
+  removeClass,
+  scrollIntoViewIfOutsideViewport,
+  simulateYouTubeHover,
+  waitForSelector,
 } from './services';
 
 export const storageSync = makeStorageSync(chrome.storage.sync);
@@ -38,7 +37,6 @@ export const getSearchResults = makeGetSearchResults(
   getGoogleSearchResults,
   getYouTubeSearchResults
 );
-export { clickPeopleAlsoAskAccordion };
 
 export const waitForSearchRoot = makeWaitForSearchRoot(
   waitForSelector,

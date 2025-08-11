@@ -1,10 +1,9 @@
 import {
-  UPDATE_KEYMAPPINGS_MESSAGE,
   PEOPLE_ALSO_ASK_ACCORDION_TIMEOUT,
+  UPDATE_KEYMAPPINGS_MESSAGE,
 } from './constants';
 import {
   detectTheme,
-  clickPeopleAlsoAskAccordion,
   getPageType,
   getSearchResults,
   highlight,
@@ -13,6 +12,7 @@ import {
   waitForSearchRoot,
 } from './dependency-injection';
 import type { PageType } from './services';
+import { clickPeopleAlsoAskAccordion } from './services';
 
 import './style.scss';
 
