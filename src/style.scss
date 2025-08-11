@@ -1,28 +1,14 @@
-/* Create a highlight effect using pseudo-elements that won't affect layout */
-.sn-selected-dark,
-.sn-selected-light {
-  position: relative !important;
-  z-index: 1 !important;
-}
-
-.sn-selected-dark::before,
-.sn-selected-light::before {
-  content: '' !important;
-  position: absolute !important;
-  top: -4px !important;
-  left: -4px !important;
-  right: -4px !important;
-  bottom: -4px !important;
+/* Create a highlight effect using outline that won't affect layout */
+.sn-selected-dark {
+  outline: 2px solid rgba(138, 180, 248, 0.8) !important;
+  outline-offset: 2px !important;
+  background-color: rgba(51, 57, 77, 0.1) !important;
   border-radius: 8px !important;
-  z-index: -1 !important;
 }
 
-.sn-selected-dark::before {
-  background-color: rgb(51, 57, 77) !important;
-  box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.5) !important;
-}
-
-.sn-selected-light::before {
-  background-color: rgb(240, 240, 240) !important;
-  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.5) !important;
+.sn-selected-light {
+  outline: 2px solid rgba(26, 115, 232, 0.8) !important;
+  outline-offset: 2px !important;
+  background-color: rgba(240, 240, 240, 0.3) !important;
+  border-radius: 8px !important;
 }
