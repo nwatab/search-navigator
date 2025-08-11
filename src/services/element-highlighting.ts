@@ -1,5 +1,5 @@
 // Element highlighting utilities
-import { ClassModifier } from './dom-utils';
+import type { ClassModifier } from './dom-utils';
 
 /**
  * Creates a function that highlights an element at the specified index
