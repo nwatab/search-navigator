@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Search navigator",
-  "version": "1.9.2",
+  "version": "1.9.3",
   "description": "Navigate search results with shortcuts",
   "action": {
     "default_popup": "popup.html",

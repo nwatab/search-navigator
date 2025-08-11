@@ -5,6 +5,19 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.9.3] - 2025-08-12
+
+### Fixed
+
+- Fix UX so reset button functionality only updates UI without saving to storage. (#75)
+- Preserve text color for visited links. (#77)
+- Fixed continuous loading triggered by auto-expanding "People also ask" sections.
+- Fix highlight styles that were causing text alignment issues. (#84)
+
+### Maintenance
+
+- Refactor to split highlight.ts into separate modules. (#83)
+
 ## [1.9.2] - 2025-06-28
 
 ### Fixed
@@ -145,6 +158,7 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ---
 
+[1.9.3]: https://github.com/nwatab/search-navigator/compare/v1.9.2...v1.9.3
 [1.9.2]: https://github.com/nwatab/search-navigator/compare/v1.9.1...v1.9.2
 [1.9.1]: https://github.com/nwatab/search-navigator/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/nwatab/search-navigator/compare/v1.8.0...v1.9.0
