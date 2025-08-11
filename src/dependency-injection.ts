@@ -2,7 +2,7 @@ import {
   makeStorageSync,
   makeHighlight,
   makeUnhighlight,
-  toggleAccordion,
+  clickPeopleAlsoAskAccordion,
   createKeymapManager,
   addClass,
   removeClass,
@@ -36,7 +36,7 @@ export const getSearchResults = makeGetSearchResults(
   getGoogleSearchResults,
   getYouTubeSearchResults
 );
-export { toggleAccordion };
+export { clickPeopleAlsoAskAccordion };
 
 export const waitForSearchRoot = makeWaitForSearchRoot(
   waitForSelector,

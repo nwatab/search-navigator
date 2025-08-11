@@ -4,7 +4,7 @@ import { ClassModifier } from './dom-utils';
 /**
  * Helper function to find and click accordion elements in "People also ask" sections
  */
-export const toggleAccordion = (
+export const clickPeopleAlsoAskAccordion = (
   element: HTMLElement,
   expanded?: boolean
 ): void => {
@@ -79,7 +79,7 @@ export const makeHighlight =
 
     // Handle People also ask
     if (options.autoExpand) {
-      toggleAccordion(results[index], false);
+      clickPeopleAlsoAskAccordion(results[index], false);
     }
     if (options.simulateHover) {
       simulateYouTubeHover(result, 'mouseenter');
@@ -111,7 +111,7 @@ export const makeUnhighlight =
     removeClass(result, 'sn-selected-light');
 
     // Collapse expanded accordion if present
-    toggleAccordion(results[index], true);
+    clickPeopleAlsoAskAccordion(results[index], true);
 
     if (options.simulateHover) {
       simulateYouTubeHover(result, 'mouseleave');

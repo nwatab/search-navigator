@@ -1,7 +1,7 @@
 import { UPDATE_KEYMAPPINGS_MESSAGE } from './constants';
 import {
   detectTheme,
-  toggleAccordion,
+  clickPeopleAlsoAskAccordion,
   getPageType,
   getSearchResults,
   highlight,
@@ -109,7 +109,7 @@ import './style.scss';
 
         // This is a "People also ask" section, toggle expansion
         if (hasRelatedQuestionPair) {
-          toggleAccordion(currentResult);
+          clickPeopleAlsoAskAccordion(currentResult);
 
           setTimeout(() => {
             const newResults = getSearchResults(document, pageType);
