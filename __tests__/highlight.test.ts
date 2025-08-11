@@ -9,12 +9,18 @@ jest.mock('../src/services/dom-utils', () => ({
 
 describe('makeHighlight', () => {
   let addClass: jest.Mock;
+  let simulateYouTubeHover: jest.Mock;
   let highlight: ReturnType<typeof makeHighlight>;
   let results: HTMLElement[];
 
   beforeEach(() => {
     addClass = jest.fn();
-    highlight = makeHighlight(addClass, scrollIntoViewIfOutsideViewport);
+    simulateYouTubeHover = jest.fn();
+    highlight = makeHighlight(
+      addClass,
+      scrollIntoViewIfOutsideViewport,
+      simulateYouTubeHover
+    );
 
     // Setup DOM elements
     document.body.innerHTML = '';
@@ -64,12 +70,14 @@ describe('makeHighlight', () => {
 
 describe('makeUnhighlight', () => {
   let removeClass: jest.Mock;
+  let simulateYouTubeHover: jest.Mock;
   let unhighlight: ReturnType<typeof makeUnhighlight>;
   let results: HTMLElement[];
 
   beforeEach(() => {
     removeClass = jest.fn();
-    unhighlight = makeUnhighlight(removeClass);
+    simulateYouTubeHover = jest.fn();
+    unhighlight = makeUnhighlight(removeClass, simulateYouTubeHover);
 
     // Setup DOM elements
     document.body.innerHTML = '';

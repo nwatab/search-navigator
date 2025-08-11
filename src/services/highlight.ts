@@ -31,7 +31,7 @@ export const clickPeopleAlsoAskAccordion = (
 /**
  * Helper function to simulate YouTube thumbnail hover
  */
-const simulateYouTubeHover = (
+export const simulateYouTubeHover = (
   element: HTMLElement,
   eventType: 'mouseenter' | 'mouseleave'
 ): void => {
@@ -53,7 +53,11 @@ const simulateYouTubeHover = (
 export const makeHighlight =
   (
     addClass: ClassModifier,
-    scrollIntoViewIfOutsideViewport: (el: Element) => Element
+    scrollIntoViewIfOutsideViewport: (el: Element) => Element,
+    simulateYouTubeHover: (
+      element: HTMLElement,
+      eventType: 'mouseenter' | 'mouseleave'
+    ) => void
   ) =>
   (
     results: HTMLElement[],
@@ -87,7 +91,13 @@ export const makeHighlight =
  * If index is omitted, unhighlights all elements
  */
 export const makeUnhighlight =
-  (removeClass: ClassModifier) =>
+  (
+    removeClass: ClassModifier,
+    simulateYouTubeHover: (
+      element: HTMLElement,
+      eventType: 'mouseenter' | 'mouseleave'
+    ) => void
+  ) =>
   (
     results: HTMLElement[],
     index: number,

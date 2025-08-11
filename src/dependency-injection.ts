@@ -2,6 +2,7 @@ import {
   makeStorageSync,
   makeHighlight,
   makeUnhighlight,
+  simulateYouTubeHover,
   clickPeopleAlsoAskAccordion,
   createKeymapManager,
   addClass,
@@ -28,9 +29,10 @@ export const detectTheme = makeDetectTheme(
 );
 export const highlight = makeHighlight(
   addClass,
-  scrollIntoViewIfOutsideViewport
+  scrollIntoViewIfOutsideViewport,
+  simulateYouTubeHover
 );
-export const unhighlight = makeUnhighlight(removeClass);
+export const unhighlight = makeUnhighlight(removeClass, simulateYouTubeHover);
 export const getPageType = makeGetPageType(getGoogleSearchTabType);
 export const getSearchResults = makeGetSearchResults(
   getGoogleSearchResults,
