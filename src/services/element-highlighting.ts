@@ -7,11 +7,7 @@ import type { ClassModifier } from './dom-utils';
 export const makeHighlight =
   (
     addClass: ClassModifier,
-    scrollIntoViewIfOutsideViewport: (el: Element) => Element,
-    simulateYouTubeHover: (
-      element: HTMLElement,
-      eventType: 'mouseenter' | 'mouseleave'
-    ) => void
+    scrollIntoViewIfOutsideViewport: (el: Element) => Element
   ) =>
   (
     results: HTMLElement[],
@@ -19,8 +15,7 @@ export const makeHighlight =
     theme: 'dark' | 'light',
     options: {
       scrollIntoView?: boolean;
-      simulateHover?: boolean;
-    } = { scrollIntoView: true, simulateHover: true }
+    } = { scrollIntoView: true }
   ): void => {
     const className = `sn-selected-${theme}`;
     if (typeof index !== 'number' || index < 0 || index >= results.length) {
@@ -33,10 +28,6 @@ export const makeHighlight =
     if (options.scrollIntoView) {
       scrollIntoViewIfOutsideViewport(results[index]);
     }
-
-    if (options.simulateHover) {
-      simulateYouTubeHover(result, 'mouseenter');
-    }
   };
 
 /**
@@ -45,20 +36,8 @@ export const makeHighlight =
  * If index is omitted, unhighlights all elements
  */
 export const makeUnhighlight =
-  (
-    removeClass: ClassModifier,
-    simulateYouTubeHover: (
-      element: HTMLElement,
-      eventType: 'mouseenter' | 'mouseleave'
-    ) => void
-  ) =>
-  (
-    results: HTMLElement[],
-    index: number,
-    options: {
-      simulateHover?: boolean;
-    } = { simulateHover: true }
-  ): void => {
+  (removeClass: ClassModifier) =>
+  (results: HTMLElement[], index: number): void => {
     // throw invalid index
     if (typeof index === 'number' && (index < 0 || index >= results.length)) {
       throw new Error('Invalid index provided for unhighlight');
@@ -68,10 +47,4 @@ export const makeUnhighlight =
     const result = results[index];
     removeClass(result, 'sn-selected-dark');
     removeClass(result, 'sn-selected-light');
-
-    // Collapse expanded accordion if present
-
-    if (options.simulateHover) {
-      simulateYouTubeHover(result, 'mouseleave');
-    }
   };

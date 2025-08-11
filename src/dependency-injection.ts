@@ -16,7 +16,6 @@ import {
   makeWaitForSearchRoot,
   removeClass,
   scrollIntoViewIfOutsideViewport,
-  simulateYouTubeHover,
   waitForSelector,
 } from './services';
 
@@ -28,10 +27,9 @@ export const detectTheme = makeDetectTheme(
 );
 export const highlight = makeHighlight(
   addClass,
-  scrollIntoViewIfOutsideViewport,
-  simulateYouTubeHover
+  scrollIntoViewIfOutsideViewport
 );
-export const unhighlight = makeUnhighlight(removeClass, simulateYouTubeHover);
+export const unhighlight = makeUnhighlight(removeClass);
 export const getPageType = makeGetPageType(getGoogleSearchTabType);
 export const getSearchResults = makeGetSearchResults(
   getGoogleSearchResults,
