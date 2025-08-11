@@ -1,5 +1,5 @@
 import {
-UPDATE_KEYMAPPINGS_MESSAGE,
+  UPDATE_KEYMAPPINGS_MESSAGE,
   PEOPLE_ALSO_ASK_ACCORDION_TIMEOUT,
 } from './constants';
 import {
@@ -108,6 +108,7 @@ import './style.scss';
         );
 
         // This is a "People also ask" section, toggle expansion
+        // ToDo: `open_link` (Mostly Enter key) should open a link in an expanded accordion, instead of closing it.
         if (hasRelatedQuestionPair) {
           clickPeopleAlsoAskAccordion(currentResult);
 
