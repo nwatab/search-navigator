@@ -3,3 +3,7 @@ node_modules/
 .DS_Store
 .vscode/
 coverage/
+
+# Lock files from other package managers
+bun.lock*
+yarn.lock
