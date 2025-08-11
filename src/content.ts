@@ -12,7 +12,7 @@ import {
   waitForSearchRoot,
 } from './dependency-injection';
 import type { PageType } from './services';
-import { clickPeopleAlsoAskAccordion } from './services';
+import { togglePeopleAlsoAskAccordion } from './services';
 
 import './style.scss';
 
@@ -110,7 +110,7 @@ import './style.scss';
         // This is a "People also ask" section, toggle expansion
         // ToDo: `open_link` (Mostly Enter key) should open a link in an expanded accordion, instead of closing it.
         if (hasRelatedQuestionPair) {
-          clickPeopleAlsoAskAccordion(currentResult);
+          togglePeopleAlsoAskAccordion(currentResult);
 
           setTimeout(() => {
             const newResults = getSearchResults(document, pageType);
