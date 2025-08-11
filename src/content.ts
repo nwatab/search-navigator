@@ -36,7 +36,6 @@ import './style.scss';
     const theme = detectTheme(window, document, pageType);
 
     highlight(results, currentIndex, theme, {
-      autoExpand: false,
       scrollIntoView: false,
       simulateHover: true,
     });
@@ -68,7 +67,6 @@ import './style.scss';
           unhighlight(results, currentIndex);
           currentIndex++;
           highlight(results, currentIndex, theme, {
-            autoExpand: false,
             simulateHover: false,
             scrollIntoView: true,
           });
@@ -83,7 +81,6 @@ import './style.scss';
           unhighlight(results, currentIndex);
           currentIndex--;
           highlight(results, currentIndex, theme, {
-            autoExpand: false,
             simulateHover: true,
             scrollIntoView: true,
           });
@@ -122,7 +119,6 @@ import './style.scss';
               // Re-highlight the current element in case DOM structure changed
               // Note: Don't unhighlight first as it would collapse the expanded section
               highlight(results, currentIndex, theme, {
-                autoExpand: false,
                 scrollIntoView: false,
                 simulateHover: true,
               });

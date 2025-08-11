@@ -60,10 +60,9 @@ export const makeHighlight =
     index: number,
     theme: 'dark' | 'light',
     options: {
-      autoExpand?: boolean;
       scrollIntoView?: boolean;
       simulateHover?: boolean;
-    } = { autoExpand: true, scrollIntoView: true, simulateHover: true }
+    } = { scrollIntoView: true, simulateHover: true }
   ): void => {
     const className = `sn-selected-${theme}`;
     if (typeof index !== 'number' || index < 0 || index >= results.length) {
@@ -77,10 +76,6 @@ export const makeHighlight =
       scrollIntoViewIfOutsideViewport(results[index]);
     }
 
-    // Handle People also ask
-    if (options.autoExpand) {
-      clickPeopleAlsoAskAccordion(results[index], false);
-    }
     if (options.simulateHover) {
       simulateYouTubeHover(result, 'mouseenter');
     }
@@ -111,7 +106,6 @@ export const makeUnhighlight =
     removeClass(result, 'sn-selected-light');
 
     // Collapse expanded accordion if present
-    clickPeopleAlsoAskAccordion(results[index], true);
 
     if (options.simulateHover) {
       simulateYouTubeHover(result, 'mouseleave');
