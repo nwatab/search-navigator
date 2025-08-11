@@ -1,5 +1,8 @@
 // filepath: /Users/n/work/search-navigator/__tests__/highlight.test.ts
-import { makeHighlight, makeUnhighlight } from '../src/services/highlight';
+import {
+  makeHighlight,
+  makeUnhighlight,
+} from '../src/services/element-highlighting';
 import { scrollIntoViewIfOutsideViewport } from '../src/services/dom-utils';
 
 // Mock scrollIntoViewIfOutsideViewport function
