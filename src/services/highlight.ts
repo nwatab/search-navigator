@@ -4,7 +4,10 @@ import { ClassModifier } from './dom-utils';
 /**
  * Helper function to find and click accordion elements in "People also ask" sections
  */
-const toggleAccordion = (element: HTMLElement, expanded?: boolean): void => {
+export const toggleAccordion = (
+  element: HTMLElement,
+  expanded?: boolean
+): void => {
   const relatedQuestionPair = element.querySelector('.related-question-pair');
   if (!relatedQuestionPair) return;
 
@@ -24,18 +27,6 @@ const toggleAccordion = (element: HTMLElement, expanded?: boolean): void => {
     );
   }
 };
-
-/**
- * Creates a function that toggles the expansion of "People also ask" sections
- */
-export const makeExpandSection =
-  () =>
-  (results: HTMLElement[], index: number): void => {
-    if (typeof index !== 'number' || index < 0 || index >= results.length) {
-      throw new Error('Invalid index provided for expand section');
-    }
-    toggleAccordion(results[index]);
-  };
 
 /**
  * Helper function to simulate YouTube thumbnail hover

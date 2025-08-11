@@ -2,7 +2,7 @@ import {
   makeStorageSync,
   makeHighlight,
   makeUnhighlight,
-  makeExpandSection,
+  toggleAccordion,
   createKeymapManager,
   addClass,
   removeClass,
@@ -31,12 +31,12 @@ export const highlight = makeHighlight(
   scrollIntoViewIfOutsideViewport
 );
 export const unhighlight = makeUnhighlight(removeClass);
-export const expandSection = makeExpandSection();
 export const getPageType = makeGetPageType(getGoogleSearchTabType);
 export const getSearchResults = makeGetSearchResults(
   getGoogleSearchResults,
   getYouTubeSearchResults
 );
+export { toggleAccordion };
 
 export const waitForSearchRoot = makeWaitForSearchRoot(
   waitForSelector,
