@@ -12,7 +12,7 @@ import {
   waitForSearchRoot,
 } from './dependency-injection';
 import type { PageType } from './services';
-import { togglePeopleAlsoAskAccordion } from './services';
+import { simulateYouTubeHover, togglePeopleAlsoAskAccordion } from './services';
 
 import './style.scss';
 
@@ -40,8 +40,12 @@ import './style.scss';
 
     highlight(results, currentIndex, theme, {
       scrollIntoView: false,
-      simulateHover: true,
     });
+
+    // Simulate YouTube hover for YouTube search results
+    if (pageType === 'youtube-search-result') {
+      simulateYouTubeHover(results[currentIndex], 'mouseenter');
+    }
 
     // Add keydown event listener for all Google Search pages
     document.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -67,12 +71,16 @@ import './style.scss';
           results = getSearchResults(document, pageType);
         }
         if (results.length > 0 && currentIndex < results.length - 1) {
+          // Simulate YouTube hover leave for the current element before moving
+          if (pageType === 'youtube-search-result') {
+            simulateYouTubeHover(results[currentIndex], 'mouseleave');
+          }
           unhighlight(results, currentIndex);
           currentIndex++;
           highlight(results, currentIndex, theme, {
-            simulateHover: false,
             scrollIntoView: true,
           });
+          // Don't simulate hover for move down to avoid triggering preview
         }
       } else if (
         keymapManager.isKeyMatch(e, 'move_up') ||
@@ -81,12 +89,19 @@ import './style.scss';
         // up
         e.preventDefault();
         if (results.length > 0 && currentIndex > 0) {
+          // Simulate YouTube hover leave for the current element before moving
+          if (pageType === 'youtube-search-result') {
+            simulateYouTubeHover(results[currentIndex], 'mouseleave');
+          }
           unhighlight(results, currentIndex);
           currentIndex--;
           highlight(results, currentIndex, theme, {
-            simulateHover: true,
             scrollIntoView: true,
           });
+          // Simulate YouTube hover for the new element
+          if (pageType === 'youtube-search-result') {
+            simulateYouTubeHover(results[currentIndex], 'mouseenter');
+          }
         }
       } else if (keymapManager.isKeyMatch(e, 'open_link')) {
         // open link or expand section
@@ -124,8 +139,11 @@ import './style.scss';
               // Note: Don't unhighlight first as it would collapse the expanded section
               highlight(results, currentIndex, theme, {
                 scrollIntoView: false,
-                simulateHover: true,
               });
+              // Simulate YouTube hover for the re-highlighted element
+              if (pageType === 'youtube-search-result') {
+                simulateYouTubeHover(results[currentIndex], 'mouseenter');
+              }
             }
           }, PEOPLE_ALSO_ASK_ACCORDION_TIMEOUT);
           return;

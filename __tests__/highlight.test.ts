@@ -1,5 +1,8 @@
 // filepath: /Users/n/work/search-navigator/__tests__/highlight.test.ts
-import { makeHighlight, makeUnhighlight } from '../src/services/highlight';
+import {
+  makeHighlight,
+  makeUnhighlight,
+} from '../src/services/element-highlighting';
 import { scrollIntoViewIfOutsideViewport } from '../src/services/dom-utils';
 
 // Mock scrollIntoViewIfOutsideViewport function
@@ -9,18 +12,12 @@ jest.mock('../src/services/dom-utils', () => ({
 
 describe('makeHighlight', () => {
   let addClass: jest.Mock;
-  let simulateYouTubeHover: jest.Mock;
   let highlight: ReturnType<typeof makeHighlight>;
   let results: HTMLElement[];
 
   beforeEach(() => {
     addClass = jest.fn();
-    simulateYouTubeHover = jest.fn();
-    highlight = makeHighlight(
-      addClass,
-      scrollIntoViewIfOutsideViewport,
-      simulateYouTubeHover
-    );
+    highlight = makeHighlight(addClass, scrollIntoViewIfOutsideViewport);
 
     // Setup DOM elements
     document.body.innerHTML = '';
@@ -70,14 +67,12 @@ describe('makeHighlight', () => {
 
 describe('makeUnhighlight', () => {
   let removeClass: jest.Mock;
-  let simulateYouTubeHover: jest.Mock;
   let unhighlight: ReturnType<typeof makeUnhighlight>;
   let results: HTMLElement[];
 
   beforeEach(() => {
     removeClass = jest.fn();
-    simulateYouTubeHover = jest.fn();
-    unhighlight = makeUnhighlight(removeClass, simulateYouTubeHover);
+    unhighlight = makeUnhighlight(removeClass);
 
     // Setup DOM elements
     document.body.innerHTML = '';
