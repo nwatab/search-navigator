@@ -1,4 +1,7 @@
-import { UPDATE_KEYMAPPINGS_MESSAGE } from './constants';
+import {
+UPDATE_KEYMAPPINGS_MESSAGE,
+  PEOPLE_ALSO_ASK_ACCORDION_TIMEOUT,
+} from './constants';
 import {
   detectTheme,
   clickPeopleAlsoAskAccordion,
@@ -123,7 +126,7 @@ import './style.scss';
                 simulateHover: true,
               });
             }
-          }, 1000);
+          }, PEOPLE_ALSO_ASK_ACCORDION_TIMEOUT);
           return;
         }
 

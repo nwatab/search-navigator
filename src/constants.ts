@@ -1,5 +1,8 @@
 export const UPDATE_KEYMAPPINGS_MESSAGE = 'updateKeyMappings';
 
+// Timeout for waiting DOM updates after "People also ask" accordion expansion
+export const PEOPLE_ALSO_ASK_ACCORDION_TIMEOUT = 1000;
+
 export const MOVE_UP_ID = 'moveUp';
 export const MOVE_DOWN_ID = 'moveDown';
 export const NAVIGATE_PREVIOUS_ID = 'previousPage';
