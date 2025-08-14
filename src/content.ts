@@ -57,7 +57,10 @@ import './style.scss';
         return;
       }
 
-      if (keymapManager.isKeyMatch(e, 'move_down') || e.key === 'ArrowDown') {
+      if (
+        keymapManager.isKeyMatch(e, 'move_down') ||
+        keymapManager.isKeyMatch(e, 'arrow_move_down')
+      ) {
         // down
         e.preventDefault();
         const dynamicLoadPageTypes: PageType[] = [
@@ -84,7 +87,7 @@ import './style.scss';
         }
       } else if (
         keymapManager.isKeyMatch(e, 'move_up') ||
-        e.key === 'ArrowUp'
+        keymapManager.isKeyMatch(e, 'arrow_move_up')
       ) {
         // up
         e.preventDefault();
@@ -168,7 +171,7 @@ import './style.scss';
         }
       } else if (
         keymapManager.isKeyMatch(e, 'navigate_previous') ||
-        e.key === 'ArrowLeft'
+        keymapManager.isKeyMatch(e, 'arrow_navigate_previous')
       ) {
         // previous page
         e.preventDefault();
@@ -184,7 +187,7 @@ import './style.scss';
         }
       } else if (
         keymapManager.isKeyMatch(e, 'navigate_next') ||
-        e.key === 'ArrowRight'
+        keymapManager.isKeyMatch(e, 'arrow_navigate_next')
       ) {
         // next page
         e.preventDefault();

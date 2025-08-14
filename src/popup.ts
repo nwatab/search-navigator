@@ -259,6 +259,11 @@ document.addEventListener('DOMContentLoaded', async () => {
           switch_to_news: switchToNewsInput,
           switch_to_map: switchToMapInput,
           switch_to_youtube: switchToYoutubeInput,
+          // Arrow keys use default values and are not user-configurable
+          arrow_move_up: null,
+          arrow_move_down: null,
+          arrow_navigate_previous: null,
+          arrow_navigate_next: null,
         };
 
       const userOverrideConfigs = (
