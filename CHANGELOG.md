@@ -5,6 +5,10 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix arrow key navigation not called when modifier keys are pressed (#87)
+
 ## [1.9.3] - 2025-08-12
 
 ### Fixed
@@ -158,6 +162,7 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ---
 
+[1.9.4]: https://github.com/nwatab/search-navigator/compare/v1.9.3...v1.9.4
 [1.9.3]: https://github.com/nwatab/search-navigator/compare/v1.9.2...v1.9.3
 [1.9.2]: https://github.com/nwatab/search-navigator/compare/v1.9.1...v1.9.2
 [1.9.1]: https://github.com/nwatab/search-navigator/compare/v1.9.0...v1.9.1
