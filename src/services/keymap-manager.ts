@@ -7,6 +7,11 @@ export interface KeyConfigs<T extends string> {
   open_link: Pick<KeyConfig<T>, 'key'>; // open link only needs the key
   navigate_previous: KeyConfig<T>;
   navigate_next: KeyConfig<T>;
+  // Arrow key alternatives for navigation
+  arrow_move_up: KeyConfig<T>;
+  arrow_move_down: KeyConfig<T>;
+  arrow_navigate_previous: KeyConfig<T>;
+  arrow_navigate_next: KeyConfig<T>;
   switch_to_image_search: KeyConfig<T>;
   switch_to_all_search: KeyConfig<T>;
   switch_to_videos: KeyConfig<T>;
@@ -49,6 +54,35 @@ export const defaultKeyConfigs: KeyConfigs<string> = {
   },
   navigate_next: {
     key: 'l',
+    ctrl: false,
+    alt: false,
+    shift: false,
+    meta: false,
+  },
+  // Arrow key alternatives - only activate when no modifier keys that conflict with browser shortcuts
+  arrow_move_up: {
+    key: 'ArrowUp',
+    ctrl: false,
+    alt: false,
+    shift: false,
+    meta: false,
+  },
+  arrow_move_down: {
+    key: 'ArrowDown',
+    ctrl: false,
+    alt: false,
+    shift: false,
+    meta: false,
+  },
+  arrow_navigate_previous: {
+    key: 'ArrowLeft',
+    ctrl: false,
+    alt: false,
+    shift: false,
+    meta: false,
+  },
+  arrow_navigate_next: {
+    key: 'ArrowRight',
     ctrl: false,
     alt: false,
     shift: false,
@@ -111,7 +145,10 @@ export const createKeymapManager = async (
   const currentData = await storage.get<{ key_configs?: KeyConfigs<string> }>(
     'key_configs'
   );
-  let current = currentData.key_configs ?? defaultKeyConfigs;
+  // Merge stored configs with defaults to ensure new default keys are included
+  let current = currentData.key_configs
+    ? { ...defaultKeyConfigs, ...currentData.key_configs }
+    : defaultKeyConfigs;
 
   return {
     getKeyConfigs() {
