@@ -21,6 +21,13 @@ describe('get Google search results', () => {
     const results = getGoogleSearchResults('image', dom.window.document);
     expect(results.length).toBe(8);
   });
+  it('get results on all tab for query "something"', async () => {
+    const htmlPath = path.join(__dirname, '/htmls/20250807_all_usa_14.html');
+    const dom = await JSDOM.fromFile(htmlPath);
+    const results = getGoogleSearchResults('all', dom.window.document);
+    console.log(results);
+    expect(results.length).toBe(19);
+  });
   it('get image results for query "château-chalon"', async () => {
     const htmlPath = path.join(
       __dirname,
