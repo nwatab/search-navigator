@@ -26,11 +26,12 @@ export function getGoogleSearchTabType(
   }
   switch (udm) {
     // https://medium.com/@tanyongsheng0805/every-google-udm-in-the-world-6ee9741434c9
+    // #1: Web
     // #2: Images
     // #6: Learn
     // #7: Videos
     // #12: News
-    // #14: Web
+    // #14: Web (alternate variant)
     // #15: Attractions
     // #18: Forums
     // #28: Shopping
@@ -38,6 +39,9 @@ export function getGoogleSearchTabType(
     // #37: Products
     // #44: Visual matches
     // #48: Exact matches
+    case '1':
+    case '14':
+      return 'all';
     case '2':
       return 'image';
     case '7':
@@ -47,7 +51,12 @@ export function getGoogleSearchTabType(
     case '28':
       return 'shopping';
   }
-  return null; // not expected to be here
+  // Google periodically introduces new tbm/udm values. Rather than breaking
+  // every shortcut on an unrecognized value, fall back to the default tab type.
+  console.warn(
+    `Unknown Google search tab type (tbm=${tbm}, udm=${udm}); falling back to "all".`
+  );
+  return 'all';
 }
 
 export const makeGetPageType =
@@ -64,7 +73,7 @@ export const makeGetPageType =
       const tabType = getGoogleSearchTabType(searchParam);
       if (!tabType) {
         throw new Error(
-          "Can't to determine search tab type for: " + location.href
+          "Can't determine search tab type for: " + location.href
         );
       }
       return tabType;

@@ -46,16 +46,32 @@ describe('getGoogleSearchTabType', () => {
     expect(getGoogleSearchTabType(urlSearchParams)).toBe('shopping');
   });
 
-  it('should return null for unsupported UDM values', () => {
-    const urlSearchParams = new URLSearchParams('q=dummy+search+query&udm=99');
-    expect(getGoogleSearchTabType(urlSearchParams)).toBeNull();
+  it('should return "all" for the Web tab (udm=1)', () => {
+    const urlSearchParams = new URLSearchParams('q=dummy+search+query&udm=1');
+    expect(getGoogleSearchTabType(urlSearchParams)).toBe('all');
   });
 
-  it('should return null for unsupported TBM values', () => {
+  it('should return "all" for the Web tab alternate variant (udm=14)', () => {
+    const urlSearchParams = new URLSearchParams('q=dummy+search+query&udm=14');
+    expect(getGoogleSearchTabType(urlSearchParams)).toBe('all');
+  });
+
+  it('should fall back to "all" (with a warning) for unsupported UDM values', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const urlSearchParams = new URLSearchParams('q=dummy+search+query&udm=99');
+    expect(getGoogleSearchTabType(urlSearchParams)).toBe('all');
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
+
+  it('should fall back to "all" (with a warning) for unsupported TBM values', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const urlSearchParams = new URLSearchParams(
       'q=dummy+search+query&tbm=unknown'
     );
-    expect(getGoogleSearchTabType(urlSearchParams)).toBeNull();
+    expect(getGoogleSearchTabType(urlSearchParams)).toBe('all');
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
   });
 
   it('should prioritize TBM over UDM when both are present', () => {
@@ -83,8 +99,11 @@ describe('getGoogleSearchTabType', () => {
   });
 
   it('should handle case sensitivity correctly', () => {
-    // TBM values should be case-sensitive
+    // TBM values are case-sensitive, so an upper-cased value is unrecognized
+    // and falls back to the default "all" tab type.
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const urlSearchParams = new URLSearchParams('q=test&tbm=ISCH');
-    expect(getGoogleSearchTabType(urlSearchParams)).toBeNull();
+    expect(getGoogleSearchTabType(urlSearchParams)).toBe('all');
+    warnSpy.mockRestore();
   });
 });

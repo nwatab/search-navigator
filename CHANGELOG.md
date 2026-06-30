@@ -7,6 +7,7 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ### Fixed
 
+- Fix tab type detection on search URLs with `udm=1` (Web tab); recognize `udm` Web variants and fall back to the default tab type instead of throwing on unknown `tbm`/`udm` values (#90)
 - Fix arrow key navigation not called when modifier keys are pressed (#87)
 
 ## [1.9.3] - 2025-08-12
