@@ -41,15 +41,19 @@ export function getSearchRootSelector(pageType: PageType): string {
   return '#rso, #search';
 }
 
-function getSearchRoot(
-  pageType: PageType,
-  doc: Document
-): HTMLDivElement | null {
+function getSearchRoots(pageType: PageType, doc: Document): HTMLDivElement[] {
   if (pageType === 'youtube-search-result') {
-    return doc.getElementById('contents') as HTMLDivElement | null;
+    return [doc.getElementById('contents')].filter(
+      (el): el is HTMLDivElement => el !== null
+    );
   }
-  return (doc.getElementById('rso') ??
-    doc.getElementById('search')) as HTMLDivElement | null;
+  const roots = [doc.getElementById('rso') ?? doc.getElementById('search')];
+  if (pageType === 'all') {
+    // On the "All" tab, infinite scroll appends extra results inside
+    // #botstuff, outside #rso/#search (issue #76).
+    roots.push(doc.getElementById('botstuff'));
+  }
+  return roots.filter((el): el is HTMLDivElement => el !== null);
 }
 
 export interface YouTubeSearchOptions {
@@ -62,13 +66,13 @@ export const getGoogleSearchResults = (
   tabType: GoogleSearchTabType,
   doc: Document = document
 ): HTMLDivElement[] => {
-  const root = getSearchRoot(tabType, doc);
+  const roots = getSearchRoots(tabType, doc);
 
-  if (!root) {
+  if (roots.length === 0) {
     throw new Error('No search root found in the document.');
   }
 
-  return collectSingleHeadingsForGoogle(root, tabType);
+  return roots.flatMap((root) => collectSingleHeadingsForGoogle(root, tabType));
 };
 
 export const getYouTubeSearchResults = (

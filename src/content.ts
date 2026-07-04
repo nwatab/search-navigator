@@ -64,6 +64,7 @@ import './style.scss';
         // down
         e.preventDefault();
         const dynamicLoadPageTypes: PageType[] = [
+          'all',
           'image',
           'youtube-search-result',
         ] as const;
