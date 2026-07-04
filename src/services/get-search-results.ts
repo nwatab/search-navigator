@@ -36,14 +36,16 @@ export type PageType = GoogleSearchTabType | 'youtube-search-result';
 
 export function getSearchRootSelector(pageType: PageType): string {
   if (pageType === 'youtube-search-result') {
-    return '#contents';
+    // Many YouTube elements share id="contents"; scope to the search page
+    // container so we don't match an unrelated node (issue #73).
+    return 'ytd-search #contents';
   }
   return '#rso, #search';
 }
 
 function getSearchRoots(pageType: PageType, doc: Document): HTMLDivElement[] {
   if (pageType === 'youtube-search-result') {
-    return [doc.getElementById('contents')].filter(
+    return [doc.querySelector('ytd-search #contents')].filter(
       (el): el is HTMLDivElement => el !== null
     );
   }
@@ -99,8 +101,11 @@ export const getYouTubeSearchResults = (
 
   const combinedSelector = selectors.join(',');
 
-  // Single DOM query
-  const elements = doc.querySelectorAll(combinedSelector);
+  // Scope the query to the search results container: YouTube keeps DOM of
+  // previously visited pages around, and a document-wide query could pick up
+  // renderers from those hidden pages (issue #73).
+  const root = doc.querySelector('ytd-search #contents') ?? doc;
+  const elements = root.querySelectorAll(combinedSelector);
   return Array.from(elements) as HTMLDivElement[];
 };
 
