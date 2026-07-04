@@ -21,54 +21,93 @@ const titleOfHighlighted = async (page: {
         ''
     );
 
-test.beforeEach(async ({ context }) => {
-  await serveFixtures(context, {
-    'https://www.youtube.com/results':
-      '20250620-youtube-search-result-prokofiev-piano-concerto-3-tokyo.html',
+test.describe('regular video navigation', () => {
+  test.beforeEach(async ({ context }) => {
+    await serveFixtures(context, {
+      'https://www.youtube.com/results':
+        '20250620-youtube-search-result-prokofiev-piano-concerto-3-tokyo.html',
+    });
+  });
+
+  test('navigates YouTube results with j and k', async ({ page }) => {
+    await page.goto(YOUTUBE_RESULTS_URL);
+    const highlighted = page.locator(HIGHLIGHT_SELECTOR);
+    await expect(highlighted).toHaveCount(1);
+
+    const first = await titleOfHighlighted(page);
+    await page.keyboard.press('j');
+    await expect(highlighted).toHaveCount(1);
+    const second = await titleOfHighlighted(page);
+    expect(second).not.toBe(first);
+
+    await page.keyboard.press('k');
+    await expect(highlighted).toHaveCount(1);
+    expect(await titleOfHighlighted(page)).toBe(first);
+  });
+
+  test('keeps exactly one active listener across SPA navigations', async ({
+    page,
+  }) => {
+    await page.goto(YOUTUBE_RESULTS_URL);
+    const highlighted = page.locator(HIGHLIGHT_SELECTOR);
+    await expect(highlighted).toHaveCount(1);
+
+    const first = await titleOfHighlighted(page);
+    await page.keyboard.press('j');
+    const second = await titleOfHighlighted(page);
+    expect(second).not.toBe(first);
+
+    // Simulate YouTube SPA navigation, which re-runs the extension's init().
+    await page.evaluate(() =>
+      document.dispatchEvent(new Event('yt-navigate-finish'))
+    );
+    // Re-init highlights the first result again.
+    await expect(
+      page.locator(HIGHLIGHT_SELECTOR).filter({ hasText: first })
+    ).toHaveCount(1);
+
+    // One keypress must move the highlight exactly one step; with stale
+    // listeners piling up (issue #73) it would move several results at once
+    // and leave multiple highlights behind.
+    await page.keyboard.press('j');
+    await expect(highlighted).toHaveCount(1);
+    expect(await titleOfHighlighted(page)).toBe(second);
   });
 });
 
-test('navigates YouTube results with j and k', async ({ page }) => {
-  await page.goto(YOUTUBE_RESULTS_URL);
-  const highlighted = page.locator(HIGHLIGHT_SELECTOR);
-  await expect(highlighted).toHaveCount(1);
+test.describe('playlist and course navigation', () => {
+  test.beforeEach(async ({ context }) => {
+    await serveFixtures(context, {
+      'https://www.youtube.com/results': '20260704-youtube-qft-tokyo.html',
+    });
+  });
 
-  const first = await titleOfHighlighted(page);
-  await page.keyboard.press('j');
-  await expect(highlighted).toHaveCount(1);
-  const second = await titleOfHighlighted(page);
-  expect(second).not.toBe(first);
+  test('navigates onto playlist/course results (yt-lockup-view-model)', async ({
+    page,
+  }) => {
+    await page.goto('https://www.youtube.com/results?search_query=qft');
+    const highlighted = page.locator(HIGHLIGHT_SELECTOR);
+    await expect(highlighted).toHaveCount(1);
 
-  await page.keyboard.press('k');
-  await expect(highlighted).toHaveCount(1);
-  expect(await titleOfHighlighted(page)).toBe(first);
-});
-
-test('keeps exactly one active listener across SPA navigations', async ({
-  page,
-}) => {
-  await page.goto(YOUTUBE_RESULTS_URL);
-  const highlighted = page.locator(HIGHLIGHT_SELECTOR);
-  await expect(highlighted).toHaveCount(1);
-
-  const first = await titleOfHighlighted(page);
-  await page.keyboard.press('j');
-  const second = await titleOfHighlighted(page);
-  expect(second).not.toBe(first);
-
-  // Simulate YouTube SPA navigation, which re-runs the extension's init().
-  await page.evaluate(() =>
-    document.dispatchEvent(new Event('yt-navigate-finish'))
-  );
-  // Re-init highlights the first result again.
-  await expect(
-    page.locator(HIGHLIGHT_SELECTOR).filter({ hasText: first })
-  ).toHaveCount(1);
-
-  // One keypress must move the highlight exactly one step; with stale
-  // listeners piling up (issue #73) it would move several results at once
-  // and leave multiple highlights behind.
-  await page.keyboard.press('j');
-  await expect(highlighted).toHaveCount(1);
-  expect(await titleOfHighlighted(page)).toBe(second);
+    // Walk down until the course lockup is reached; it must be selectable.
+    const lockupIndex = await page.evaluate(() => {
+      const results = Array.from(
+        document.querySelectorAll(
+          'ytd-search #contents ytd-video-renderer, ytd-search #contents yt-lockup-view-model'
+        )
+      );
+      return results.findIndex(
+        (el) => el.tagName.toLowerCase() === 'yt-lockup-view-model'
+      );
+    });
+    expect(lockupIndex).toBeGreaterThan(-1);
+    for (let i = 0; i < lockupIndex; i++) {
+      await page.keyboard.press('j');
+    }
+    await expect(highlighted).toHaveCount(1);
+    const highlightedTag = await highlighted
+      .first()
+      .evaluate((el) => el.tagName.toLowerCase());
+    expect(highlightedTag).toBe('yt-lockup-view-model');
+  });
 });
