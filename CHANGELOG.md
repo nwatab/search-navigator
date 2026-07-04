@@ -5,9 +5,27 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.9.5] - 2026-07-04
+
 ### Fixed
 
 - Fix tab type detection on search URLs with `udm=1` (Web tab); recognize `udm` Web variants and fall back to the default tab type instead of throwing on unknown `tbm`/`udm` values (#90)
+- Include results loaded by infinite scroll into `#botstuff` in All tab navigation. (#76)
+- Stabilize YouTube search result navigation: remove stale keydown listeners piling up across SPA navigations, scope the search root to `ytd-search #contents`, and recover when results have not rendered yet. (#73)
+
+### Changed
+
+- On the Images tab, Enter now opens the preview (enlarge) panel and pressing Enter again opens the image's source page; Ctrl/Cmd/Shift+Enter opens the source page directly. (#72)
+
+### Maintenance
+
+- Add Playwright E2E tests that load the built extension and run against saved page snapshots without network access. (#92)
+- Refactor dependency injection to wire only the Chrome API boundary; pure functions are now imported directly. (#97)
+
+## [1.9.4] - 2025-08-14
+
+### Fixed
+
 - Fix arrow key navigation not called when modifier keys are pressed (#87)
 
 ## [1.9.3] - 2025-08-12
