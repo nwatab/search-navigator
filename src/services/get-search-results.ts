@@ -1,3 +1,5 @@
+import { waitForSelector } from './dom-utils';
+
 /**
  * Return an array of visible children (not display:none, not aria-hidden="true").
  */
@@ -109,43 +111,26 @@ export const getYouTubeSearchResults = (
   return Array.from(elements) as HTMLDivElement[];
 };
 
-export const makeGetSearchResults =
-  (
-    getGoogleSearchResults: (
-      tabType: GoogleSearchTabType,
-      doc?: Document
-    ) => HTMLDivElement[],
-    getYouTubeSearchResults: (
-      doc: Document,
-      options?: YouTubeSearchOptions
-    ) => HTMLDivElement[]
-  ) =>
-  (doc: Document, pageType: PageType): HTMLDivElement[] => {
-    if (pageType === 'youtube-search-result') {
-      return getYouTubeSearchResults(doc, {
-        shorts: false,
-        ads: false,
-        mix: true,
-      });
-    }
-    return getGoogleSearchResults(pageType, doc);
-  };
+export const getSearchResults = (
+  doc: Document,
+  pageType: PageType
+): HTMLDivElement[] => {
+  if (pageType === 'youtube-search-result') {
+    return getYouTubeSearchResults(doc, {
+      shorts: false,
+      ads: false,
+      mix: true,
+    });
+  }
+  return getGoogleSearchResults(pageType, doc);
+};
 
-export const makeWaitForSearchRoot =
-  (
-    waitForSelector: (
-      doc: Document,
-      selector: string,
-      timeout?: number
-    ) => Promise<Element>,
-    getSearchRootSelector: (pageType: PageType) => string
-  ) =>
-  async (
-    doc: Document = document,
-    pageType: PageType,
-    timeout = 5_000
-  ): Promise<HTMLDivElement> => {
-    const selector = getSearchRootSelector(pageType);
-    const el = await waitForSelector(doc, selector, timeout);
-    return el as HTMLDivElement;
-  };
+export const waitForSearchRoot = async (
+  doc: Document = document,
+  pageType: PageType,
+  timeout = 5_000
+): Promise<HTMLDivElement> => {
+  const selector = getSearchRootSelector(pageType);
+  const el = await waitForSelector(doc, selector, timeout);
+  return el as HTMLDivElement;
+};

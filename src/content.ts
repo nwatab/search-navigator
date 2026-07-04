@@ -2,20 +2,18 @@ import {
   PEOPLE_ALSO_ASK_ACCORDION_TIMEOUT,
   UPDATE_KEYMAPPINGS_MESSAGE,
 } from './constants';
+import { keymapManagerPromise } from './dependency-injection';
+import type { PageType } from './services';
 import {
   detectTheme,
+  getGoogleImageResultAnchors,
   getPageType,
   getSearchResults,
   highlight,
-  keymapManagerPromise,
-  unhighlight,
-  waitForSearchRoot,
-} from './dependency-injection';
-import type { PageType } from './services';
-import {
-  getGoogleImageResultAnchors,
   simulateYouTubeHover,
   togglePeopleAlsoAskAccordion,
+  unhighlight,
+  waitForSearchRoot,
 } from './services';
 
 import './style.scss';

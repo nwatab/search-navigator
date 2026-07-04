@@ -59,33 +59,25 @@ export function getGoogleSearchTabType(
   return 'all';
 }
 
-export const makeGetPageType =
-  (
-    getGoogleSearchTabType: (
-      urlSearchParams: URLSearchParams
-    ) => GoogleSearchTabType | null
-  ) =>
-  (location: Location): PageType => {
-    const url = new URL(location.href);
+export const getPageType = (location: Location): PageType => {
+  const url = new URL(location.href);
 
-    if (url.hostname === 'www.google.com') {
-      const searchParam = new URLSearchParams(location.search);
-      const tabType = getGoogleSearchTabType(searchParam);
-      if (!tabType) {
-        throw new Error(
-          "Can't determine search tab type for: " + location.href
-        );
-      }
-      return tabType;
+  if (url.hostname === 'www.google.com') {
+    const searchParam = new URLSearchParams(location.search);
+    const tabType = getGoogleSearchTabType(searchParam);
+    if (!tabType) {
+      throw new Error("Can't determine search tab type for: " + location.href);
     }
+    return tabType;
+  }
 
-    if (
-      url.hostname === 'www.youtube.com' &&
-      url.pathname === '/results' &&
-      url.searchParams.has('search_query')
-    ) {
-      return 'youtube-search-result';
-    }
+  if (
+    url.hostname === 'www.youtube.com' &&
+    url.pathname === '/results' &&
+    url.searchParams.has('search_query')
+  ) {
+    return 'youtube-search-result';
+  }
 
-    throw new Error(`Unexpected host: ${url}`);
-  };
+  throw new Error(`Unexpected host: ${url}`);
+};

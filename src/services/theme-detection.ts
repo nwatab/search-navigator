@@ -21,27 +21,15 @@ export function determineThemeFromRgb(
     : 'light';
 }
 
-export const makeDetectTheme =
-  (
-    extractBackgroundRgb: (
-      window: Window & typeof globalThis,
-      el: HTMLElement
-    ) => [number, number, number] | null,
-    determineThemeFromRgb: (
-      rgb: [number, number, number],
-      brightnessThreshold?: number
-    ) => 'light' | 'dark'
-  ) =>
-  (
-    window: Window & typeof globalThis,
-    document: Document,
-    pageType: PageType
-  ): 'light' | 'dark' => {
-    const el =
-      pageType === 'youtube-search-result'
-        ? document.documentElement
-        : document.body;
-    const rgb = extractBackgroundRgb(window, el);
-    const theme = determineThemeFromRgb(rgb || [255, 255, 255]);
-    return theme;
-  };
+export const detectTheme = (
+  window: Window & typeof globalThis,
+  document: Document,
+  pageType: PageType
+): 'light' | 'dark' => {
+  const el =
+    pageType === 'youtube-search-result'
+      ? document.documentElement
+      : document.body;
+  const rgb = extractBackgroundRgb(window, el);
+  return determineThemeFromRgb(rgb || [255, 255, 255]);
+};
