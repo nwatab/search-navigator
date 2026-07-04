@@ -1,49 +1,43 @@
-// filepath: /Users/n/work/search-navigator/__tests__/highlight.test.ts
-import {
-  makeHighlight,
-  makeUnhighlight,
-} from '../src/services/element-highlighting';
+import { highlight, unhighlight } from '../src/services/element-highlighting';
 import { scrollIntoViewIfOutsideViewport } from '../src/services/dom-utils';
 
-// Mock scrollIntoViewIfOutsideViewport function
+// Mock only the viewport-dependent scrolling; jsdom has no layout, so the
+// real implementation could never report an element as outside the viewport.
 jest.mock('../src/services/dom-utils', () => ({
+  ...jest.requireActual('../src/services/dom-utils'),
   scrollIntoViewIfOutsideViewport: jest.fn().mockImplementation((el) => el),
 }));
 
-describe('makeHighlight', () => {
-  let addClass: jest.Mock;
-  let highlight: ReturnType<typeof makeHighlight>;
+const createResults = (count: number): HTMLElement[] => {
+  document.body.innerHTML = '';
+  return Array.from({ length: count }).map((_, i) => {
+    const div = document.createElement('div');
+    div.id = `result-${i}`;
+    document.body.appendChild(div);
+    return div;
+  });
+};
+
+describe('highlight', () => {
   let results: HTMLElement[];
 
   beforeEach(() => {
-    addClass = jest.fn();
-    highlight = makeHighlight(addClass, scrollIntoViewIfOutsideViewport);
-
-    // Setup DOM elements
-    document.body.innerHTML = '';
-    results = Array.from({ length: 3 }).map((_, i) => {
-      const div = document.createElement('div');
-      div.id = `result-${i}`;
-      document.body.appendChild(div);
-      return div;
-    });
-
-    // Reset mocks
+    results = createResults(3);
     jest.clearAllMocks();
   });
 
   it('should add the correct highlight class', () => {
     highlight(results, 1, 'light');
 
-    expect(addClass).toHaveBeenCalledTimes(1);
-    expect(addClass).toHaveBeenCalledWith(results[1], 'sn-selected-light');
+    expect(results[1].classList.contains('sn-selected-light')).toBe(true);
+    expect(results[0].classList.contains('sn-selected-light')).toBe(false);
+    expect(results[2].classList.contains('sn-selected-light')).toBe(false);
   });
 
   it('should add the dark theme class when specified', () => {
     highlight(results, 0, 'dark');
 
-    expect(addClass).toHaveBeenCalledTimes(1);
-    expect(addClass).toHaveBeenCalledWith(results[0], 'sn-selected-dark');
+    expect(results[0].classList.contains('sn-selected-dark')).toBe(true);
   });
 
   it('should scroll the element into view by default', () => {
@@ -65,34 +59,21 @@ describe('makeHighlight', () => {
   });
 });
 
-describe('makeUnhighlight', () => {
-  let removeClass: jest.Mock;
-  let unhighlight: ReturnType<typeof makeUnhighlight>;
+describe('unhighlight', () => {
   let results: HTMLElement[];
 
   beforeEach(() => {
-    removeClass = jest.fn();
-    unhighlight = makeUnhighlight(removeClass);
-
-    // Setup DOM elements
-    document.body.innerHTML = '';
-    results = Array.from({ length: 3 }).map((_, i) => {
-      const div = document.createElement('div');
-      div.id = `result-${i}`;
-      document.body.appendChild(div);
-      return div;
-    });
-
-    // Reset mocks
+    results = createResults(3);
     jest.clearAllMocks();
   });
 
   it('should remove both light and dark highlight classes', () => {
+    results[1].classList.add('sn-selected-light', 'sn-selected-dark');
+
     unhighlight(results, 1);
 
-    expect(removeClass).toHaveBeenCalledTimes(2);
-    expect(removeClass).toHaveBeenCalledWith(results[1], 'sn-selected-dark');
-    expect(removeClass).toHaveBeenCalledWith(results[1], 'sn-selected-light');
+    expect(results[1].classList.contains('sn-selected-light')).toBe(false);
+    expect(results[1].classList.contains('sn-selected-dark')).toBe(false);
   });
 
   it('should not collapse expanded related questions (keep them open)', () => {
@@ -122,13 +103,13 @@ describe('makeUnhighlight', () => {
   it('should not collapse if no expanded related questions', () => {
     // Setup element without related question pair
     const div = document.createElement('div');
+    div.classList.add('sn-selected-light');
     document.body.appendChild(div);
     results = [div];
 
     unhighlight(results, 0);
 
-    // Just asserting that it doesn't throw an error
-    expect(removeClass).toHaveBeenCalledTimes(2);
+    expect(div.classList.contains('sn-selected-light')).toBe(false);
   });
 
   it('should throw an error for invalid index', () => {
