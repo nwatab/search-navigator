@@ -36,7 +36,7 @@ Navigate Google search results with your keyboard:
 - `h/l` or `←/→` - Previous/next page
 - `Enter` - Open result (+ `Ctrl`/`Cmd` for new tab, `Shift` for new window)
 
-  _Note: Navigation controls are currently not supported on Shopping pages_
+  _Note: Navigation controls are not supported on Shopping pages_
 
 **Switch Between Tabs**
 
@@ -48,17 +48,14 @@ Navigate Google search results with your keyboard:
 
 **Customize shortcuts** by clicking the extension icon. Arrow keys cannot be changed.
 
-## Important Notes
-
-⚠️ **YouTube functionality is currently unstable and in preview version.** Navigation features may not work consistently on YouTube Search Result pages. Full YouTube support is planned for future releases.
-
 ## Roadmap
 
 - [x] Light/Dark Theme support
 - [x] Keyboard shortcut customization
 - [x] Switch between All, Images, Videos, News, and Shopping search tabs
 - [x] Navigate to Google Maps and YouTube with current search query
-- [ ] YouTube support: move up/down, open, save to “Watch Later”
+- [x] YouTube support: move up/down, open
+- [ ] YouTube support: save to “Watch Later”
 - [x] Image/Video/News support: move up/down, open
 
 ## Developer Contribution Guidelines
