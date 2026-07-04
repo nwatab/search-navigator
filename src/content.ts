@@ -12,7 +12,11 @@ import {
   waitForSearchRoot,
 } from './dependency-injection';
 import type { PageType } from './services';
-import { simulateYouTubeHover, togglePeopleAlsoAskAccordion } from './services';
+import {
+  getGoogleImageResultAnchors,
+  simulateYouTubeHover,
+  togglePeopleAlsoAskAccordion,
+} from './services';
 
 import './style.scss';
 
@@ -28,6 +32,9 @@ import './style.scss';
     const { signal } = keydownAbortController;
 
     let currentIndex: number = 0;
+    // Index of the image result whose preview panel was opened with Enter;
+    // pressing Enter again on it opens the source page (issue #72).
+    let enlargedIndex: number | null = null;
     let pageType: PageType;
     try {
       pageType = getPageType(window.location);
@@ -151,8 +158,32 @@ import './style.scss';
             return; // not expected to happen
           }
 
-          // Check if this is a "People also ask" section first
           const currentResult = results[currentIndex];
+
+          if (pageType === 'image') {
+            // First Enter enlarges (opens Google's preview panel); Enter
+            // again — or any modifier — opens the source page (issue #72).
+            const { thumbnail, source } =
+              getGoogleImageResultAnchors(currentResult);
+            const { ctrlKey, metaKey, shiftKey } = e;
+            const hasModifier = ctrlKey || metaKey || shiftKey;
+            if (!hasModifier && enlargedIndex !== currentIndex && thumbnail) {
+              thumbnail.click();
+              enlargedIndex = currentIndex;
+              return;
+            }
+            if (!source?.href) return;
+            if (ctrlKey || metaKey) {
+              window.open(source.href, '_blank');
+            } else if (shiftKey) {
+              window.open(source.href, '_blank', '');
+            } else {
+              source.click();
+            }
+            return;
+          }
+
+          // Check if this is a "People also ask" section first
           const hasRelatedQuestionPair = currentResult.querySelector(
             '.related-question-pair'
           );

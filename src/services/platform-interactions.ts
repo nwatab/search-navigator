@@ -51,6 +51,29 @@ export const togglePeopleAlsoAskAccordion = (element: HTMLElement): void => {
 };
 
 /**
+ * Split a Google Images grid result into its two anchors: the thumbnail
+ * anchor that opens Google's preview panel when clicked, and the anchor
+ * pointing to the source page.
+ */
+export const getGoogleImageResultAnchors = (
+  result: HTMLElement
+): {
+  thumbnail: HTMLAnchorElement | null;
+  source: HTMLAnchorElement | null;
+} => {
+  const anchors = Array.from(result.querySelectorAll('a'));
+  // The thumbnail anchor has no href until Google populates it with a
+  // site-relative /imgres URL; the source anchor links straight to the
+  // external page.
+  const isExternalHref = (a: HTMLAnchorElement): boolean =>
+    /^https?:\/\//.test(a.getAttribute('href') ?? '');
+  return {
+    thumbnail: anchors.find((a) => !isExternalHref(a)) ?? null,
+    source: anchors.find(isExternalHref) ?? null,
+  };
+};
+
+/**
  * Helper function to simulate YouTube thumbnail hover
  */
 export const simulateYouTubeHover = (
