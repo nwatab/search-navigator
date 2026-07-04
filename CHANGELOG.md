@@ -5,6 +5,16 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.9.6] - 2026-07-04
+
+### Fixed
+
+- Make YouTube playlist, course and Mix results selectable again: they render as `yt-lockup-view-model` host elements, and the CSS classes the old selector relied on were removed from YouTube's DOM. (#100)
+
+### Maintenance
+
+- Add E2E regression tests for previously uncaught errors (warmup page, SPA navigation to a watch page, empty result list). (#99)
+
 ## [1.9.5] - 2026-07-04
 
 ### Fixed
