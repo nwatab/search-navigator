@@ -62,7 +62,8 @@ function getSearchRoots(pageType: PageType, doc: Document): HTMLDivElement[] {
 
 export interface YouTubeSearchOptions {
   shorts?: boolean;
-  mix?: boolean;
+  /** Mixes, playlists and courses, all rendered as yt-lockup-view-model. */
+  playlists?: boolean;
   ads?: boolean;
 }
 
@@ -83,7 +84,7 @@ export const getYouTubeSearchResults = (
   doc: Document,
   options: YouTubeSearchOptions = {}
 ): HTMLDivElement[] => {
-  const { shorts = false, mix = false, ads = false } = options;
+  const { shorts = false, playlists = false, ads = false } = options;
 
   // Build a single selector based on options
   const selectors: string[] = ['ytd-video-renderer'];
@@ -95,10 +96,12 @@ export const getYouTubeSearchResults = (
       'ytm-shorts-lockup-view-model-v2.shortsLockupViewModelHost.yt-horizontal-list-renderer'
     );
   }
-  if (mix) {
-    selectors.push(
-      '.yt-lockup-view-model-wiz.yt-lockup-view-model-wiz--horizontal.yt-lockup-view-model-wiz--collection-stack-2'
-    );
+  if (playlists) {
+    // Select the host element: the inner
+    // .yt-lockup-view-model-wiz--collection-stack-2 classes it used to be
+    // matched by were removed from YouTube's DOM, which made mixes,
+    // playlists and courses unselectable.
+    selectors.push('yt-lockup-view-model');
   }
 
   const combinedSelector = selectors.join(',');
@@ -119,7 +122,7 @@ export const getSearchResults = (
     return getYouTubeSearchResults(doc, {
       shorts: false,
       ads: false,
-      mix: true,
+      playlists: true,
     });
   }
   return getGoogleSearchResults(pageType, doc);
