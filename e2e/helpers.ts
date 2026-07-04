@@ -11,12 +11,16 @@ const fixturesDir = fileURLToPath(
 export const HIGHLIGHT_SELECTOR = '.sn-selected-light, .sn-selected-dark';
 
 /**
- * Strip <script> tags from a saved page so the page's own bundled JavaScript
- * does not run against the snapshot; the extension's content script is
- * injected separately by the browser and is unaffected.
+ * Prepare a saved page for serving: strip <script> tags so the page's own
+ * bundled JavaScript does not run against the snapshot (the extension's
+ * content script is injected separately by the browser and is unaffected),
+ * and drop highlight classes the extension may have baked into the snapshot
+ * when the page was saved.
  */
-const stripScripts = (html: string): string =>
-  html.replace(/<script\b[\s\S]*?<\/script>/gi, '');
+const sanitizeSnapshot = (html: string): string =>
+  html
+    .replace(/<script\b[\s\S]*?<\/script>/gi, '')
+    .replace(/\bsn-selected-(?:dark|light)\b/g, '');
 
 /**
  * Serve saved-page fixtures for matching document URLs and block all other
@@ -46,7 +50,7 @@ export const serveFixtures = async (
     const html = await fs.readFile(path.join(fixturesDir, entry[1]), 'utf8');
     return route.fulfill({
       contentType: 'text/html; charset=utf-8',
-      body: stripScripts(html),
+      body: sanitizeSnapshot(html),
     });
   });
 };
