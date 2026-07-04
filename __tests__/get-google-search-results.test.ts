@@ -21,6 +21,14 @@ describe('get Google search results', () => {
     const results = getGoogleSearchResults('image', dom.window.document);
     expect(results.length).toBe(8);
   });
+  it('get results on all tab including infinite-scroll results in #botstuff for query "something"', async () => {
+    // Infinite scroll appends extra results inside #botstuff (issue #76).
+    // This snapshot holds 7 results in #rso and 4 in #botstuff.
+    const htmlPath = path.join(__dirname, '/htmls/20250807_all_usa_14.html');
+    const dom = await JSDOM.fromFile(htmlPath);
+    const results = getGoogleSearchResults('all', dom.window.document);
+    expect(results.length).toBe(11);
+  });
   it('get image results for query "château-chalon"', async () => {
     const htmlPath = path.join(
       __dirname,
