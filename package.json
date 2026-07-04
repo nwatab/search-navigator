@@ -9,11 +9,13 @@
     "build:prod": "ENV=prod rollup -c",
     "format": "prettier --write \"src/**/*.{js,ts,tsx,json,css,scss,md}\"",
     "format:check": "prettier --check \"src/**/*.{js,ts,tsx,json,css,scss,md}\"",
-    "test": "jest"
+    "test": "jest",
+    "test:e2e": "pnpm run build:dev && playwright test"
   },
   "author": "Naoki Watanave",
   "license": "MIT",
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^8.5.0",
     "@types/chrome": "^0.0.315",

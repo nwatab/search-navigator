@@ -8,3 +8,7 @@ coverage/
 # Lock files from other package managers
 bun.lock*
 yarn.lock
+
+# Playwright
+test-results/
+playwright-report/
