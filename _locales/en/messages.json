@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "Search Navigator – Keyboard shortcuts for Google & YouTube",
+    "description": "Extension name shown in the toolbar and Chrome Web Store."
+  },
+  "extDescription": {
+    "message": "Keyboard shortcuts for Google Search & YouTube. Move with j/k, switch tabs, open results — no mouse, no setup, no tracking.",
+    "description": "Store summary / short description (max 132 characters)."
+  }
+}
