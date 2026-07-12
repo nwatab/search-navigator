@@ -2,14 +2,24 @@ import {
   PEOPLE_ALSO_ASK_ACCORDION_TIMEOUT,
   UPDATE_KEYMAPPINGS_MESSAGE,
 } from './constants';
-import { keymapManagerPromise } from './dependency-injection';
+import { keymapManagerPromise, storageSync } from './dependency-injection';
 import type { PageType } from './services';
 import {
+  createRatePromptToast,
+  defaultRatingState,
   detectTheme,
   getGoogleImageResultAnchors,
   getPageType,
+  getRatingState,
   getSearchResults,
   highlight,
+  incrementOpens,
+  markDismissed,
+  markRated,
+  RATE_PROMPT_TOAST_ID,
+  RATE_URL,
+  saveRatingState,
+  shouldShowRatePrompt,
   simulateYouTubeHover,
   togglePeopleAlsoAskAccordion,
   unhighlight,
@@ -23,6 +33,41 @@ import './style.scss';
   // init() re-runs on SPA navigation (yt-navigate-finish, popstate). Abort the
   // previous keydown listener so each keypress is handled exactly once (issue #73).
   let keydownAbortController: AbortController | null = null;
+
+  // Rating nudge: count genuine result-opens and, once past the threshold, show
+  // a single dismissible toast asking for a store rating. All local; no tracking.
+  let ratingState = await getRatingState(storageSync).catch(
+    () => defaultRatingState
+  );
+  let ratePromptHandled = false;
+
+  const recordResultOpen = () => {
+    const next = incrementOpens(ratingState);
+    if (next === ratingState) return;
+    ratingState = next;
+    void saveRatingState(storageSync, ratingState).catch(() => {});
+  };
+
+  const maybeShowRatePrompt = (theme: 'light' | 'dark') => {
+    if (ratePromptHandled) return;
+    ratePromptHandled = true;
+    if (!shouldShowRatePrompt(ratingState)) return;
+    if (document.getElementById(RATE_PROMPT_TOAST_ID)) return;
+    const toast = createRatePromptToast(theme, {
+      onRate: () => {
+        window.open(RATE_URL, '_blank', 'noopener');
+        ratingState = markRated(ratingState);
+        void saveRatingState(storageSync, ratingState).catch(() => {});
+        toast.remove();
+      },
+      onDismiss: () => {
+        ratingState = markDismissed(ratingState);
+        void saveRatingState(storageSync, ratingState).catch(() => {});
+        toast.remove();
+      },
+    });
+    document.body.appendChild(toast);
+  };
 
   async function init() {
     keydownAbortController?.abort();
@@ -56,6 +101,9 @@ import './style.scss';
       );
     }
     const theme = detectTheme(window, document, pageType);
+
+    // Ask for a rating once the user has opened enough results (fire-and-forget).
+    maybeShowRatePrompt(theme);
 
     // Results may not be rendered yet (YouTube streams them in). Pressing
     // move_down re-queries, so navigation recovers once they appear.
@@ -171,6 +219,7 @@ import './style.scss';
               return;
             }
             if (!source?.href) return;
+            recordResultOpen();
             if (ctrlKey || metaKey) {
               window.open(source.href, '_blank');
             } else if (shiftKey) {
@@ -218,6 +267,7 @@ import './style.scss';
             'a[href]'
           ) as HTMLAnchorElement;
           if (!link?.href) return;
+          recordResultOpen();
           const { ctrlKey, metaKey, shiftKey } = e;
           if (ctrlKey || metaKey) {
             // Ctrl+Click or Cmd+Click → new tab
