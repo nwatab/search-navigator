@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "Search Navigator – Google と YouTube のキーボードショートカット",
+    "description": "Extension name shown in the toolbar and Chrome Web Store."
+  },
+  "extDescription": {
+    "message": "Google 検索と YouTube をキーボードで操作。j/k で移動、タブ切替、結果を開く。マウス不要・設定不要・追跡なし。",
+    "description": "Store summary / short description (max 132 characters)."
+  }
+}

@@ -66,6 +66,7 @@ export default [
         targets: [
           { src: 'manifest.json', dest: 'dist' },
           { src: 'icons/*.png', dest: 'dist' },
+          { src: '_locales', dest: 'dist' },
         ],
       }),
     ].filter(Boolean), // Filter out false values
