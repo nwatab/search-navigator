@@ -5,6 +5,10 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+### Changed
+
+- Optimize the store listing for discoverability: keyword-rich extension `name` and `description` in the manifest, plus a `short_name` for cramped surfaces.
+
 ## [1.9.6] - 2026-07-04
 
 ### Fixed
