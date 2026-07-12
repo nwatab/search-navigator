@@ -5,6 +5,8 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-07-12
+
 ### Added
 
 - In-page rating prompt: after opening enough search results, a one-time, dismissible toast invites a Chrome Web Store rating. The open counter is stored locally in `chrome.storage.sync`; no tracking and no external requests (clicking "Rate" opens the store page).
