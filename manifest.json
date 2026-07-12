@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Search Navigator – Keyboard shortcuts for Google & YouTube",
   "short_name": "Search Navigator",
-  "version": "1.9.6",
+  "version": "1.10.0",
   "description": "Keyboard shortcuts for Google Search & YouTube. Move with j/k, switch tabs, open results — no mouse, no setup, no tracking.",
   "action": {
     "default_popup": "popup.html",
