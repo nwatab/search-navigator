@@ -8,3 +8,5 @@ export * from './theme-detection';
 export * from './keymap-manager';
 export * from './chrome-storage';
 export * from './keymap-utils';
+export * from './rating-prompt';
+export * from './rate-prompt-toast';
