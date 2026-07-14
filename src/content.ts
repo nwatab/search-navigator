@@ -53,6 +53,11 @@ import './style.scss';
     ratePromptHandled = true;
     if (!shouldShowRatePrompt(ratingState)) return;
     if (document.getElementById(RATE_PROMPT_TOAST_ID)) return;
+    // Ask at most once, ever. Persist that the prompt has been shown *now* so
+    // that ignoring it (leaving without clicking) never re-shows it on the next
+    // page load. Clicking "Rate" simply upgrades the status to 'rated'.
+    ratingState = markDismissed(ratingState);
+    void saveRatingState(storageSync, ratingState).catch(() => {});
     const toast = createRatePromptToast(theme, {
       onRate: () => {
         window.open(RATE_URL, '_blank', 'noopener');
@@ -61,8 +66,6 @@ import './style.scss';
         toast.remove();
       },
       onDismiss: () => {
-        ratingState = markDismissed(ratingState);
-        void saveRatingState(storageSync, ratingState).catch(() => {});
         toast.remove();
       },
     });
