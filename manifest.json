@@ -3,7 +3,7 @@
   "default_locale": "en",
   "name": "__MSG_extName__",
   "short_name": "Search Navigator",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "__MSG_extDescription__",
   "action": {
     "default_popup": "popup.html",

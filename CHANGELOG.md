@@ -5,6 +5,8 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.11.0] - 2026-07-14
+
 ### Added
 
 - Internationalization (`_locales`): the extension name and store summary are now localized via `__MSG__` placeholders, with English (`en`, default) and Japanese (`ja`) messages. This unlocks a localized Japanese store listing in the Chrome Web Store dashboard after the next upload.
