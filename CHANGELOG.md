@@ -9,6 +9,10 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 - Internationalization (`_locales`): the extension name and store summary are now localized via `__MSG__` placeholders, with English (`en`, default) and Japanese (`ja`) messages. This unlocks a localized Japanese store listing in the Chrome Web Store dashboard after the next upload.
 
+### Fixed
+
+- Rating prompt now appears at most once per install. Previously, ignoring the toast (closing the tab without clicking) let it reappear on every later search page; it is now marked as shown the moment it is displayed.
+
 ## [1.10.0] - 2026-07-12
 
 ### Added
