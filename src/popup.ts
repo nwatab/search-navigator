@@ -1,4 +1,4 @@
-import type { KeyConfigs } from './services';
+import type { KeyConfig, KeyConfigs } from './services';
 import {
   createKeymapManager,
   defaultKeyConfigs,
@@ -71,27 +71,35 @@ document.addEventListener('DOMContentLoaded', async () => {
       return el as HTMLInputElement;
     });
 
-    // Set the values using the helper function to convert KeyConfig to display string
-    moveUpInput.value = keyConfigToString(keyConfigs.move_up);
-    moveDownInput.value = keyConfigToString(keyConfigs.move_down);
-    openLinkInput.value = keyConfigToString(keyConfigs.open_link);
-    previousPageInput.value = keyConfigToString(keyConfigs.navigate_previous);
-    nextPageInput.value = keyConfigToString(keyConfigs.navigate_next);
-    switchToImageSearchInput.value = keyConfigToString(
+    // A disabled (null) shortcut is shown as an empty field
+    const toDisplayString = (
+      cfg: Pick<KeyConfig<string>, 'key'> | null
+    ): string => (cfg ? keyConfigToString(cfg) : '');
+
+    moveUpInput.value = toDisplayString(keyConfigs.move_up);
+    moveDownInput.value = toDisplayString(keyConfigs.move_down);
+    openLinkInput.value = toDisplayString(keyConfigs.open_link);
+    previousPageInput.value = toDisplayString(keyConfigs.navigate_previous);
+    nextPageInput.value = toDisplayString(keyConfigs.navigate_next);
+    switchToImageSearchInput.value = toDisplayString(
       keyConfigs.switch_to_image_search
     );
-    switchToAllSearchInput.value = keyConfigToString(
+    switchToAllSearchInput.value = toDisplayString(
       keyConfigs.switch_to_all_search
     );
-    switchToVideosInput.value = keyConfigToString(keyConfigs.switch_to_videos);
-    switchToShoppingInput.value = keyConfigToString(
+    switchToVideosInput.value = toDisplayString(keyConfigs.switch_to_videos);
+    switchToShoppingInput.value = toDisplayString(
       keyConfigs.switch_to_shopping
     );
-    switchToNewsInput.value = keyConfigToString(keyConfigs.switch_to_news);
-    switchToMapInput.value = keyConfigToString(keyConfigs.switch_to_map);
-    switchToYoutubeInput.value = keyConfigToString(
-      keyConfigs.switch_to_youtube
-    );
+    switchToNewsInput.value = toDisplayString(keyConfigs.switch_to_news);
+    switchToMapInput.value = toDisplayString(keyConfigs.switch_to_map);
+    switchToYoutubeInput.value = toDisplayString(keyConfigs.switch_to_youtube);
+
+    document
+      .querySelectorAll<HTMLInputElement>('.shortcut-input')
+      .forEach((input) => {
+        input.placeholder = input.value ? '' : 'None';
+      });
   }
 
   /**
@@ -127,6 +135,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (swallowKeys.has(event.key)) {
           event.preventDefault();
           return; // stay in the input, wait for a "real" key
+        }
+
+        // Backspace/Delete clears the binding: the shortcut is disabled on save
+        if (event.key === 'Backspace' || event.key === 'Delete') {
+          event.preventDefault();
+          input.value = '';
+          didCapture = true;
+          input.blur();
+          return;
         }
 
         // 1) whitelist test
@@ -183,11 +200,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       input.addEventListener('blur', () => {
-        input.placeholder = '';
         if (!didCapture) {
           // restore original if no valid combo was captured
           input.value = originalValue;
         }
+        input.placeholder = input.value ? '' : 'None';
       });
     });
   }
@@ -271,8 +288,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       ).reduce(
         (acc, key) => {
           const el = inputs[key];
-          if (el?.value) {
-            acc[key] = stringToKeyConfig(el.value);
+          if (el) {
+            // An empty field means the user cleared the binding: save it as
+            // null (disabled) instead of falling back to the default key
+            acc[key] = el.value ? stringToKeyConfig(el.value) : null;
           }
           return acc;
         },
