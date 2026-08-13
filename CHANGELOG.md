@@ -5,6 +5,8 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.12.0] - 2026-08-13
+
 ### Added
 
 - Individual shortcuts can now be disabled: press Backspace (or Delete) in a shortcut field in the popup to clear it, then Save. A cleared shortcut is stored as disabled and no longer reacts to any key. Requested in a Chrome Web Store review (2026-08-06, "How do I delete a shortcut?").
