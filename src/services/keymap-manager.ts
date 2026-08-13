@@ -1,24 +1,25 @@
 import type { ChromeStorage } from './chrome-storage';
 import type { KeyConfig } from './keymap-utils';
 
+// `null` means the shortcut is disabled: it never matches any key.
 export interface KeyConfigs<T extends string> {
-  move_up: KeyConfig<T>;
-  move_down: KeyConfig<T>;
-  open_link: Pick<KeyConfig<T>, 'key'>; // open link only needs the key
-  navigate_previous: KeyConfig<T>;
-  navigate_next: KeyConfig<T>;
+  move_up: KeyConfig<T> | null;
+  move_down: KeyConfig<T> | null;
+  open_link: Pick<KeyConfig<T>, 'key'> | null; // open link only needs the key
+  navigate_previous: KeyConfig<T> | null;
+  navigate_next: KeyConfig<T> | null;
   // Arrow key alternatives for navigation
-  arrow_move_up: KeyConfig<T>;
-  arrow_move_down: KeyConfig<T>;
-  arrow_navigate_previous: KeyConfig<T>;
-  arrow_navigate_next: KeyConfig<T>;
-  switch_to_image_search: KeyConfig<T>;
-  switch_to_all_search: KeyConfig<T>;
-  switch_to_videos: KeyConfig<T>;
-  switch_to_shopping: KeyConfig<T>;
-  switch_to_news: KeyConfig<T>;
-  switch_to_map: KeyConfig<T>;
-  switch_to_youtube: KeyConfig<T>;
+  arrow_move_up: KeyConfig<T> | null;
+  arrow_move_down: KeyConfig<T> | null;
+  arrow_navigate_previous: KeyConfig<T> | null;
+  arrow_navigate_next: KeyConfig<T> | null;
+  switch_to_image_search: KeyConfig<T> | null;
+  switch_to_all_search: KeyConfig<T> | null;
+  switch_to_videos: KeyConfig<T> | null;
+  switch_to_shopping: KeyConfig<T> | null;
+  switch_to_news: KeyConfig<T> | null;
+  switch_to_map: KeyConfig<T> | null;
+  switch_to_youtube: KeyConfig<T> | null;
 }
 
 export type Action = keyof KeyConfigs<string>;
@@ -157,7 +158,7 @@ export const createKeymapManager = async (
     isKeyMatch(e, action) {
       if (action === 'open_link') {
         const cfg = current[action];
-        return e.key === cfg.key;
+        return cfg ? e.key === cfg.key : false;
       }
       const cfg = current[action];
       return cfg
