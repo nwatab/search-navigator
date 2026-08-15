@@ -12,3 +12,6 @@ yarn.lock
 # Playwright
 test-results/
 playwright-report/
+
+# Release packages (distributed as GitHub Release assets)
+*.zip
