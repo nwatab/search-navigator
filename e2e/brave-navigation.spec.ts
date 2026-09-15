@@ -33,6 +33,28 @@ test('highlights the first result on load', async ({ page }) => {
   );
 });
 
+test('keeps the first result highlighted when Brave resets its class', async ({
+  page,
+}) => {
+  await page.goto(BRAVE_ALL_URL);
+  const highlighted = page.locator(HIGHLIGHT_SELECTOR);
+  await expect(highlighted).toHaveCount(1);
+
+  // Brave's scripts are stripped from snapshots; mimic its hydration, which
+  // rewrites the class attribute of every result after the extension ran.
+  await page.evaluate(() => {
+    document
+      .querySelectorAll('.snippet[data-type]')
+      .forEach((el) => el.setAttribute('class', 'snippet'));
+  });
+  await expect(highlighted).toHaveCount(1);
+  await expect(highlighted).toHaveAttribute('data-pos', '1');
+
+  await page.keyboard.press('ArrowDown');
+  await expect(highlighted).toHaveCount(1);
+  await expect(highlighted).toHaveAttribute('data-pos', '2');
+});
+
 test('moves the highlight with j/k and arrow keys', async ({ page }) => {
   await page.goto(BRAVE_ALL_URL);
   const highlighted = page.locator(HIGHLIGHT_SELECTOR);

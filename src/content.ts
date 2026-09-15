@@ -21,6 +21,7 @@ import {
   isBravePageType,
   markDismissed,
   markRated,
+  preserveHighlight,
   RATE_PROMPT_TOAST_ID,
   RATE_URL,
   saveRatingState,
@@ -125,6 +126,17 @@ import './style.scss';
       if (pageType === 'youtube-search-result') {
         simulateYouTubeHover(results[currentIndex], 'mouseenter');
       }
+    }
+
+    if (isBravePageType(pageType)) {
+      // Brave hydrates after the content script runs and resets the class of
+      // result elements, removing the highlight from the first result.
+      preserveHighlight(
+        document.body,
+        () => results[currentIndex],
+        theme,
+        signal
+      );
     }
 
     const currentTab = getSearchTabType(pageType);

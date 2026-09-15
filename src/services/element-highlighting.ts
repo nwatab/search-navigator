@@ -43,3 +43,29 @@ export const unhighlight = (results: HTMLElement[], index: number): void => {
   removeClass(result, 'sn-selected-dark');
   removeClass(result, 'sn-selected-light');
 };
+
+/**
+ * Keeps the highlight on the current result when the page itself rewrites
+ * class attributes (Brave Search does so while hydrating, which otherwise
+ * wipes the highlight applied on load). Stops when `signal` aborts.
+ */
+export const preserveHighlight = (
+  root: Node,
+  getHighlighted: () => HTMLElement | undefined,
+  theme: 'dark' | 'light',
+  signal: AbortSignal
+): void => {
+  const className = `sn-selected-${theme}`;
+  const observer = new MutationObserver(() => {
+    const el = getHighlighted();
+    if (el && !el.classList.contains(className)) {
+      addClass(el, className);
+    }
+  });
+  observer.observe(root, {
+    attributes: true,
+    attributeFilter: ['class'],
+    subtree: true,
+  });
+  signal.addEventListener('abort', () => observer.disconnect(), { once: true });
+};
