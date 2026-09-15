@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "Search Navigator – гарячі клавіші для Google і YouTube",
+    "description": "Extension name shown in the toolbar and Chrome Web Store."
+  },
+  "extDescription": {
+    "message": "Гарячі клавіші для Google Пошуку й YouTube. Рух j/k, перемикання вкладок, відкриття результатів — без миші, налаштувань і стеження.",
+    "description": "Store summary / short description (max 132 characters)."
+  }
+}

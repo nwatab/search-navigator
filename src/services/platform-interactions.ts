@@ -74,6 +74,20 @@ export const getGoogleImageResultAnchors = (
 };
 
 /**
+ * The source-page link of a Brave Images result, available only while
+ * Brave's preview panel shows that result (it is then marked "selected").
+ */
+export const getBraveImageSourceLink = (
+  result: HTMLElement,
+  doc: Document = document
+): HTMLAnchorElement | null => {
+  if (!result.classList.contains('selected')) return null;
+  return doc.querySelector<HTMLAnchorElement>(
+    '#images-selected-context-menu a.images-selected-title[href]'
+  );
+};
+
+/**
  * Helper function to simulate YouTube thumbnail hover
  */
 export const simulateYouTubeHover = (

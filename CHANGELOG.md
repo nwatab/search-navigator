@@ -5,6 +5,11 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+### Added
+
+- Brave Search support (`search.brave.com`): navigate All, Images, Videos and News results with the same shortcuts, go to the previous/next page, and switch between Brave tabs. Keys handled by the extension no longer also trigger Brave's own arrow-key navigation. Adding the site means Chrome asks existing users to approve access to `search.brave.com` after updating.
+- Ukrainian (`uk`) localization of the extension name and store summary.
+
 ## [1.12.0] - 2026-08-13
 
 ### Added

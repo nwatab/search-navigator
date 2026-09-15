@@ -28,6 +28,17 @@
       "js": ["content.js"],
       "css": ["style.css"],
       "run_at": "document_end"
+    },
+    {
+      "matches": [
+        "https://search.brave.com/search*",
+        "https://search.brave.com/images*",
+        "https://search.brave.com/videos*",
+        "https://search.brave.com/news*"
+      ],
+      "js": ["content.js"],
+      "css": ["style.css"],
+      "run_at": "document_end"
     }
   ],
   "permissions": ["storage", "activeTab", "tabs"],
