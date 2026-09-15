@@ -1,4 +1,10 @@
-import type { GoogleSearchTabType, PageType } from './get-search-results';
+import {
+  isBravePageType,
+  toBraveSearchTabType,
+  type BraveSearchTabType,
+  type GoogleSearchTabType,
+  type PageType,
+} from './get-search-results';
 
 // Google search tab type detection
 export function getGoogleSearchTabType(
@@ -59,6 +65,21 @@ export function getGoogleSearchTabType(
   return 'all';
 }
 
+const BRAVE_TAB_BY_PATHNAME: Record<string, BraveSearchTabType> = {
+  '/search': 'all',
+  '/images': 'image',
+  '/videos': 'videos',
+  '/news': 'news',
+};
+
+// Brave search tab type detection
+export function getBraveSearchTabType(url: URL): BraveSearchTabType | null {
+  if (!url.searchParams.get('q')) {
+    return null;
+  }
+  return BRAVE_TAB_BY_PATHNAME[url.pathname] ?? null;
+}
+
 export const getPageType = (location: Location): PageType => {
   const url = new URL(location.href);
 
@@ -71,6 +92,14 @@ export const getPageType = (location: Location): PageType => {
     return tabType;
   }
 
+  if (url.hostname === 'search.brave.com') {
+    const tabType = getBraveSearchTabType(url);
+    if (!tabType) {
+      throw new Error("Can't determine search tab type for: " + location.href);
+    }
+    return `brave-${tabType}`;
+  }
+
   if (
     url.hostname === 'www.youtube.com' &&
     url.pathname === '/results' &&
@@ -80,4 +109,90 @@ export const getPageType = (location: Location): PageType => {
   }
 
   throw new Error(`Unexpected host: ${url}`);
+};
+
+export type SearchTabType = GoogleSearchTabType;
+
+/**
+ * The search tab the page belongs to, regardless of search engine, or null
+ * for pages without tabs (YouTube).
+ */
+export const getSearchTabType = (pageType: PageType): SearchTabType | null => {
+  if (isBravePageType(pageType)) {
+    return toBraveSearchTabType(pageType);
+  }
+  if (pageType === 'youtube-search-result') {
+    return null;
+  }
+  return pageType;
+};
+
+const BRAVE_PATHNAME_BY_TAB: Record<BraveSearchTabType, string> = {
+  all: '/search',
+  image: '/images',
+  videos: '/videos',
+  news: '/news',
+};
+
+const GOOGLE_TBM_BY_TAB: Record<SearchTabType, string | null> = {
+  all: null,
+  image: 'isch',
+  videos: 'vid',
+  shopping: 'shop',
+  news: 'nws',
+};
+
+/**
+ * URL of `tab` for `query` on the search engine of `pageType`. Stays on Brave
+ * when already there; returns null when that engine has no such tab (Brave
+ * has no Shopping tab). Without a query, the "all" tab is the engine's home.
+ */
+export const getSearchTabUrl = (
+  pageType: PageType,
+  tab: SearchTabType,
+  query: string | null
+): string | null => {
+  if (isBravePageType(pageType)) {
+    if (tab === 'shopping') return null;
+    if (!query) return tab === 'all' ? 'https://search.brave.com' : null;
+    return `https://search.brave.com${BRAVE_PATHNAME_BY_TAB[tab]}?q=${encodeURIComponent(query)}`;
+  }
+  if (!query) return tab === 'all' ? 'https://www.google.com' : null;
+  const tbm = GOOGLE_TBM_BY_TAB[tab];
+  return `https://www.google.com/search?${tbm ? `tbm=${tbm}&` : ''}q=${encodeURIComponent(query)}`;
+};
+
+const getBraveOffset = (url: URL): number =>
+  Number(url.searchParams.get('offset') ?? 0) || 0;
+
+/**
+ * URL of the previous or next results page, or null when there is none or
+ * the tab is not paginated.
+ */
+export const getPaginationUrl = (
+  doc: Document,
+  location: Location,
+  pageType: PageType,
+  direction: 'previous' | 'next'
+): string | null => {
+  const tab = getSearchTabType(pageType);
+  if (isBravePageType(pageType)) {
+    if (tab === 'image') return null;
+    // Brave renders "Previous"/"Next" as links, or on the News tab as
+    // buttons carrying an href. Labels are localized, so tell them apart by
+    // the offset (page index) instead.
+    const currentUrl = new URL(location.href);
+    const currentOffset = getBraveOffset(currentUrl);
+    const target = Array.from(doc.querySelectorAll('.pagination [href]'))
+      .map((el) => new URL(el.getAttribute('href') ?? '', currentUrl.origin))
+      .find((url) =>
+        direction === 'next'
+          ? getBraveOffset(url) > currentOffset
+          : getBraveOffset(url) < currentOffset
+      );
+    return target?.href ?? null;
+  }
+  if (tab === null || tab === 'image') return null;
+  const link = doc.querySelector(direction === 'next' ? '#pnnext' : '#pnprev');
+  return link instanceof HTMLAnchorElement && link.href ? link.href : null;
 };

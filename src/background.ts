@@ -4,29 +4,28 @@ import type { KeyConfigs } from './services/keymap-manager';
 // Listen for messages from popup
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === UPDATE_KEYMAPPINGS_MESSAGE) {
-    // Forward the keymap update to all Google search tabs
+    // Forward the keymap update to all supported search tabs
     broadcastKeymapUpdate(message.keyConfigs);
     sendResponse({ success: true });
   }
 });
 
 /**
- * Broadcasts keymap updates to all Google search tabs
+ * Broadcasts keymap updates to all supported search tabs
  */
 async function broadcastKeymapUpdate(
   keyConfigs: KeyConfigs<string>
 ): Promise<void> {
   try {
-    // Query all tabs that match Google search and YouTube patterns
+    // Query all tabs that match Google search, YouTube and Brave Search patterns
     const urlPatterns = [
       'https://www.google.com/search*',
       'https://www.youtube.com/*',
+      'https://search.brave.com/*',
     ] as const;
-    const [googleTabs, youtubeTabs] = await Promise.all(
-      urlPatterns.map((url) => chrome.tabs.query({ url }))
-    );
-
-    const tabs = [...googleTabs, ...youtubeTabs];
+    const tabs = (
+      await Promise.all(urlPatterns.map((url) => chrome.tabs.query({ url })))
+    ).flat();
 
     // Send the keymap update message to each matching tab
     const promises = tabs.map(async (tab) => {

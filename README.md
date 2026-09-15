@@ -46,6 +46,10 @@ Navigate Google search results with your keyboard:
 
 - `m` - Google Maps • `y` - YouTube
 
+**Brave Search**
+
+The same shortcuts work on [Brave Search](https://search.brave.com) (All, Images, Videos and News). Tab shortcuts stay on Brave; Brave has no Shopping tab, so `s` does nothing there.
+
 **Customize shortcuts** by clicking the extension icon. Arrow keys cannot be changed.
 
 ## Roadmap
@@ -57,6 +61,7 @@ Navigate Google search results with your keyboard:
 - [x] YouTube support: move up/down, open
 - [ ] YouTube support: save to “Watch Later”
 - [x] Image/Video/News support: move up/down, open
+- [x] Brave Search support: move up/down, open, previous/next page, switch tabs
 
 ## Developer Contribution Guidelines
 

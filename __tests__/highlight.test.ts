@@ -1,4 +1,8 @@
-import { highlight, unhighlight } from '../src/services/element-highlighting';
+import {
+  highlight,
+  preserveHighlight,
+  unhighlight,
+} from '../src/services/element-highlighting';
 import { scrollIntoViewIfOutsideViewport } from '../src/services/dom-utils';
 
 // Mock only the viewport-dependent scrolling; jsdom has no layout, so the
@@ -115,5 +119,52 @@ describe('unhighlight', () => {
   it('should throw an error for invalid index', () => {
     expect(() => unhighlight(results, -1)).toThrow('Invalid index');
     expect(() => unhighlight(results, 3)).toThrow('Invalid index');
+  });
+});
+
+describe('preserveHighlight', () => {
+  const flushMutations = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+  it('re-applies the highlight when the page resets the class', async () => {
+    document.body.innerHTML = '<div class="snippet"></div>';
+    const el = document.querySelector<HTMLElement>('.snippet')!;
+    const controller = new AbortController();
+    preserveHighlight(document.body, () => el, 'dark', controller.signal);
+    el.classList.add('sn-selected-dark');
+
+    el.className = 'snippet'; // e.g. Brave hydrating the result
+    await flushMutations();
+    expect(el.classList.contains('sn-selected-dark')).toBe(true);
+    controller.abort();
+  });
+
+  it('leaves results that are no longer highlighted alone', async () => {
+    document.body.innerHTML = '<div id="a"></div><div id="b"></div>';
+    const a = document.getElementById('a')!;
+    const b = document.getElementById('b')!;
+    let current: HTMLElement = a;
+    const controller = new AbortController();
+    preserveHighlight(document.body, () => current, 'light', controller.signal);
+
+    a.classList.add('sn-selected-light');
+    a.classList.remove('sn-selected-light');
+    current = b;
+    b.classList.add('sn-selected-light');
+    await flushMutations();
+    expect(a.classList.contains('sn-selected-light')).toBe(false);
+    expect(b.classList.contains('sn-selected-light')).toBe(true);
+    controller.abort();
+  });
+
+  it('stops after the signal aborts', async () => {
+    document.body.innerHTML = '<div class="snippet"></div>';
+    const el = document.querySelector<HTMLElement>('.snippet')!;
+    const controller = new AbortController();
+    preserveHighlight(document.body, () => el, 'dark', controller.signal);
+    controller.abort();
+
+    el.className = 'snippet';
+    await flushMutations();
+    expect(el.classList.contains('sn-selected-dark')).toBe(false);
   });
 });

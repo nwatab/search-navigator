@@ -34,9 +34,28 @@ export type GoogleSearchTabType =
   | 'videos'
   | 'shopping'
   | 'news';
-export type PageType = GoogleSearchTabType | 'youtube-search-result';
+export type BraveSearchTabType = 'all' | 'image' | 'videos' | 'news';
+export type BravePageType = `brave-${BraveSearchTabType}`;
+export type PageType =
+  | GoogleSearchTabType
+  | BravePageType
+  | 'youtube-search-result';
+
+export const isBravePageType = (
+  pageType: PageType
+): pageType is BravePageType => pageType.startsWith('brave-');
+
+export const toBraveSearchTabType = (
+  pageType: BravePageType
+): BraveSearchTabType => pageType.slice('brave-'.length) as BraveSearchTabType;
 
 export function getSearchRootSelector(pageType: PageType): string {
+  if (pageType === 'brave-image') {
+    return '.images-layout';
+  }
+  if (isBravePageType(pageType)) {
+    return '#mixed-main';
+  }
   if (pageType === 'youtube-search-result') {
     // Many YouTube elements share id="contents"; scope to the search page
     // container so we don't match an unrelated node (issue #73).
@@ -45,7 +64,10 @@ export function getSearchRootSelector(pageType: PageType): string {
   return '#rso, #search';
 }
 
-function getSearchRoots(pageType: PageType, doc: Document): HTMLDivElement[] {
+function getSearchRoots(
+  pageType: GoogleSearchTabType | 'youtube-search-result',
+  doc: Document
+): HTMLDivElement[] {
   if (pageType === 'youtube-search-result') {
     return [doc.querySelector('ytd-search #contents')].filter(
       (el): el is HTMLDivElement => el !== null
@@ -114,10 +136,32 @@ export const getYouTubeSearchResults = (
   return Array.from(elements) as HTMLDivElement[];
 };
 
+export const getBraveSearchResults = (
+  tabType: BraveSearchTabType,
+  doc: Document = document
+): HTMLDivElement[] => {
+  if (tabType === 'image') {
+    // Image results are <button>s that open Brave's preview panel. The
+    // "Find elsewhere" tile shares the class but is a <div>.
+    return Array.from(
+      doc.querySelectorAll<HTMLDivElement>('.images-layout button.image-result')
+    );
+  }
+  // Web, video and news results (and clusters such as "Videos" on the web
+  // tab) are rendered as .snippet[data-type]. Non-result blocks in the same
+  // column (FAQ, related queries, pagination) have no data-type.
+  return Array.from(
+    doc.querySelectorAll<HTMLDivElement>('#mixed-main .snippet[data-type]')
+  );
+};
+
 export const getSearchResults = (
   doc: Document,
   pageType: PageType
 ): HTMLDivElement[] => {
+  if (isBravePageType(pageType)) {
+    return getBraveSearchResults(toBraveSearchTabType(pageType), doc);
+  }
   if (pageType === 'youtube-search-result') {
     return getYouTubeSearchResults(doc, {
       shorts: false,
