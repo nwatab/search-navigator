@@ -14,6 +14,7 @@ import {
   getSearchResults,
   highlight,
   incrementOpens,
+  isKeyEventFromEditable,
   markDismissed,
   markRated,
   RATE_PROMPT_TOAST_ID,
@@ -125,11 +126,9 @@ import './style.scss';
     document.addEventListener(
       'keydown',
       (e: KeyboardEvent) => {
-        if (
-          ['INPUT', 'TEXTAREA'].includes(
-            (document.activeElement && document.activeElement.tagName) || ''
-          )
-        ) {
+        // Stay out of the way while the user is typing (search box, AI
+        // Overview follow-up, any editable) or composing with an IME.
+        if (e.isComposing || isKeyEventFromEditable(e, document)) {
           return;
         }
 
