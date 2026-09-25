@@ -48,3 +48,60 @@ export function waitForSelector(
     }, timeout);
   });
 }
+
+const EDITABLE_TAG_NAMES: ReadonlySet<string> = new Set([
+  'INPUT',
+  'TEXTAREA',
+  'SELECT',
+]);
+const EDITABLE_ROLES: ReadonlySet<string> = new Set([
+  'textbox',
+  'searchbox',
+  'combobox',
+]);
+const CONTENTEDITABLE_SELECTOR =
+  '[contenteditable]:not([contenteditable="false"])';
+
+const isElement = (value: unknown): value is Element =>
+  value instanceof Element;
+
+/**
+ * Whether keystrokes on `el` are text entry rather than shortcuts: native
+ * form controls, contenteditable regions (or any node inside one) and ARIA
+ * text boxes. Google's AI Overview follow-up box is the motivating case.
+ */
+export const isEditableElement = (el: Element): boolean =>
+  EDITABLE_TAG_NAMES.has(el.tagName) ||
+  EDITABLE_ROLES.has(el.getAttribute('role') ?? '') ||
+  el.closest(CONTENTEDITABLE_SELECTOR) !== null;
+
+/**
+ * The innermost focused element, descending through open shadow roots
+ * (`document.activeElement` stops at the shadow host).
+ */
+export const getDeepActiveElement = (
+  root: Document | ShadowRoot
+): Element | null => {
+  const active = root.activeElement;
+  const shadow = active?.shadowRoot;
+  return shadow?.activeElement ? getDeepActiveElement(shadow) : active;
+};
+
+/**
+ * Whether a keyboard event comes from an editable element, so navigation
+ * shortcuts must leave it alone.
+ *
+ * The event's composed path is checked first: it is fixed when the event is
+ * dispatched and reaches into open shadow roots, whereas
+ * `document.activeElement` may already have moved by the time the event
+ * bubbles up to the document (the page's own handler can blur or replace the
+ * box while handling the same keystroke). The focused element is still
+ * checked as a fallback.
+ */
+export const isKeyEventFromEditable = (
+  e: KeyboardEvent,
+  doc: Document
+): boolean =>
+  [e.composedPath()[0], e.target, getDeepActiveElement(doc)]
+    .filter(isElement)
+    .some(isEditableElement);
