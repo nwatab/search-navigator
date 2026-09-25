@@ -5,6 +5,12 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.12.1] - 2026-09-25
+
+### Fixed
+
+- Shortcuts no longer fire while typing in Google's AI Overview follow-up box ("Ask anything"): pressing Enter there used to open the highlighted result and cancel the message. The keydown handler now judges the event's own target (which stays fixed even if the page moves focus while handling the keystroke) and recognizes `contenteditable` regions, ARIA text boxes and inputs inside open shadow roots; keystrokes during IME composition are ignored as well. Reported in a Chrome Web Store review (2026-09-10).
+
 ## [1.12.0] - 2026-08-13
 
 ### Added
